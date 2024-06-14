@@ -1,0 +1,89 @@
+[build-system]
+requires = [
+  "setuptools>=62.1",
+  "setuptools_scm[toml]>=6.2",
+  "wheel",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mast_contributor_tools"
+description = "This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). "
+requires-python = ">=3.11"
+readme = { file = "README.rst", content-type = "text/x-rst" }
+license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
+authors = [
+  { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
+]
+dependencies = []
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-doctestplus",
+    "pytest-cov"
+]
+docs = [
+    "sphinx",
+    "sphinx-automodapi",
+]
+[project.urls]
+repository = "https://github.com/spacetelescope/mast_contributor_tools"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["mast_contributor_tools._dev*"]
+
+[tool.setuptools_scm]
+write_to = "mast_contributor_tools/_version.py"
+
+[tool.pytest.ini_options]
+testpaths = [
+  "mast_contributor_tools",
+  "docs",
+]
+doctest_plus = "enabled"
+text_file_format = "rst"
+addopts = "--doctest-rst"
+
+[tool.coverage.run]
+omit = [
+ "mast_contributor_tools/__init*",
+ "mast_contributor_tools/conftest.py",
+ "mast_contributor_tools/*setup_package*",
+ "mast_contributor_tools/tests/*",
+ "mast_contributor_tools/*/tests/*",
+ "mast_contributor_tools/extern/*",
+ "mast_contributor_tools/version*",
+ "*/mast_contributor_tools/__init*",
+ "*/mast_contributor_tools/conftest.py",
+ "*/mast_contributor_tools/*setup_package*",
+ "*/mast_contributor_tools/tests/*",
+ "*/mast_contributor_tools/*/tests/*",
+ "*/mast_contributor_tools/extern/*",
+ "*/mast_contributor_tools/version*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain about packages we have installed
+  "except ImportError",
+  # Don't complain if tests don't hit assertions
+  "raise AssertionError",
+  "raise NotImplementedError",
+  # Don't complain about script hooks
+  "def main(.*):",
+  # Ignore branches that don't pertain to this version of Python
+  "pragma: py{ignore_python_version}",
+  # Don't complain about IPython completion helper
+  "def _ipython_key_completions_",
+  # typing.TYPE_CHECKING is False at runtime
+  "if TYPE_CHECKING:",
+  # Ignore typing overloads
+  "@overload",
+]

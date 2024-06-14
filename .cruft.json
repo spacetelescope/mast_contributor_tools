@@ -1,0 +1,31 @@
+{
+  "template": "https://github.com/OpenAstronomy/packaging-guide",
+  "commit": "e7f59ff1c4a17783223b68ae5e2a03969ba5847d",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "package_name": "mast_contributor_tools",
+      "module_name": "mast_contributor_tools",
+      "short_description": "This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). ",
+      "author_name": "MAST Staff",
+      "author_email": "mast_contrib@stsci.edu",
+      "project_url": "https://github.com/spacetelescope/mast_contributor_tools",
+      "license": "BSD 3-Clause",
+      "minimum_python_version": "3.11",
+      "use_compiled_extensions": "n",
+      "enable_dynamic_dev_versions": "y",
+      "include_example_code": "n",
+      "include_cruft_update_github_workflow": "n",
+      "_sphinx_theme": "alabaster",
+      "_parent_project": "",
+      "_install_requires": "",
+      "_copy_without_render": [
+        "docs/_templates",
+        "docs/_static",
+        ".github/workflows/sub_package_update.yml"
+      ],
+      "_template": "https://github.com/OpenAstronomy/packaging-guide"
+    }
+  },
+  "directory": null
+}
