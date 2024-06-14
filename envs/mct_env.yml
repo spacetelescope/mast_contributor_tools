@@ -1,0 +1,16 @@
+name: mast_contributor_tools
+channels:
+  - conda-forge
+  - anaconda
+  - nodefaults
+dependencies:
+  - python=3.11
+  - jupyter
+  - pip
+  - pip:
+    - setuptools
+    - setuptools_scm
+    - pytest
+    - pytest-doctestplus
+    - deepmerge
+    - click

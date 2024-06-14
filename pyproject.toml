@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 name = "mast_contributor_tools"
 description = "This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). "
 requires-python = ">=3.11"
-readme = { file = "README.rst", content-type = "text/x-rst" }
+readme = { file = "README.md", content-type = "text/x-rst" }
 license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
 authors = [
   { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
