@@ -1,8 +1,8 @@
+# MAST_CONTRIBUTOR_TOOLS
 This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). 
-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-License
--------
+# License
+
 
 This project is Copyright (c) MAST Staff and licensed under
 the terms of the BSD 3-Clause license. This package is based upon
@@ -10,8 +10,7 @@ the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-g
 which is licensed under the BSD 3-clause licence. See the licenses folder for
 more information.
 
-Contributing
-------------
+# Contributing
 
 We love contributions! mast_contributor_tools is open source,
 built on open source, and we'd love to have you hang out in our community.
