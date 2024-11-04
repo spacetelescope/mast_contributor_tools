@@ -1,0 +1,23 @@
+{
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.defaultInterpreterPath": "${env:PYTHON_ENV_PATH}",
+    "python.envFile": "${workspaceFolder}/.env",
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "always"
+        }
+    },
+    "ruff.lint.args": ["--config=${workspaceFolder}/pyproject.toml"
+    ],
+    "ruff.format.args": ["--config=${workspaceFolder}/pyproject.toml"
+    ],
+    "ruff.organizeImports": true,
+    "notebook.formatOnSave.enabled": true,
+    "notebook.lineNumbers": "on",
+}

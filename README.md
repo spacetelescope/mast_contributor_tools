@@ -20,6 +20,15 @@ Change `env_name` below with whatever you want to name the environment.
 conda env create -n env_name -f mct_env.yml
 conda activate env_name
 ```
+### Setting PYTHON_ENV_PATH 
+If you are using VSCode, it allows loading environment variables from a .env file in your workspace setting.
+
+Create a .env File in Your Project Root.
+```env
+PYTHON_ENV_PATH=/path/to/your/python
+```
+This variable will be used in `.vscode/settings.json` to loading the right environment when you open your project with VScode.
+
 ### mast_contributor_tools installation
 The `mast_contributor_tools` directory contains the python package itself, installable via pip.
 ```shell
