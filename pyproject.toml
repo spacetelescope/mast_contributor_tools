@@ -15,8 +15,8 @@ authors = [
   { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
 ]
 dependencies = [
-    "click",
-    "pyyaml",
+    "click >= 8.1.0",
+    "pyyaml >6.0.1",
 ]
 dynamic = ["version"]
 
