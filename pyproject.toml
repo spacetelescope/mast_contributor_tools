@@ -50,7 +50,7 @@ write_to = "mast_contributor_tools/_version.py"
 
 [tool.pytest.ini_options]
 testpaths = [
-  "mast_contributor_tools",
+  "mast_contributor_tools/tests",
   "docs",
 ]
 doctest_plus = "enabled"

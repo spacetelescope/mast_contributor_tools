@@ -37,4 +37,4 @@ jobs:
           ruff check . --config=pyproject.toml
 
       - name: Run tests
-        run: pytest mast_contributor_tools/tests/
+        run: pytest mast_contributor_tools/tests/ -v --collect-only # collect only because there are no test scripts yet. Delete `-v --collect-only` when you have one.
