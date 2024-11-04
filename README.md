@@ -1,5 +1,5 @@
 # MAST_CONTRIBUTOR_TOOLS
-This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). 
+This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions).
 
 ## Development Workflow
 There are two main branches for bibcat work:
@@ -20,14 +20,9 @@ Change `env_name` below with whatever you want to name the environment.
 conda env create -n env_name -f mct_env.yml
 conda activate env_name
 ```
-### Setting PYTHON_ENV_PATH 
-If you are using VSCode, it allows loading environment variables from a .env file in your workspace setting.
-
-Create a .env File in Your Project Root.
-```env
-PYTHON_ENV_PATH=/path/to/your/python
+### (Optional for Development) VSCode settings.json
 ```
-This variable will be used in `.vscode/settings.json` to loading the right environment when you open your project with VScode.
+If you decide to use VSCode for your development, you can use the [workspace settings.json](.vscode/settings.json). You should choose your python interpreter locally by setting your conda environment.
 
 ### mast_contributor_tools installation
 The `mast_contributor_tools` directory contains the python package itself, installable via pip.

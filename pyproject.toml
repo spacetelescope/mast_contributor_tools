@@ -15,7 +15,7 @@ authors = [
   { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
 ]
 dependencies = [
-    "click",   
+    "click",
     "pyyaml",
 ]
 dynamic = ["version"]

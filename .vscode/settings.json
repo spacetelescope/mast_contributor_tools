@@ -3,9 +3,7 @@
     "python.analysis.typeCheckingMode": "off",
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.diagnosticMode": "workspace",
-    "python.defaultInterpreterPath": "${env:PYTHON_ENV_PATH}",
-    "python.envFile": "${workspaceFolder}/.env",
-    "[python]": {
+     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {

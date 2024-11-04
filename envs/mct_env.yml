@@ -11,7 +11,7 @@ dependencies:
     - setuptools
     - setuptools_scm
     - wheel
-    - click   
+    - click
     - deepmerge
     - pyyaml
     - pre-commit
