@@ -14,14 +14,22 @@ license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
 authors = [
   { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
 ]
-dependencies = []
+dependencies = [
+    "click",   
+    "pyyaml",
+]
 dynamic = ["version"]
 
 [project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "ruff",
+]
 test = [
     "pytest",
     "pytest-doctestplus",
-    "pytest-cov"
+    "pytest-cov",
+    "pytest-mock",
 ]
 docs = [
     "sphinx",

@@ -1,6 +1,60 @@
 # MAST_CONTRIBUTOR_TOOLS
 This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). 
 
+## Development Workflow
+There are two main branches for bibcat work:
+
+- The **dev** branch contains ongoing development work and all new work should be done in branches that are merged against **dev**.
+
+- The **main** branch contains the latest stable release of `mast_contributor_tools`.
+
+## Installation
+### Required packages and versions
+- See required packages found in the [conda evn file](envs/mct_env.yml) or [pyproject.toml](pyproject.toml).
+
+### Conda env installation
+Change `env_name` below with whatever you want to name the environment.
+- Download the conda installation yml file [here](envs/mct_env.yml).
+- In the terminal, run these commands.
+```shell
+conda env create -n env_name -f mct_env.yml
+conda activate env_name
+```
+### mast_contributor_tools installation
+The `mast_contributor_tools` directory contains the python package itself, installable via pip.
+```shell
+pip install -e .
+```
+## pre-commit for development
+
+[pre-commit](https://pre-commit.com/) allows all collaborators push their commits compliant with the same set of lint and format rules in [pyproject.toml](pyproject.toml) by checking all files in the project at different stages of the git workflow. It runs commands specified in the [.pre-commit-config.yaml](.pre-commit-config.yaml) config file and runs checks before committing or pushing, to catch errors that would have caused a build failure before they reach CI.
+
+### Install pre-commit
+You will need to install `pre-commit` manually.
+```bash
+pip install pre-commit # if you haven't already installed the package
+```
+
+```bash
+pre-commit install # install default hooks, `pre-commit`, `pre-push`, and `commit-msg`, as specified in the config file.
+```
+
+If this is your first time running, you should run the hooks against for all files and it will fix all files based on your setting.
+```bash
+pre-commit run --all-files
+```
+Finally, you will need to update `pre-commit` regularly by running
+```bash
+pre-commit autoupdate
+```
+For other configuration options and more detailed information, check out at the [pre-commit](https://pre-commit.com/) page.
+
+
+## Quick Start
+### Filename Check
+To check if the filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please see [the Filename Check Guide](mast_contributor_tools/filename_check/filename_check.md) to get started.
+
+### Metadata Check
 # License
 
 

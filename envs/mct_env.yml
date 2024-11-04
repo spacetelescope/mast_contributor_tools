@@ -10,7 +10,13 @@ dependencies:
   - pip:
     - setuptools
     - setuptools_scm
+    - wheel
+    - click   
+    - deepmerge
+    - pyyaml
+    - pre-commit
+    - ruff
     - pytest
     - pytest-doctestplus
-    - deepmerge
-    - click
+    - pytest-mock
+    - pytest-cov
