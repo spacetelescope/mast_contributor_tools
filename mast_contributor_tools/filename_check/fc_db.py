@@ -62,6 +62,11 @@ class Hlsp_SQLiteDb():
             for statement in [FILENAME_TABLE,FIELDS_TABLE,PROBLEMS_VIEW]:
                 self.conn.execute(statement)
             
+            # Turn on Write-Ahead Log
+            # See https://www.powersync.com/blog/sqlite-optimizations-for-ultra-high-performance
+            self.conn.execute('PRAGMA journal_mode = WAL')
+            self.conn.execute('PRAGMA synchronous = normal')
+            self.conn.execute('PRAGMA journal_size_limit = 6144000')
             self.conn.commit()
 
         except sqlite3.Error as e:
