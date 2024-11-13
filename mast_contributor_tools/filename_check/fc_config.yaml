@@ -1,0 +1,41 @@
+# HLSP Filename check config file
+FieldLength:
+    'extension': 16
+    'filter': 20
+    'hlsp_str': 4
+    'hlsp_name': 20
+    'instrument': 20
+    'mission': 20
+    'target_name': 30
+    'product_type': 16
+    'version_id': 9
+    'generic1': 20
+    'generic2': 20
+    'generic3': 20
+    'generic4': 20
+
+ExtensionTypes:
+ - asdf
+ - csv
+ - db
+ - ecsv
+ - fits
+ - jpeg
+ - jpg
+ - md
+ - pdf
+ - png
+ - readme
+ - tif
+ - txt
+
+SemanticTypes:
+ - cat
+ - drz
+ - img
+ - lc
+ - map
+ - model
+ - spec
+
+...
