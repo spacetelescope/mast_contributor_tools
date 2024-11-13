@@ -34,10 +34,10 @@ if __name__ == '__main__':
     """
     descr_text = 'Validate a specific name of an HLSP science product'
     parser = argparse.ArgumentParser(description=descr_text)
-    parser.add_argument('in_file', type=str, 
-                        help='Name of an HLSP product')
     parser.add_argument('hlsp_name', type=str, 
                         help='Name of HLSP collection')
+    parser.add_argument('in_file', type=str, 
+                        help='Name of an HLSP product')
     args = parser.parse_args()
 
     main(args.in_file, args.hlsp_name)
