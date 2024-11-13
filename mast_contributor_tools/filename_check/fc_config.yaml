@@ -33,6 +33,7 @@ SemanticTypes:
  - cat
  - drz
  - img
+ - lc
  - map
  - model
  - spec

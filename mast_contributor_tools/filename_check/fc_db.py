@@ -85,7 +85,6 @@ class Hlsp_SQLiteDb():
         file_record : dict
             File attributes
         """
-        #print(file_record)
         self.conn.execute(INSERT_FILE_RECORD, file_record)
         self.conn.commit()
 

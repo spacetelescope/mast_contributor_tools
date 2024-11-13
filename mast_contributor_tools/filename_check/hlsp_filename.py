@@ -1,4 +1,3 @@
-# shaw@stsci.edu
 from abc import ABC, abstractmethod
 import os
 from pathlib import Path
@@ -7,23 +6,20 @@ import yaml
 
 # Fetch configurations for the module
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(BASE_DIR, 'config.yaml'),'r') as f:
+with open(os.path.join(BASE_DIR, 'fc_config.yaml'),'r') as f:
     cfg = yaml.safe_load(f)
 
 EXTENSION_TYPES = cfg['ExtensionTypes']
 SEMANTIC_TYPES = cfg['SemanticTypes']
 fieldLengthPolicy = cfg['FieldLength']
 
-# Fetch lists of missions, instruments, filters
-#MISSIONS = ['hst','iue', 'jwst','tess']
-#INSTRUMENTS = ['miri','nircam','niriss','nirspec','acs','cos','stis','wfc3']
-#FILTERS = ['f100lp','f170lp','f290lp','g140h','g235h','g395h','f555w']
-
 with open(os.path.join(BASE_DIR, 'oif.yaml'),'r') as f:
     oif = yaml.safe_load(f)
 
 MISSIONS = [*oif]
 INSTRUMENTS = set(sum([[*oif[m]['instruments']] for m in MISSIONS], []))
+# Tussing the list of all unique filters takes more work
+# The following does not support name "aliases" in the yaml file
 filt_list = []
 for m in MISSIONS:
     for i in [*oif[m]['instruments']]:
@@ -42,8 +38,11 @@ class FieldRule():
     approach to validiting field *values* varies by field. The expressions that 
     validate the version or target fields can be verified at https://regex101.com
     """
-    version_expr = re.compile("^v[1-9][\d]?((\.\d{1,2})(\.[a-z0-9]{1,2})?)?$")
-    target_expr = re.compile("^[a-zA-Z][a-zA-Z\d+-.]*[a-zA-Z0-9]$")
+    hlsp_expr = re.compile("^[a-z][a-z0-9-]*[a-z0-9]$")
+    #target_expr = re.compile("^[a-zA-Z][a-zA-Z\d+-.]*[a-zA-Z0-9]$")
+    #version_expr = re.compile("^v[1-9][\d]?((\.\d{1,2})(\.[a-z0-9]{1,2})?)?$")
+    target_expr = re.compile("^[a-zA-Z][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
+    version_expr = re.compile("^v[1-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?")
     
     def length(value: str, max_length: int) -> bool:
         return len(value) <= max_length
@@ -52,6 +51,9 @@ class FieldRule():
         return value.islower()
     
     # Rules for field values
+    def matchHlsp(value: str) -> bool:
+        return FieldRule.hlsp_expr.match(value) is not None
+    
     def matchTarget(value: str) -> bool:
         return FieldRule.target_expr.match(value) is not None
     
@@ -111,7 +113,6 @@ class FilenameFieldAB(ABC):
         self.len_eval = False
         self.value_eval = False
         self.severity = 'fatal'
-        #print(f'Creating {self.name} field with value {self.value}')
     
     @abstractmethod
     def evaluate(self):
@@ -179,7 +180,6 @@ class HlspNameField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         # Assume a valid HLSP name was passed to the constructor
-        #self.value_eval = True
         self.value_eval = FieldRule.matchChoice(self.value, [self.hlsp_ref_name])
         self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
 
@@ -310,8 +310,10 @@ class HlspFileName():
                  hlsp_name: str
                  ) -> None:
         self.filepath = filepath
-        self.hlspName = hlsp_name
-        #self.length = len(self.name)
+        if FieldRule.matchHlsp(hlsp_name):
+            self.hlspName = hlsp_name
+        else:
+            raise ValueError(f'Invalid HLSP name: {hlsp_name}')
         self.fields = []
     
     def partition(self) -> None:
@@ -351,11 +353,8 @@ class HlspFileName():
         
         # If there are 5 < nFields < 9, the other fields are treated as generic
         elif 5 < nf < 9:
-            #print('Creating generic fields')
             for i in range(2,nf-3):
                 self.fields.append(GenericField(self.fieldvals[i], i-1))
-        # Announce the successful end
-        #print(f'Created {nf} fields for file {self.name}')
     
     def evaluate_fields(self):
         """Evaluate attributes of each field
@@ -371,7 +370,9 @@ class HlspFileName():
         return [f.get_scores() for f in self.fields]
 
     def evaluate_filename(self):
-        """Evaluate attributes of the filename
+        """Evaluate attributes of the filename.
+
+        Note that the filename 'status' depends upon having evaluated the fields.
         
         Returns:
         --------
