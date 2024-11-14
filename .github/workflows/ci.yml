@@ -1,0 +1,40 @@
+name: CI Test Suite
+on: [push, pull_request]
+jobs:
+  lint_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Print working directory
+        run: pwd
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: '**/pyproject.toml'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[dev,test,docs]"
+
+      - name: Run linter and formatter
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          ruff check . --config=pyproject.toml --statistics --exit-zero # --fix if you want to automatically fix errors.
+          # exit-zero treats all errors as warnings.
+          ruff check . --config=pyproject.toml
+
+    #  - name: Run tests
+    #    run: pytest mast_contributor_tools/tests/ # uncomment when there are test scripts ready.

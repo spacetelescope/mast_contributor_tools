@@ -14,14 +14,22 @@ license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
 authors = [
   { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
 ]
-dependencies = []
+dependencies = [
+    "click >= 8.1.0",
+    "pyyaml >6.0.1",
+]
 dynamic = ["version"]
 
 [project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "ruff",
+]
 test = [
     "pytest",
     "pytest-doctestplus",
-    "pytest-cov"
+    "pytest-cov",
+    "pytest-mock",
 ]
 docs = [
     "sphinx",
@@ -42,7 +50,7 @@ write_to = "mast_contributor_tools/_version.py"
 
 [tool.pytest.ini_options]
 testpaths = [
-  "mast_contributor_tools",
+  "mast_contributor_tools/tests",
   "docs",
 ]
 doctest_plus = "enabled"
