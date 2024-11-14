@@ -2,7 +2,7 @@
 This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions).
 
 ## Development Workflow
-There are two main branches for bibcat work:
+There are two main branches for mast_contributor_tools work:
 
 - The **dev** branch contains ongoing development work and all new work should be done in branches that are merged against **dev**.
 
