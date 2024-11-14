@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from hlsp_filename import HlspFileName
+from mast_contributor_tools.filename_check.hlsp_filename import HlspFileName
 
 
 def main(inFile, hlspName):
