@@ -16,12 +16,14 @@ There are two main branches for mast_contributor_tools work:
 Change `env_name` below with whatever you want to name the environment.
 - Download the conda installation yml file [here](envs/mct_env.yml).
 - In the terminal, run these commands.
+
 ```shell
 conda env create -n env_name -f mct_env.yml
 conda activate env_name
 ```
+
 ### (Optional for Development) VSCode settings.json
-```
+
 If you decide to use VSCode for your development, you can use the [workspace settings.json](.vscode/settings.json). You should choose your python interpreter locally by setting your conda environment.
 
 ### mast_contributor_tools installation
