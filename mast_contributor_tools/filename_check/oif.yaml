@@ -591,6 +591,11 @@ kepler:
     kepler:
       filters:
         - kepler
+tess:
+  instruments:
+    ffi:
+      filters:
+        - tess
 k2:
   instruments:
     kepler:
@@ -782,5 +787,11 @@ wise:
         - w2
         - w3
         - w4
+
+multi:
+  instruments:
+    multi:
+      filters:
+        - multi
 
 ...

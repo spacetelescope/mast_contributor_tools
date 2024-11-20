@@ -40,11 +40,11 @@ class FieldRule:
     validate the version or target fields can be verified at https://regex101.com
     """
 
-    hlsp_expr = re.compile("^[a-z][a-z0-9-]*[a-z0-9]$")
+    hlsp_expr = re.compile(r"^[a-z][a-z0-9-]*[a-z0-9]$")
     # target_expr = re.compile("^[a-zA-Z][a-zA-Z\d+-.]*[a-zA-Z0-9]$")
     # version_expr = re.compile("^v[1-9][\d]?((\.\d{1,2})(\.[a-z0-9]{1,2})?)?$")
-    target_expr = re.compile("^[a-zA-Z][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
-    version_expr = re.compile("^v[1-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?")
+    target_expr = re.compile(r"^[a-zA-Z][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
+    version_expr = re.compile(r"^v[1-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?")
 
     def length(value: str, max_length: int) -> bool:
         return len(value) <= max_length
@@ -53,7 +53,7 @@ class FieldRule:
         return value.islower()
 
     # Rules for field values
-    def matchHlsp(value: str) -> bool:
+    def matchHlspName(value: str) -> bool:
         return FieldRule.hlsp_expr.match(value) is not None
 
     def matchTarget(value: str) -> bool:
@@ -177,12 +177,14 @@ class HlspNameField(FilenameFieldAB):
 
     def __init__(self, value: str, ref_name: str) -> None:
         super().__init__("hlsp_name", value)
-        self.hlsp_ref_name = ref_name
+        self.hlsp_ref_name = ref_name.lower()
 
     def evaluate(self):
         super().evaluate()
         # Assume a valid HLSP name was passed to the constructor
-        self.value_eval = FieldRule.matchChoice(self.value, [self.hlsp_ref_name])
+        self.value_eval = FieldRule.matchHlspName(self.value) and FieldRule.matchChoice(
+            self.value, [self.hlsp_ref_name]
+        )
         self.severity = FieldRule.severity(
             self.cap_eval and self.len_eval and self.value_eval
         )
@@ -226,7 +228,9 @@ class ProductField(FilenameFieldAB):
         super().evaluate()
         self.value_eval = FieldRule.matchChoice(self.value, SEMANTIC_TYPES)
         self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
+        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
+            self.severity = FieldRule.severity_lax(self.value_eval)
 
 
 class TargetField(FilenameFieldAB):
@@ -242,7 +246,9 @@ class TargetField(FilenameFieldAB):
         # but must begin and end with a purely alphanumeric character.
         self.value_eval = FieldRule.matchTarget(self.value)
         self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
+        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
+            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
 
 
 class VersionField(FilenameFieldAB):
@@ -275,7 +281,9 @@ class GenericField(FilenameFieldAB):
         # No restriction on generic field values
         self.value_eval = True
         self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
+        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
+            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
 
 
 class HlspFileName:
@@ -312,7 +320,7 @@ class HlspFileName:
 
     def __init__(self, filepath: Path, hlsp_name: str) -> None:
         self.filepath = filepath
-        if FieldRule.matchHlsp(hlsp_name):
+        if FieldRule.matchHlspName(hlsp_name):
             self.hlspName = hlsp_name
         else:
             raise ValueError(f"Invalid HLSP name: {hlsp_name}")
@@ -382,7 +390,10 @@ class HlspFileName:
         if "fatal" in field_status:
             status = "fail"
         else:
-            status = SCORE[FieldRule.capitalization(self.path)]
+            if self.path == ".":  # if current directory, ignore path
+                status = SCORE[FieldRule.capitalization(self.name)]
+            else:
+                status = SCORE[FieldRule.capitalization(self.path)]
         attr = {
             "path": self.path,
             "filename": self.name,
