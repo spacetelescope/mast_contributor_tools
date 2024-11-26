@@ -46,7 +46,7 @@ def assert_scores_match(
 
     """
     # Convert expected_score list into dict
-    expected_score = {
+    expected_score_dict = {
         "capitalization": expected_score[0],
         "length": expected_score[1],
         "value": expected_score[2],
@@ -54,15 +54,15 @@ def assert_scores_match(
     }
 
     # Test each value individually
-    for test_key in expected_score.keys():
+    for test_key in expected_score_dict.keys():
         test_name = recieved_score["name"]
         eval_msg = (
             f"Error in field '{test_name}.{test_key}':"
             + f" recieved '{recieved_score[test_key]}', "
-            + f" expected '{expected_score[test_key]}' does not match"
+            + f" expected '{expected_score_dict[test_key]}' does not match"
         )
         # Assert scores match
-        assert recieved_score[test_key] == expected_score[test_key], eval_msg
+        assert recieved_score[test_key] == expected_score_dict[test_key], eval_msg
 
 
 # ==============================================
@@ -248,7 +248,6 @@ def test_FilterField(test_value: str, expected_score: list[str]) -> None:
         ("v01", ["pass", "pass", "fail", "fatal"]),  # TICA uses this - should it pass??
         ("dr1", ["pass", "pass", "fail", "fatal"]),
         ("1.2.3", ["fail", "pass", "fail", "fatal"]),
-        ("", ["fail", "pass", "fail", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )
@@ -450,6 +449,7 @@ def test_cfg(test_value: str, cfg_list: list) -> None:
 
 # Test that all field classes are called in HlspFileName (no fields are skipped)
 # Listed in backwards order because the last one is passed to function first
+# For standard 9-field filename
 @mock.patch("mast_contributor_tools.filename_check.hlsp_filename.ExtensionField")
 @mock.patch("mast_contributor_tools.filename_check.hlsp_filename.ProductField")
 @mock.patch("mast_contributor_tools.filename_check.hlsp_filename.VersionField")
@@ -459,7 +459,7 @@ def test_cfg(test_value: str, cfg_list: list) -> None:
 @mock.patch("mast_contributor_tools.filename_check.hlsp_filename.MissionField")
 @mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspNameField")
 @mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspField")
-def test_field_parts_called_in_HlspFileName(*mock_fields) -> None:
+def test_field_9parts_called_in_HlspFileName(*mock_fields) -> None:
     """Test that all field classes are called in HlspFileName"""
     test_filename = "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits"
     # Split file name into parts to test
@@ -483,3 +483,31 @@ def test_field_parts_called_in_HlspFileName(*mock_fields) -> None:
             mock_field.assert_called_with(parts[i], parts[i])  # two args for HlspName
         else:
             mock_field.assert_called_with(parts[i])  # one for everything else
+
+
+# Test that all field classes are called in HlspFileName (no fields are skipped)
+# Listed in backwards order because the last one is passed to function first
+# For shorter 5-field filename with Generic Fields
+@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.ExtensionField")
+@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.GenericField")
+@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspNameField")
+@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspField")
+def test_field_5parts_called_in_HlspFileName(*mock_fields) -> None:
+    """Test that all field classes are called in HlspFileName"""
+    test_filename = "hlsp_fake-hlsp_alltargets_v1_cat.fits"
+    # Split file name into parts to test
+    parts = test_filename.split("_")
+    last = parts[-1].split(".", 1)
+    parts = parts[:-1] + last
+
+    # Initiate File Name Validation
+    hfn = HlspFileName(Path(test_filename), "fake-hlsp")
+    hfn.partition()
+    hfn.create_fields()
+    # Check to make sure every field was checked
+    for i, mock_field in enumerate(mock_fields):
+        # Assert field was checked
+        (
+            mock_field.assert_called_once(),
+            f"Field {mock_field._extract_mock_name()} was not called",
+        )

@@ -2,8 +2,8 @@ import argparse
 import re
 from pathlib import Path
 
-from fc_db import Hlsp_SQLiteDb
-from hlsp_filename import FieldRule, HlspFileName
+from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
+from mast_contributor_tools.filename_check.hlsp_filename import FieldRule, HlspFileName
 
 FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.\w+)?(\.[\w]+(\.gz|\.zip)?)$")
 
