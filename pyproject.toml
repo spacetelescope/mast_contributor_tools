@@ -22,8 +22,8 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit",
-    "ruff",
+    "pre-commit >=4.0.1",
+    "ruff >= 0.8.2",
 ]
 test = [
     "pytest",
