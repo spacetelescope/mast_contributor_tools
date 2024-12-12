@@ -43,7 +43,7 @@ class FieldRule:
     hlsp_expr = re.compile(r"^[a-z][a-z0-9-]*[a-z0-9]$")
     # target_expr = re.compile("^[a-zA-Z][a-zA-Z\d+-.]*[a-zA-Z0-9]$")
     # version_expr = re.compile("^v[1-9][\d]?((\.\d{1,2})(\.[a-z0-9]{1,2})?)?$")
-    target_expr = re.compile(r"^[a-zA-Z][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
+    target_expr = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
     version_expr = re.compile(r"^v[1-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?")
 
     def length(value: str, max_length: int) -> bool:

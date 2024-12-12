@@ -197,10 +197,10 @@ def test_InstrumentField(
         ("vega", ["pass", "pass", "pass", "N/A"]),
         ("m31", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
+        ("2m04215943+1932063", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
-        ("2m04215943+1932063", ["pass", "pass", "fail", "unrecognized"]),
         ("M31", ["fail", "pass", "pass", "fatal"]),  # caps
-        ("2M04215943+1932063", ["fail", "pass", "fail", "fatal"]),
+        ("2M04215943+1932063", ["fail", "pass", "pass", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )
