@@ -197,11 +197,18 @@ def test_InstrumentField(
         ("vega", ["pass", "pass", "pass", "N/A"]),
         ("m31", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
+        ("ngc1385", ["pass", "pass", "pass", "N/A"]),
+        ("obj-123", ["pass", "pass", "pass", "N/A"]),
         ("2m04215943+1932063", ["pass", "pass", "pass", "N/A"]),
+        ("j152447.75-p041919.8", ["pass", "pass", "pass", "N/A"]),
+        ("2mass-j09512393-p3542490", ["pass", "pass", "pass", "N/A"]),
+        ("sdssj085259.22-p031320.6", ["pass", "pass", "pass", "N/A"]),
+        ("1saxj1032.3-p5051", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
         ("M31", ["fail", "pass", "pass", "fatal"]),  # caps
         ("2M04215943+1932063", ["fail", "pass", "pass", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("123+456", ["fail", "pass", "pass", "fatal"]),  # all digits
     ],
 )
 def test_TargetField(test_value: str, expected_score: list[str]) -> None:
@@ -354,6 +361,11 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
         (
             "hlsp_hff-deepspace_hst_acs-wfc3_all_multi_v1_readme.txt",
             "hff-deepspace",
+            "pass",
+        ),
+        (
+            "hlsp_cos-gal_hst_cos_j152447.75-p041919.8_g130m_v1_fullspec.fits",
+            "cos-gal",
             "pass",
         ),
         (  # NOTE: actual tica version is 'v01' but that fails here
