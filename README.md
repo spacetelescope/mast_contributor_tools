@@ -55,6 +55,20 @@ pre-commit autoupdate
 ```
 For other configuration options and more detailed information, check out at the [pre-commit](https://pre-commit.com/) page.
 
+### Testing
+
+This package includes a test suite built with `pytest`. After installing, you can ensure the code is working correctly by running:
+
+```
+pytest
+```
+
+which will run all test scripts in the `tests` directory and output the results. Each `.py` file in the source code directory has a corresponding `_test.py` file in the tests directory. The tests can calso be called on a single file, for example:
+
+```
+pytest tests/filename_check/test_hlsp_filename.py
+```
+
 
 ## Quick Start
 ### Filename Check

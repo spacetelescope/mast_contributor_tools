@@ -53,9 +53,11 @@ testpaths = [
   "mast_contributor_tools/tests",
   "docs",
 ]
-doctest_plus = "enabled"
-text_file_format = "rst"
-addopts = "--doctest-rst"
+python_files = "test_*.py"
+# commenting these out for now until docs are added
+# doctest_plus = "enabled"
+# text_file_format = "rst"
+# addopts = "--doctest-rst"
 
 [tool.coverage.run]
 omit = [

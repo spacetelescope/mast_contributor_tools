@@ -17,6 +17,7 @@ FieldLength:
 ExtensionTypes:
  - asdf
  - csv
+ - dat
  - db
  - ecsv
  - fits
@@ -26,6 +27,7 @@ ExtensionTypes:
  - pdf
  - png
  - readme
+ - tar.gz
  - tif
  - txt
 

@@ -36,5 +36,5 @@ jobs:
           # exit-zero treats all errors as warnings.
           ruff check . --config=pyproject.toml
 
-    #  - name: Run tests
-    #    run: pytest mast_contributor_tools/tests/ # uncomment when there are test scripts ready.
+      - name: Run tests
+        run: pytest mast_contributor_tools/tests/
