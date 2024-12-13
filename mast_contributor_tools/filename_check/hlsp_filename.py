@@ -44,7 +44,7 @@ class FieldRule:
     # target_expr = re.compile("^[a-zA-Z][a-zA-Z\d+-.]*[a-zA-Z0-9]$")
     # version_expr = re.compile("^v[1-9][\d]?((\.\d{1,2})(\.[a-z0-9]{1,2})?)?$")
     target_expr = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
-    version_expr = re.compile(r"^v[1-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?")
+    version_expr = re.compile(r"^v[0-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?$")
 
     def length(value: str, max_length: int) -> bool:
         return len(value) <= max_length
@@ -153,9 +153,11 @@ class FilterField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.matchMultiChoice(self.value, FILTERS)
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
+        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
+        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
+            # Return "unrecognized" but not fatal warning
+            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
 
 
 class HlspField(FilenameFieldAB):
@@ -213,9 +215,11 @@ class MissionField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.matchMultiChoice(self.value, MISSIONS)
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
+        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
+        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
+            # Return "unrecognized" but not fatal warning
+            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
 
 
 class ProductField(FilenameFieldAB):

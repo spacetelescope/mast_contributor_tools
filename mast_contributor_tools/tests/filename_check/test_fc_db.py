@@ -1,5 +1,17 @@
 """
 Tests for mast_contributor_tools/filename_check/fc_db.py
+
+Each test recieves four scores: [capitalization, length, value, severity]:
+- "Captilization" checks the capitilzation rules for this field, generally
+required to be lowercase
+- "Length" checks the character length, with the upper limit set for each field,
+for example, the "HLSP name" must be less than 20 characters.
+- "Value" checks the value of the field for additional rules; for example, the
+target name is allowed to include some special characters, and the instrument must
+be valid for the telescope name.
+- "Severity" is the overall score, combining these three tests. Generally "N/A" if
+the filename passes validation, "fatal" if it fails, or "unrecognized" for non-fatal
+warnings.
 """
 
 import os
@@ -66,7 +78,7 @@ def test_Hlsp_SQLiteDb_Columns(table_name: str, expected_column: str) -> None:
     ],
 )
 def test_add_filename(file_record) -> None:
-    """Test field record can be inserted successfully with add_filename()"""
+    """Test file record can be inserted successfully with add_filename()"""
     test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
     test_db.create_db()
     test_db.add_filename(

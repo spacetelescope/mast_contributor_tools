@@ -1,5 +1,17 @@
 """
 Tests for mast_contributor_tools/filename_check/hlsp_filename.py
+
+Each test recieves four scores: [capitalization, length, value, severity]:
+- "Captilization" checks the capitilzation rules for this field, generally
+required to be lowercase
+- "Length" checks the character length, with the upper limit set for each field,
+for example, the "HLSP name" must be less than 20 characters.
+- "Value" checks the value of the field for additional rules; for example, the
+target name is allowed to include some special characters, and the instrument must
+be valid for the telescope name.
+- "Severity" is the overall score, combining these three tests. Generally "N/A" if
+the filename passes validation, "fatal" if it fails, or "unrecognized" for non-fatal
+warnings.
 """
 
 from pathlib import Path
@@ -41,7 +53,7 @@ def assert_scores_match(
     ------------
     recieved_score: dict[str,str]
         dictionary of recieved score
-    expected_score: list
+    expected_score: list[str]
         list of expected score from test input
 
     """
@@ -79,6 +91,7 @@ def assert_scores_match(
         ("HLSP", ["fail", "pass", "pass", "fatal"]),  # no caps
         ("hst", ["pass", "pass", "fail", "fatal"]),  # not "hlsp"
         ("banana", ["pass", "fail", "fail", "fatal"]),  # not "hlsp"
+        ("123-hlsp", ["pass", "fail", "fail", "fatal"]),  # not "hlsp"
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )
@@ -113,7 +126,7 @@ def test_HlspField(
         ("my-hlsp!", "my-hlsp!", ["pass", "pass", "fail", "fatal"]),
         ("2hlsp", "2-my-hlsp", ["pass", "pass", "fail", "fatal"]),
         ("hlsp+hlsp", "hlsp+hlsp", ["pass", "pass", "fail", "fatal"]),
-        # character limits
+        # current character limits <= 20 characters
         (
             "really-really-long-hlsp-name",
             "really-really-long-hlsp-name",
@@ -145,10 +158,12 @@ def test_HlspNameField(
         ("hst-jwst", ["pass", "pass", "pass", "N/A"]),
         ("sdss", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
+        # Expected to give warnings
+        ("fake-mission", ["pass", "pass", "fail", "unrecognized"]),
+        # this one should fail, but gives warning. Revisit later
+        ("hst_jwst", ["pass", "pass", "fail", "unrecognized"]),
         # Expected to Fail
-        ("fake-mission", ["pass", "pass", "fail", "fatal"]),
         ("HST", ["fail", "pass", "pass", "fatal"]),
-        ("hst_jwst", ["pass", "pass", "fail", "fatal"]),
         ("ReallyLongMissionName", ["fail", "fail", "fail", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
@@ -172,6 +187,7 @@ def test_MissionField(
         # Expected to Pass
         ("nirspec", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
+        ("nircam-nirspec", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
         ("NIRSPEC", ["fail", "pass", "pass", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
@@ -228,9 +244,11 @@ def test_TargetField(test_value: str, expected_score: list[str]) -> None:
         ("f435w", ["pass", "pass", "pass", "N/A"]),
         ("u", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
+        ("g102-f435w", ["pass", "pass", "pass", "N/A"]),
+        # Expeced to give warning
+        ("fakefilter", ["pass", "pass", "fail", "unrecognized"]),  # not in list
         # Expected to Fail
         ("F435W", ["fail", "pass", "pass", "fatal"]),  # caps
-        ("fakefilter", ["pass", "pass", "fail", "fatal"]),  # not in list
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )
@@ -251,10 +269,14 @@ def test_FilterField(test_value: str, expected_score: list[str]) -> None:
         ("v1", ["pass", "pass", "pass", "N/A"]),
         ("v2.3", ["pass", "pass", "pass", "N/A"]),
         ("v1.2.3", ["pass", "pass", "pass", "N/A"]),
+        ("v01", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
-        ("v01", ["pass", "pass", "fail", "fatal"]),  # TICA uses this - should it pass??
         ("dr1", ["pass", "pass", "fail", "fatal"]),
         ("1.2.3", ["fail", "pass", "fail", "fatal"]),
+        ("v1-1", ["pass", "pass", "fail", "fatal"]),
+        ("v123.4.5.6", ["pass", "fail", "fail", "fatal"]),
+        ("v1.2.3.4.5", ["pass", "fail", "fail", "fatal"]),
+        ("V1", ["fail", "pass", "fail", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )
@@ -299,10 +321,10 @@ def test_ProductField(test_value: str, expected_score: list[str]) -> None:
         ("fits", ["pass", "pass", "pass", "N/A"]),
         ("pdf", ["pass", "pass", "pass", "N/A"]),
         ("png", ["pass", "pass", "pass", "N/A"]),
-        ("dat", ["pass", "pass", "fail", "fatal"]),
+        ("dat", ["pass", "pass", "pass", "N/A"]),
+        ("tar.gz", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
-        ("JPG", ["fail", "pass", "pass", "fatal"]),  # should caps be okay here?
-        ("tar.gz", ["pass", "pass", "fail", "fatal"]),
+        ("JPG", ["fail", "pass", "pass", "fatal"]),
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )
@@ -322,6 +344,7 @@ def test_ExtensionField(test_value: str, expected_score: list[str]) -> None:
         # Expected to Pass
         ("anything", ["pass", "pass", "pass", "N/A"]),
         ("dashes-are-fine", ["pass", "pass", "pass", "N/A"]),
+        ("pluses-are+fine", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
         # Expected to fail
         ("ANYTHING", ["fail", "pass", "pass", "fatal"]),  # caps
@@ -353,8 +376,8 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
             "pass",
         ),
         # Real examples
-        (
-            "hlsp_phangs-jwst_jwst_nircam_ngc1385_f335m_v1p0p1_img.fits",
+        (  # real version is 'v1p0p1' which fails
+            "hlsp_phangs-jwst_jwst_nircam_ngc1385_f335m_v1_img.fits",
             "phangs-jwst",
             "pass",
         ),
@@ -368,9 +391,29 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
             "cos-gal",
             "pass",
         ),
-        (  # NOTE: actual tica version is 'v01' but that fails here
-            "hlsp_tica_tess_ffi_s0084-o2-01023889-cam1-ccd1_tess_v1_img.fits",
+        (
+            "hlsp_tica_tess_ffi_s0084-o2-01023889-cam1-ccd1_tess_v01_img.fits",
             "tica",
+            "pass",
+        ),
+        (  # example using multi
+            "hlsp_my-hlsp_multi_multi_vega_multi_v1_spec.fits",
+            "my-hlsp",
+            "pass",
+        ),
+        (  # example using multi in only some fields
+            "hlsp_my-hlsp_hst_multi_vega_multi_v1_spec.fits",
+            "my-hlsp",
+            "pass",
+        ),
+        (  # example readme with only 4 fields
+            "hlsp_my-hlsp_hst_readme.txt",
+            "my-hlsp",
+            "pass",
+        ),
+        (  # example catalog
+            "hlsp_my-hlsp_alltargets_v1_cat.fits",
+            "my-hlsp",
             "pass",
         ),
         # Expected to Fail

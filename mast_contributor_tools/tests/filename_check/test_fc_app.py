@@ -8,7 +8,7 @@ from unittest import mock
 from mast_contributor_tools.filename_check.fc_app import check_filenames, get_file_paths
 
 
-def fake_directory() -> list:
+def fake_directory() -> list[Path]:
     """Mock directory with some fake filenames for testing purposes"""
     file_list = [
         Path("fake-directory/file1.fits"),
