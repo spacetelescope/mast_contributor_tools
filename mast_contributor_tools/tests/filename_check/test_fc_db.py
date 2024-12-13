@@ -2,7 +2,7 @@
 Tests for mast_contributor_tools/filename_check/fc_db.py
 
 Each test recieves four scores: [capitalization, length, value, severity]:
-- "Captilization" checks the capitilzation rules for this field, generally
+- "Captalization" checks the capitilzation rules for this field, generally
 required to be lowercase
 - "Length" checks the character length, with the upper limit set for each field,
 for example, the "HLSP name" must be less than 20 characters.
