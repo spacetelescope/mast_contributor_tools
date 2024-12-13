@@ -269,14 +269,17 @@ def test_FilterField(test_value: str, expected_score: list[str]) -> None:
         ("v1", ["pass", "pass", "pass", "N/A"]),
         ("v2.3", ["pass", "pass", "pass", "N/A"]),
         ("v1.2.3", ["pass", "pass", "pass", "N/A"]),
+        ("v12.34.56", ["pass", "pass", "pass", "N/A"]),
         ("v01", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
         ("dr1", ["pass", "pass", "fail", "fatal"]),
-        ("1.2.3", ["fail", "pass", "fail", "fatal"]),
-        ("v1-1", ["pass", "pass", "fail", "fatal"]),
-        ("v123.4.5.6", ["pass", "fail", "fail", "fatal"]),
-        ("v1.2.3.4.5", ["pass", "fail", "fail", "fatal"]),
-        ("V1", ["fail", "pass", "fail", "fatal"]),
+        ("1.2.3", ["fail", "pass", "fail", "fatal"]),  # does not start with v
+        ("v1-1", ["pass", "pass", "fail", "fatal"]),  # no hyphens
+        ("v123.4", ["pass", "pass", "fail", "fatal"]),  # too many digits before '.'
+        ("v1.2.3.4", ["pass", "pass", "fail", "fatal"]),  # too many periods
+        ("V1", ["fail", "pass", "fail", "fatal"]),  # caps
+        ("v1.", ["pass", "pass", "fail", "fatal"]),  # ends with period
+        ("v1.a", ["pass", "pass", "fail", "fatal"]),  # no letters allowed
         ("", ["fail", "pass", "fail", "fatal"]),  # empty string
     ],
 )

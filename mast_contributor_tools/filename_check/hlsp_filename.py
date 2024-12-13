@@ -40,11 +40,25 @@ class FieldRule:
     validate the version or target fields can be verified at https://regex101.com
     """
 
+    # HLSP Name Expression:
+    # "^[a-z]"" : The first character must be a lowercase letter
+    # "[a-z0-9-]*" : The middle characers can be lowercase letters, numbers, or a hyphen '-'
+    # "[a-z0-9]$" : The last character must be a lowercase letter or a number
     hlsp_expr = re.compile(r"^[a-z][a-z0-9-]*[a-z0-9]$")
-    # target_expr = re.compile("^[a-zA-Z][a-zA-Z\d+-.]*[a-zA-Z0-9]$")
-    # version_expr = re.compile("^v[1-9][\d]?((\.\d{1,2})(\.[a-z0-9]{1,2})?)?$")
+
+    # Target Name Expression:
+    # "^[a-zA-Z0-9]" : The first character must be a letter or a number
+    # "[a-zA-Z0-9+\-.]*" : middle characters can be letters, numbers, or
+    #   some special characters are  allowed: '+' and '-' and '.'
+    # "[a-zA-Z0-9]$" Last character must be a letter or a number (no special characters)
     target_expr = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
-    version_expr = re.compile(r"^v[0-9][0-9]?(([.0-9]{1,2})(.[a-z0-9]{1,2})?)?$")
+
+    # Version Expression:
+    # "^v" : must start with "v"
+    # "[0-9]{0,2}" Next zero two two characters must be numbers
+    # "([.][0-9]{0,2})": There can be up to two "." followed by up to two more numbers
+    # "[0-9]$" the last character must be a number
+    version_expr = re.compile(r"^v[0-9]{0,2}([.][0-9]{0,2}){0,2}[0-9]$")
 
     def length(value: str, max_length: int) -> bool:
         return len(value) <= max_length
