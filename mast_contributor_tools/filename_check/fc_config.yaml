@@ -30,6 +30,7 @@ ExtensionTypes:
  - tar.gz
  - tif
  - txt
+ - tar.gz
 
 SemanticTypes:
  - cat

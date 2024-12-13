@@ -2,9 +2,12 @@ import argparse
 from pathlib import Path
 
 from mast_contributor_tools.filename_check.hlsp_filename import HlspFileName
+from mast_contributor_tools.utils.logger_config import setup_logger
+
+logger = setup_logger(__name__)
 
 
-def main(inFile, hlspName):
+def main(inFile: str, hlspName: str):
     """HLSP filename module CLI driver.
 
     Parameters
@@ -22,14 +25,14 @@ def main(inFile, hlspName):
     file_rec = hfn.evaluate_filename()
 
     # Display results
-    print("Filename parameters:")
+    logger.info("Filename parameters:")
     for p, v in file_rec.items():
         print(f"  {p}: {v}")
 
-    print("Field parameters:")
+    logger.info("Field parameters:")
     for e in elements:
         for p, v in e.items():
-            print(f"  {p}: {v}")
+            logger.info(f"  {p}: {v}")
 
 
 if __name__ == "__main__":

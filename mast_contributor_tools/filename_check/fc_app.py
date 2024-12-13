@@ -4,6 +4,9 @@ from pathlib import Path
 
 from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
 from mast_contributor_tools.filename_check.hlsp_filename import FieldRule, HlspFileName
+from mast_contributor_tools.utils.logger_config import setup_logger
+
+logger = setup_logger(__name__)
 
 FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.\w+)?(\.[\w]+(\.gz|\.zip)?)$")
 
@@ -50,24 +53,24 @@ def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
     verbose: bool
         Print statements if True
     """
-    print(f"\nChecking files for HLSP collection {hlsp_name}")
+    logger.info(f"\nChecking files for HLSP collection {hlsp_name}")
     files = get_file_paths(base_dir)
-    print(f"  Found {len(files)} files to check against filename rules")
+    logger.info(f"  Found {len(files)} files to check against filename rules")
     if Path(dbFile).is_file():
-        print(f"  WARNING: Database file {dbFile} already exists")
+        logger.info(f"  WARNING: Database file {dbFile} already exists")
     db = Hlsp_SQLiteDb(dbFile)
-    print(f"  Creating results database {dbFile}")
+    logger.info(f"  Creating results database {dbFile}")
     db.create_db()
 
     # Evaluate each filename
     for f in files:
         if verbose:
-            print(f"  Examining {f.name}")
+            logger.info(f"  Examining {f.name}")
         hfn = HlspFileName(f, hlsp_name)
         try:
             hfn.partition()
         except ValueError:
-            print(f"  Invalid name: {f.name}, skipping...")
+            logger.error(f"  Invalid name: {f.name}, skipping...")
         else:
             hfn.create_fields()
             elements = hfn.evaluate_fields()
@@ -80,12 +83,12 @@ def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
             try:
                 db.add_filename(file_rec)
             except Exception as e:
-                print(f"Error adding {f.name}: {e}")
+                logger.error(f"Error adding {f.name}: {e}")
             else:
                 db.add_fields(elements)
 
     db.close_db()
-    print(f"\nFilename checking complete. Results written to {dbFile}")
+    logger.info(f"\nFilename checking complete. Results written to {dbFile}")
 
 
 if __name__ == "__main__":
@@ -117,7 +120,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    print(args.hlsp_name)
+    logger.info(f"HLSP name = {args.hlsp_name}")
     if not args.dbFile:
         args.dbFile = f"results_{args.hlsp_name}.db"
     check_filenames(args.base_dir, args.hlsp_name, args.dbFile, args.verbose)
