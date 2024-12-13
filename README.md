@@ -58,7 +58,7 @@ For other configuration options and more detailed information, check out at the 
 
 ## Quick Start
 ### Filename Check
-To check if the filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please see [the Filename Check Guide](mast_contributor_tools/filename_check/filename_check.md) to get started.
+To check if the filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please see [Filename Check Guide](mast_contributor_tools/filename_check/README.md) to get started.
 
 ### Metadata Check
 # License

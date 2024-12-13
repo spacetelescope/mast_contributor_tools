@@ -384,7 +384,8 @@ class HlspFileName:
 
         Returns:
         --------
-        Dictionary of file name attributes
+        dict[str, Any]
+            Dictionary of file name attributes
         """
         field_status = [f.severity for f in self.fields]
         if "fatal" in field_status:

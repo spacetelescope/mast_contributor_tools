@@ -17,6 +17,7 @@ FieldLength:
 ExtensionTypes:
  - asdf
  - csv
+ - dat
  - db
  - ecsv
  - fits
@@ -28,6 +29,7 @@ ExtensionTypes:
  - readme
  - tif
  - txt
+ - tar.gz
 
 SemanticTypes:
  - cat
