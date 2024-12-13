@@ -50,14 +50,14 @@ class FieldRule:
     # "^[a-zA-Z0-9]" : The first character must be a letter or a number
     # "[a-zA-Z0-9+\-.]*" : middle characters can be letters, numbers, or
     #   some special characters are  allowed: '+' and '-' and '.'
-    # "[a-zA-Z0-9]$" Last character must be a letter or a number (no special characters)
+    # "[a-zA-Z0-9]$" : Last character must be a letter or a number (no special characters)
     target_expr = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
 
     # Version Expression:
     # "^v" : must start with "v"
-    # "[0-9]{0,2}" Next zero two two characters must be numbers
+    # "[0-9]{0,2}" Next zero to two characters must be numbers
     # "([.][0-9]{0,2})": There can be up to two "." followed by up to two more numbers
-    # "[0-9]$" the last character must be a number
+    # "[0-9]$" : the last character must be a number
     version_expr = re.compile(r"^v[0-9]{0,2}([.][0-9]{0,2}){0,2}[0-9]$")
 
     def length(value: str, max_length: int) -> bool:
