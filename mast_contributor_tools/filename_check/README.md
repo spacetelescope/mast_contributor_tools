@@ -2,7 +2,7 @@
 
 This application will examine each file within a user-specified directory folder for compliance with the HLSP filename requirements. See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for details. The results are saved to an SQLite3 database. Prior to a final delivery of a HLSP collection to MAST, contributors should fix all filenames where reported failures have a severity of 'fatal'.
 
-**Note:** Once your HLSP collection has been delivered to MAST, this same tool will be used to re-validaate the product filenames. MAST staff will contact you to resolve issues.
+**Note:** Once your HLSP collection has been delivered to MAST, this same tool will be used to re-validate the product filenames. MAST staff will contact you to resolve issues.
 
 ## Calling sequence
 
