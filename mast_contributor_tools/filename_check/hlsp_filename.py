@@ -1,3 +1,5 @@
+"""The main logic module to check filename compliance"""
+
 import os
 import re
 from abc import ABC, abstractmethod
@@ -14,6 +16,7 @@ EXTENSION_TYPES = cfg["ExtensionTypes"]
 SEMANTIC_TYPES = cfg["SemanticTypes"]
 fieldLengthPolicy = cfg["FieldLength"]
 
+# Fetch configurations of three name fields: observation, instrument, and filter (oif)
 with open(os.path.join(BASE_DIR, "oif.yaml"), "r") as f:
     oif = yaml.safe_load(f)
 
