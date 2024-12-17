@@ -44,7 +44,7 @@ select = [
     "E9",     # pycodestyle (E9xx): Syntax errors detected
     "F",      # Pyflakes checks: General code correctness
     "I",      # Import-related checks (e.g., isort ordering)
-    # "PL",     # Pylint checks (if integrated)
+    "PL",     # Pylint checks (if integrated)
     "C901",   # McCabe complexity check: function too complex
     "RUF010", # Ruff-specific code checks (e.g., invalid `noqa` directives)
     "W291"    # pycodestyle trailing whitespace errors
