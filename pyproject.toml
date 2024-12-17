@@ -35,6 +35,23 @@ docs = [
     "sphinx",
     "sphinx-automodapi",
 ]
+
+# Customize ruff lint here. The default setting if not specified will follow the configurations on https://docs.astral.sh/ruff/configuration/
+[tool.ruff.lint]
+select = [
+    "E4",     # pycodestyle (E4xx): Various style errors (like indentation)
+    "E7",     # pycodestyle (E7xx): Statement issues (e.g., multiple statements on one line)
+    "E9",     # pycodestyle (E9xx): Syntax errors detected
+    "F",      # Pyflakes checks: General code correctness
+    "I",      # Import-related checks (e.g., isort ordering)
+    "PL",     # Pylint checks (if integrated)
+    "C901",   # McCabe complexity check: function too complex
+    "RUF010", # Ruff-specific code checks (e.g., invalid `noqa` directives)
+    "W291"    # pycodestyle trailing whitespace errors
+    ]
+ignore = ["PLR"]  # Ignore specific Pylint refactor messages
+
+
 [project.urls]
 repository = "https://github.com/spacetelescope/mast_contributor_tools"
 
