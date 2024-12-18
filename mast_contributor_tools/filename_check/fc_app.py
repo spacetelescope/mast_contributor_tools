@@ -57,7 +57,7 @@ def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
     files = get_file_paths(base_dir)
     logger.info(f"  Found {len(files)} files to check against filename rules")
     if Path(dbFile).is_file():
-        logger.info(f"  WARNING: Database file {dbFile} already exists")
+        logger.warning(f"  WARNING: Database file {dbFile} already exists")
     db = Hlsp_SQLiteDb(dbFile)
     logger.info(f"  Creating results database {dbFile}")
     db.create_db()
