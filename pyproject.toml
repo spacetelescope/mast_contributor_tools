@@ -37,6 +37,10 @@ docs = [
 ]
 
 # Customize ruff lint here. The default setting if not specified will follow the configurations on https://docs.astral.sh/ruff/configuration/
+
+[tool.ruff]
+line-length = 120
+
 [tool.ruff.lint]
 select = [
     "E4",     # pycodestyle (E4xx): Various style errors (like indentation)
@@ -49,8 +53,7 @@ select = [
     "RUF010", # Ruff-specific code checks (e.g., invalid `noqa` directives)
     "W291"    # pycodestyle trailing whitespace errors
     ]
-ignore = ["PLR"]  # Ignore specific Pylint refactor messages
-
+ignore = ["PLR", "PLC0206"]  # Ignore specific Pylint refactor messages
 
 [project.urls]
 repository = "https://github.com/spacetelescope/mast_contributor_tools"
