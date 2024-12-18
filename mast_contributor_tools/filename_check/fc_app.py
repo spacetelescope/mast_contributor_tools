@@ -88,7 +88,7 @@ def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
                 db.add_fields(elements)
 
     db.close_db()
-    logger.info(f"\nFilename checking complete. Results written to {dbFile}")
+    logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
 
 
 if __name__ == "__main__":
