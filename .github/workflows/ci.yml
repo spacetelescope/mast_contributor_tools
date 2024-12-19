@@ -32,7 +32,7 @@ jobs:
       - name: Run linter and formatter
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          ruff check . --config=pyproject.toml --statistics --exit-zero # --fix if you want to automatically fix errors.
+          ruff check . --config=pyproject.toml --statistics --exit-zero --fix # if you want to automatically fix errors.
           # exit-zero treats all errors as warnings.
           ruff check . --config=pyproject.toml
 

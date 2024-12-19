@@ -1,3 +1,5 @@
+"""The main logic module to check filename compliance"""
+
 import os
 import re
 from abc import ABC, abstractmethod
@@ -14,6 +16,7 @@ EXTENSION_TYPES = cfg["ExtensionTypes"]
 SEMANTIC_TYPES = cfg["SemanticTypes"]
 fieldLengthPolicy = cfg["FieldLength"]
 
+# Fetch configurations of three name fields: observation, instrument, and filter (oif)
 with open(os.path.join(BASE_DIR, "oif.yaml"), "r") as f:
     oif = yaml.safe_load(f)
 
@@ -402,7 +405,8 @@ class HlspFileName:
 
         Returns:
         --------
-        Dictionary of file name attributes
+        dict[str, Any]
+            Dictionary of file name attributes
         """
         field_status = [f.severity for f in self.fields]
         if "fatal" in field_status:
