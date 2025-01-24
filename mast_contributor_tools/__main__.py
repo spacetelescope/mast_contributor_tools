@@ -56,11 +56,11 @@ def filenames_cli(
 
         This command is also equivalent to:
 
-            mct check_filenames my-hlsp --dir='.' --p='*.*' --dbFile='results_my-hlsp.db'
+            mct check_filenames my-hlsp -dir='.' -p='*.*' --dbFile='results_my-hlsp.db'
 
         To check all files in a specified directory matching a certain file pattern:
 
-            mct check_filenames my-hlsp --dir='subdir' --p='*.fits'
+            mct check_filenames my-hlsp -dir='subdir' -p='*.fits'
 
         This example will only check files ending with ".fits" in the directory "subdir"
 

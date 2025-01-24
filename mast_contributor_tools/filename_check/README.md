@@ -37,7 +37,7 @@ where `<my-hlsp>'`is the name of your HLSP.
 This command is also equivalent to:
 
 ```
-mct check_filenames my-hlsp --dir='.' --p='*.*' --dbFile='results_my-hlsp.db'
+mct check_filenames my-hlsp -dir='.' -p='*.*' --dbFile='results_my-hlsp.db'
 ```
 
 ### Example Usage: Check all files matching a pattern in a specified directory
@@ -45,7 +45,7 @@ mct check_filenames my-hlsp --dir='.' --p='*.*' --dbFile='results_my-hlsp.db'
 To check all files in a specified directory matching a certain file pattern:
 
 ```
-mct check_filenames my-hlsp --dir='subdir' --p='*.fits'
+mct check_filenames my-hlsp --directory='subdir' --pattern='*.fits'
 ```
 
 This example will only check files ending with ".fits" in the directory "subdir"
@@ -56,7 +56,7 @@ This example will only check files ending with ".fits" in the directory "subdir"
 To test a single filename (this does not have to be a real file):
 
 ```
-mct check_filenames my-hlsp --filename='hlsp_my-hlsp_readme.md`
+mct check_filenames my-hlsp --filename='hlsp_my-hlsp_readme.md'
 ```
 
 
