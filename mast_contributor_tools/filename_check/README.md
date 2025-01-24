@@ -6,13 +6,69 @@ This application will examine each file within a user-specified directory folder
 
 ## Calling sequence
 
+This application can be called from the command line using the `mct` command. To view information on the arguments and options for this command, you can use:
+
+```
+mct check_filenames --help
+```
+
+The various options for this command are described below:
+
+| Flag  | Description | Default Value |
+| ------------- | ------------- | ------------- |
+| `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory  | `'.'`, the current directory |
+| `-p` or `--pattern` | Name of a file pattern to test, for example 'hlsp_*_spec.fits'  | `'*.*'` for all files |
+| `-f` or `--filename` | Test a single filename: does not have to be a real file | None |
+| `-db` or `--dbFile` | Name of Results database file |  `results_<hlsp_name>.db` |
+| `-v` or `--verbose` | Enables verbose output for more information |  `False` |
+| `--help`| Prints information about this command |   |
+
+
+### Example Usage: Check all files in the current directory
+
+To check all files in the current working directory, run the command:
+
+```
+mct check_filenames <my-hlsp>
+```
+
+where `<my-hlsp>'`is the name of your HLSP.
+
+This command is also equivalent to:
+
+```
+mct check_filenames my-hlsp --dir='.' --p='*.*' --dbFile='results_my-hlsp.db'
+```
+
+### Example Usage: Check all files matching a pattern in a specified directory
+
+To check all files in a specified directory matching a certain file pattern:
+
+```
+mct check_filenames my-hlsp --dir='subdir' --p='*.fits'
+```
+
+This example will only check files ending with ".fits" in the directory "subdir"
+
+
+### Example Usage: Test a single filename
+
+To test a single filename (this does not have to be a real file):
+
+```
+mct check_filenames my-hlsp --filename='hlsp_my-hlsp_readme.md`
+```
+
+
+## Alternate calling sequence
+
 This application is normally called from the shell, where `my-hlsp-name` is the intended identifier in MAST of the HLSP collection.
 
 > `python fc_app.py my-hlsp-name '/path/to/files'`
 
 The *hlsp_filename* module itself has an entry point that will evaluate any string as an HLSP filename (except for matching the HLSP collection name). It may be useful to test a set of sample files before creating too many collection files to ensure that they will be compliant.
 
-> `python __main__.py hlsp_my-file-name_readme.md`
+> `python __main__.py my-hlsp-name hlsp_my-hlsp-name_readme.md`
 
 ### Resources
 

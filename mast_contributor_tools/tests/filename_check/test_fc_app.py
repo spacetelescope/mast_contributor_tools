@@ -24,7 +24,7 @@ def test_get_file_paths(mock_rglob) -> None:
     # Mock rglob to return the filelist in fake_directory
     mock_rglob.return_value = fake_directory()
     # Run function
-    output = get_file_paths(Path("fake-directory"))
+    output = get_file_paths("fake-directory")
     # assert rglob was called
     mock_rglob.assert_called_once()
     # assert the filenames were returned (without the path)
@@ -40,7 +40,7 @@ def test_check_filenames(mock_Hlsp_SQLiteDb, mock_HlspFileName, mock_get_files) 
     # mock some fake file paths for this test
     mock_get_files.return_value = fake_directory()
     # Run function
-    check_filenames(".", "hlsp-name", "test_file.db", verbose=False)
+    check_filenames(".", "hlsp-name", "*.*", "test_file.db")
     # Assert expected calls were made
     # assert mock_Hlsp_SQLiteDb object was made
     mock_Hlsp_SQLiteDb.assert_called_once()

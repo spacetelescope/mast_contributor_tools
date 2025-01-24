@@ -39,9 +39,7 @@ def get_file_paths(hlsp_path: str, search_pattern: str = "*.*") -> list[Path]:
     return [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if re.match(FILE_REGEX, p.name)]
 
 
-def check_filenames(
-    base_dir: str, hlsp_name: str, search_pattern: str = "", dbFile: str = "", verbose: bool = False
-) -> None:
+def check_filenames(base_dir: str, hlsp_name: str, search_pattern: str, dbFile: str) -> None:
     """Recursively check filenames in a directory tree of HLSP products
 
     Parameters
@@ -55,8 +53,6 @@ def check_filenames(
         return the fits files. Default value is "*.*" for all files
     dbFile : str, optional
         Name of SQLite database file to contain results
-    verbose: bool, optional
-        Enables verbose output statements if True
     """
     logger.info(f"\nChecking files for HLSP collection {hlsp_name}")
     files = get_file_paths(base_dir, search_pattern)
@@ -69,8 +65,7 @@ def check_filenames(
 
     # Evaluate each filename
     for f in files:
-        if verbose:
-            logger.info(f"  Examining {f.name}")
+        logger.debug(f"  Examining {f.name}")
         hfn = HlspFileName(f, hlsp_name)
         try:
             hfn.partition()
@@ -113,15 +108,18 @@ def check_single_filename(inFile, hlspName) -> None:
     elements = hfn.evaluate_fields()
     file_rec = hfn.evaluate_filename()
 
-    # Display results
-    print("Filename parameters:")
-    for p, v in file_rec.items():
-        logger.info(f"  {p}: {v}")
-
-    print("Field parameters:")
+    # Display resuls
     for e in elements:
+        logger_msg = "Individual Field evaluations: \n"
         for p, v in e.items():
-            logger.info(f"  {p}: {v}")
+            logger_msg += f"  {p}: {v} \n"
+        logger.debug(logger_msg)
+
+    logger_msg = "Evaluating filename: \n"
+    for p, v in file_rec.items():
+        logger_msg += f"  {p}: {v} \n"
+    logger_msg += f"Final Score: {file_rec['status'].upper()}"
+    logger.critical(logger_msg)
 
 
 if __name__ == "__main__":
@@ -129,7 +127,7 @@ if __name__ == "__main__":
     """
 
     def validHlspName(hlsp_name: str):
-        if not FieldRule.matchHlsp(hlsp_name):
+        if not FieldRule.matchHlspName(hlsp_name):
             raise argparse.ArgumentTypeError(f"Invalid name for HLSP collection: {hlsp_name}")
         return hlsp_name
 
@@ -150,7 +148,10 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable diagnostic output")
     args = parser.parse_args()
 
+    if args.verbose:
+        logger.setLevel("DEBUG")
+
     logger.info(f"HLSP name = {args.hlsp_name}")
     if not args.dbFile:
         args.dbFile = f"results_{args.hlsp_name}.db"
-    check_filenames(args.base_dir, args.hlsp_name, args.pattern, args.dbFile, args.verbose)
+    check_filenames(args.base_dir, args.hlsp_name, args.pattern, args.dbFile)
