@@ -11,7 +11,7 @@ logger = setup_logger(__name__)
 FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.\w+)?(\.[\w]+(\.gz|\.zip)?)$")
 
 
-def get_file_paths(hlsp_path: Path):
+def get_file_paths(hlsp_path: str, search_pattern: str = "*.*") -> list[Path]:
     """Build a list of filename Paths relative to the given directory
 
     The filenames are matched to a regex to filter out non-relevant files. The
@@ -23,6 +23,10 @@ def get_file_paths(hlsp_path: Path):
         Head of directory containing HLSP collection files. The base directory
         defaults to the current working directory.
 
+    search_pattern : str, optional
+        Search pattern to limit files to test. For example, "*.fits" will only
+        return the fits files. Default value is "*.*" for all files
+
     Returns
     -------
     list[Path]
@@ -32,14 +36,12 @@ def get_file_paths(hlsp_path: Path):
         base_path = Path.cwd()
     else:
         base_path = Path(hlsp_path)
-    return [
-        p.relative_to(base_path)
-        for p in base_path.rglob("*.*")
-        if re.match(FILE_REGEX, p.name)
-    ]
+    return [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if re.match(FILE_REGEX, p.name)]
 
 
-def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
+def check_filenames(
+    base_dir: str, hlsp_name: str, search_pattern: str = "", dbFile: str = "", verbose: bool = False
+) -> None:
     """Recursively check filenames in a directory tree of HLSP products
 
     Parameters
@@ -48,13 +50,16 @@ def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
         Head of directory containing HLSP collection files
     hlsp_name : str
         Official identifier (abbreviation/acronym/initialism) for the HLSP collection
-    dbFile : str
+    search_pattern : str, optional
+        Search pattern to limit files to test. For example, "*.fits" will only
+        return the fits files. Default value is "*.*" for all files
+    dbFile : str, optional
         Name of SQLite database file to contain results
-    verbose: bool
-        Print statements if True
+    verbose: bool, optional
+        Enables verbose output statements if True
     """
     logger.info(f"\nChecking files for HLSP collection {hlsp_name}")
-    files = get_file_paths(base_dir)
+    files = get_file_paths(base_dir, search_pattern)
     logger.info(f"  Found {len(files)} files to check against filename rules")
     if Path(dbFile).is_file():
         logger.warning(f"  WARNING: Database file {dbFile} already exists")
@@ -91,22 +96,49 @@ def check_filenames(base_dir: str, hlsp_name: str, dbFile: str, verbose: bool):
     logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
 
 
+def check_single_filename(inFile, hlspName) -> None:
+    """HLSP filename module CLI driver.
+
+    Parameters
+    ----------
+    inFile : str
+        Name of example HLSP product
+    hlspName : str
+        Name of example HLSP collection
+    """
+    fp = Path(inFile)
+    hfn = HlspFileName(fp, hlspName)
+    hfn.partition()
+    hfn.create_fields()
+    elements = hfn.evaluate_fields()
+    file_rec = hfn.evaluate_filename()
+
+    # Display results
+    print("Filename parameters:")
+    for p, v in file_rec.items():
+        logger.info(f"  {p}: {v}")
+
+    print("Field parameters:")
+    for e in elements:
+        for p, v in e.items():
+            logger.info(f"  {p}: {v}")
+
+
 if __name__ == "__main__":
     """HLSP filename validator top-level application.
     """
 
     def validHlspName(hlsp_name: str):
         if not FieldRule.matchHlsp(hlsp_name):
-            raise argparse.ArgumentTypeError(
-                f"Invalid name for HLSP collection: {hlsp_name}"
-            )
+            raise argparse.ArgumentTypeError(f"Invalid name for HLSP collection: {hlsp_name}")
         return hlsp_name
 
     descr_text = "Validate names for a directory of HLSP science products"
     parser = argparse.ArgumentParser(description=descr_text)
     parser.add_argument("hlsp_name", type=validHlspName, help="Name of HLSP collection")
+    parser.add_argument("base_dir", type=str, default=".", help="Path of HLSP directory tree")
     parser.add_argument(
-        "base_dir", type=str, default=".", help="Path of HLSP directory tree"
+        "-p", "--pattern", type=str, default="*.*", help="File name search pattern to limit which files to test"
     )
     parser.add_argument(
         "-d",
@@ -115,13 +147,10 @@ if __name__ == "__main__":
         default="",
         help="Results database filename (defaults to: results_<hlsp_name>.db)",
     )
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Enable diagnostic output"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable diagnostic output")
     args = parser.parse_args()
 
     logger.info(f"HLSP name = {args.hlsp_name}")
     if not args.dbFile:
         args.dbFile = f"results_{args.hlsp_name}.db"
-    check_filenames(args.base_dir, args.hlsp_name, args.dbFile, args.verbose)
-    check_filenames(args.base_dir, args.hlsp_name, args.dbFile, args.verbose)
+    check_filenames(args.base_dir, args.hlsp_name, args.pattern, args.dbFile, args.verbose)
