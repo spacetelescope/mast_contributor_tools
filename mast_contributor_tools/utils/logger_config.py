@@ -2,7 +2,7 @@ import logging
 import os
 
 
-def setup_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
+def setup_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     """Create a custom logger."""
 
     logger = logging.getLogger(name)
