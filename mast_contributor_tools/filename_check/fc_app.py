@@ -69,7 +69,7 @@ def get_file_paths(
 
     # Raise error if no files are found
     if len(file_list) == 0:
-        msg = "No files found check against filename rules"
+        msg = "No files found to check against filename rules."
         logger.error(msg)
         raise FileNotFoundError(msg)
 
@@ -91,10 +91,10 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     logger.info(f"\nChecking files for HLSP collection {hlsp_name}")
     logger.info(f"  Found {len(file_list)} files to check against filename rules")
     if Path(dbFile).is_file():
-        logger.warning(f"  WARNING: Database file {dbFile} already exists. Overwriting File.")
+        logger.warning(f"WARNING: Database file {dbFile} already exists. Overwriting File.")
         os.remove(dbFile)
     db = Hlsp_SQLiteDb(dbFile)
-    logger.info(f"  Creating results database {dbFile}")
+    logger.info(f"Creating results database {dbFile}")
     db.create_db()
 
     # Evaluate each filename

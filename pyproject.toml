@@ -59,7 +59,7 @@ ignore = ["PLR", "PLC0206"]  # Ignore specific Pylint refactor messages
 repository = "https://github.com/spacetelescope/mast_contributor_tools"
 
 [project.scripts]
-mct = "mast_contributor_tools.__main__:cli"
+mct = "mast_contributor_tools.mast_cli:cli"
 
 [tool.setuptools]
 zip-safe = false
