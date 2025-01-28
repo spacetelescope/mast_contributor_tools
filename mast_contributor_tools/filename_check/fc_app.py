@@ -81,8 +81,6 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
 
     Parameters
     ----------
-    base_dir : str
-        Head of directory containing HLSP collection files
     hlsp_name : str
         Official identifier (abbreviation/acronym/initialism) for the HLSP collection
     file_list: list[str]

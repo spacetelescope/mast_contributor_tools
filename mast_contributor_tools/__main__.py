@@ -74,9 +74,13 @@ def filenames_cli(
 
             mct check_filenames my-hlsp --filename='hlsp_my-hlsp_jwst_nirspec_starname_multi_v1_spec.fits'
     """
+    # Update logger level for verbose
     if verbose:
         logger.setLevel("DEBUG")
+        for handler in logger.handlers:
+            handler.setLevel(logger.level)
 
+    # Set default db file name
     if not dbfile:
         dbfile = f"results_{hlsp_name}.db"
 
