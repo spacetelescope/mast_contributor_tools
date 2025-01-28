@@ -17,8 +17,10 @@ The various options for this command are described below:
 | Flag  | Description | Default Value |
 | ------------- | ------------- | ------------- |
 | `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory  | `'.'`, the current directory |
-| `-p` or `--pattern` | Name of a file pattern to test, for example 'hlsp_*_spec.fits'  | `'*.*'` for all files |
 | `-f` or `--filename` | Test a single filename: does not have to be a real file | None |
+| `-p` or `--pattern` | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files |
+| `-e` or `--exclude` | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None |
+| `-n` or `--max_n` | Maximum number of files to check, for testing purposes. | None (all files) |
 | `-db` or `--dbFile` | Name of Results database file |  `results_<hlsp_name>.db` |
 | `-v` or `--verbose` | Enables verbose output for more information |  `False` |
 | `--help`| Prints information about this command |   |

@@ -1,6 +1,8 @@
 import argparse
+import os
 import re
 from pathlib import Path
+from typing import Union
 
 from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
 from mast_contributor_tools.filename_check.hlsp_filename import FieldRule, HlspFileName
@@ -11,7 +13,12 @@ logger = setup_logger(__name__)
 FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.\w+)?(\.[\w]+(\.gz|\.zip)?)$")
 
 
-def get_file_paths(hlsp_path: str, search_pattern: str = "*.*") -> list[Path]:
+def get_file_paths(
+    hlsp_path: str,
+    search_pattern: str = "*.*",
+    exclude_pattern: Union[str, None] = None,
+    max_n: Union[int, None] = None,
+) -> list[Path]:
     """Build a list of filename Paths relative to the given directory
 
     The filenames are matched to a regex to filter out non-relevant files. The
@@ -24,8 +31,16 @@ def get_file_paths(hlsp_path: str, search_pattern: str = "*.*") -> list[Path]:
         defaults to the current working directory.
 
     search_pattern : str, optional
-        Search pattern to limit files to test. For example, "*.fits" will only
-        return the fits files. Default value is "*.*" for all files
+        Search pattern to limit files to test. For example, '*.fits' will only
+        return the fits files. Default value is '*.*' for all files
+
+    exclude_pattern : str, optional
+        Search pattern to exclude files from testing. For example, '*.png' will only
+        skip all of the png files.
+
+    max_n : int, optional
+        Search pattern to exclude files from testing. For example, '*.png' will only
+        skip all of the png files.
 
     Returns
     -------
@@ -36,10 +51,32 @@ def get_file_paths(hlsp_path: str, search_pattern: str = "*.*") -> list[Path]:
         base_path = Path.cwd()
     else:
         base_path = Path(hlsp_path)
-    return [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if re.match(FILE_REGEX, p.name)]
+
+    # Search for files matching the pattern
+    file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if re.match(FILE_REGEX, p.name)]
+
+    # Exclude files
+    if exclude_pattern:
+        exclude_list = [
+            p.relative_to(base_path) for p in base_path.rglob(exclude_pattern) if re.match(FILE_REGEX, p.name)
+        ]
+        file_list = [f for f in file_list if f not in exclude_list]
+
+    # Limit number of files returned to first n rows for testing purposes
+    if max_n:
+        if max_n < len(file_list):
+            file_list = file_list[:max_n]
+
+    # Raise error if no files are found
+    if len(file_list) == 0:
+        msg = "No files found check against filename rules"
+        logger.error(msg)
+        raise FileNotFoundError(msg)
+
+    return file_list
 
 
-def check_filenames(base_dir: str, hlsp_name: str, search_pattern: str, dbFile: str) -> None:
+def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     """Recursively check filenames in a directory tree of HLSP products
 
     Parameters
@@ -48,23 +85,22 @@ def check_filenames(base_dir: str, hlsp_name: str, search_pattern: str, dbFile: 
         Head of directory containing HLSP collection files
     hlsp_name : str
         Official identifier (abbreviation/acronym/initialism) for the HLSP collection
-    search_pattern : str, optional
-        Search pattern to limit files to test. For example, "*.fits" will only
-        return the fits files. Default value is "*.*" for all files
+    file_list: list[str]
+        List of files to check, typically output from get_file_paths()
     dbFile : str, optional
         Name of SQLite database file to contain results
     """
     logger.info(f"\nChecking files for HLSP collection {hlsp_name}")
-    files = get_file_paths(base_dir, search_pattern)
-    logger.info(f"  Found {len(files)} files to check against filename rules")
+    logger.info(f"  Found {len(file_list)} files to check against filename rules")
     if Path(dbFile).is_file():
-        logger.warning(f"  WARNING: Database file {dbFile} already exists")
+        logger.warning(f"  WARNING: Database file {dbFile} already exists. Overwriting File.")
+        os.remove(dbFile)
     db = Hlsp_SQLiteDb(dbFile)
     logger.info(f"  Creating results database {dbFile}")
     db.create_db()
 
     # Evaluate each filename
-    for f in files:
+    for f in file_list:
         logger.debug(f"  Examining {f.name}")
         hfn = HlspFileName(f, hlsp_name)
         try:
@@ -154,4 +190,6 @@ if __name__ == "__main__":
     logger.info(f"HLSP name = {args.hlsp_name}")
     if not args.dbFile:
         args.dbFile = f"results_{args.hlsp_name}.db"
-    check_filenames(args.base_dir, args.hlsp_name, args.pattern, args.dbFile)
+
+    file_list = get_file_paths(args.base_dir, search_pattern=args.pattern)
+    check_filenames(args.hlsp_name, file_list, args.dbFile)

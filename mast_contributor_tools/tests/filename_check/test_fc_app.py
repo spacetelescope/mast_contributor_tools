@@ -30,17 +30,17 @@ def test_get_file_paths(mock_rglob) -> None:
     # assert the filenames were returned (without the path)
     for fake_file in fake_directory():
         assert Path(fake_file.name) in output
+    # Test the max_n argument performs as expected
+    output = get_file_paths("fake-directory", max_n=2)
+    assert len(output) == 2
 
 
-@mock.patch("mast_contributor_tools.filename_check.fc_app.get_file_paths")
 @mock.patch("mast_contributor_tools.filename_check.fc_app.HlspFileName")
 @mock.patch("mast_contributor_tools.filename_check.fc_app.Hlsp_SQLiteDb")
-def test_check_filenames(mock_Hlsp_SQLiteDb, mock_HlspFileName, mock_get_files) -> None:
+def test_check_filenames(mock_Hlsp_SQLiteDb, mock_HlspFileName) -> None:
     """Test that the check_filenames() function calls the right classes"""
-    # mock some fake file paths for this test
-    mock_get_files.return_value = fake_directory()
     # Run function
-    check_filenames(".", "hlsp-name", "*.*", "test_file.db")
+    check_filenames("hlsp-name", file_list=fake_directory(), dbFile="test_file.db")
     # Assert expected calls were made
     # assert mock_Hlsp_SQLiteDb object was made
     mock_Hlsp_SQLiteDb.assert_called_once()

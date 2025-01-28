@@ -5,9 +5,11 @@
 Main entry point into mast_contributor tools
 """
 
+from typing import Union
+
 import click
 
-from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, logger
+from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, get_file_paths, logger
 
 
 # ==========================================
@@ -28,15 +30,19 @@ def cli() -> None:
 @click.option(
     "-dir", "--directory", type=str, default=".", help="Path of HLSP directory tree; tests files in that directory"
 )
-@click.option("-p", "--pattern", default="*.*", help="Name of a file pattern to test, for example 'hlsp_*_spec.fits'")
 @click.option("-f", "--filename", default="", help="Name of a single file to test")
+@click.option("-p", "--pattern", default="*.*", help="File pattern to limit testing, for example 'hlsp_*_spec.fits'")
+@click.option("-e", "--exclude", default="", help="File pattern to exclude from testing, for example '*.png'")
+@click.option("-n", "--max_n", default=None, help="Maximum number of files to check, for testing purposes.")
 @click.option("-db", "--dbFile", default="", help="Results database filename (defaults to: results_<hlsp_name>.db)")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
 def filenames_cli(
     hlsp_name: str,
     directory: str = ".",
-    pattern: str = "*.*",
     filename: str = "",
+    pattern: str = "*.*",
+    exclude: Union[str, None] = None,
+    max_n: Union[str, int, None] = None,
     dbfile: str = "",
     verbose: bool = False,
 ) -> None:
@@ -80,7 +86,10 @@ def filenames_cli(
 
     # For checking the whole directory:
     else:
-        check_filenames(directory, hlsp_name, search_pattern=pattern, dbFile=dbfile)
+        if max_n:
+            max_n = int(max_n)
+        file_list = get_file_paths(directory, search_pattern=pattern, exclude_pattern=exclude, max_n=max_n)
+        check_filenames(hlsp_name, file_list, dbFile=dbfile)
 
 
 # ==========================================
