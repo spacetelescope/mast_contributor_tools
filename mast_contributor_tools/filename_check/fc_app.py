@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 from typing import Union
 
+from tqdm import tqdm
+
 from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
 from mast_contributor_tools.filename_check.hlsp_filename import FieldRule, HlspFileName
 from mast_contributor_tools.utils.logger_config import setup_logger
@@ -69,7 +71,7 @@ def get_file_paths(
 
     # Raise error if no files are found
     if len(file_list) == 0:
-        msg = "No files found to check against filename rules."
+        msg = f"No files found to check against filename rules in directory ({base_path})."
         logger.error(msg)
         raise FileNotFoundError(msg)
 
@@ -88,23 +90,22 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     dbFile : str, optional
         Name of SQLite database file to contain results
     """
-    logger.info(f"\nChecking files for HLSP collection {hlsp_name}")
-    logger.info(f"  Found {len(file_list)} files to check against filename rules")
+    logger.critical(f"Evaluating {len(file_list)} files for HLSP collection {hlsp_name}")
     if Path(dbFile).is_file():
-        logger.warning(f"WARNING: Database file {dbFile} already exists. Overwriting File.")
+        logger.warning(f"Database file {dbFile} already exists. Overwriting File.")
         os.remove(dbFile)
     db = Hlsp_SQLiteDb(dbFile)
-    logger.info(f"Creating results database {dbFile}")
+    logger.debug(f"Creating results database {dbFile}")
     db.create_db()
 
     # Evaluate each filename
-    for f in file_list:
-        logger.debug(f"  Examining {f.name}")
+    for f in tqdm(file_list):
+        logger.debug(f"Examining {f.name}")
         hfn = HlspFileName(f, hlsp_name)
         try:
             hfn.partition()
         except ValueError:
-            logger.error(f"  Invalid name: {f.name}, skipping...")
+            logger.error(f"Invalid name: {f.name}, skipping...")
         else:
             hfn.create_fields()
             elements = hfn.evaluate_fields()
@@ -120,7 +121,9 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
                 logger.error(f"Error adding {f.name}: {e}")
             else:
                 db.add_fields(elements)
+            logger.debug(f"    Score for {f.name}: {file_rec['status']}")
 
+    logger.critical(db.print_summary())  # print summary information on how many files passed
     db.close_db()
     logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
 

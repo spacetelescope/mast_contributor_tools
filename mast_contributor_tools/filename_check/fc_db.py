@@ -32,9 +32,7 @@ PROBLEMS_VIEW = """
         AND fl.severity != 'N/A';
         """
 
-INSERT_FILE_RECORD = (
-    """INSERT INTO filename VALUES(:path,:filename,:status,:n_elements)"""
-)
+INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:status,:n_elements)"""
 INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:capitalization,:length,:value,:severity)"""
 
 
@@ -105,3 +103,28 @@ class Hlsp_SQLiteDb:
         """
         self.conn.executemany(INSERT_FIELD_RECORD, elements)
         self.conn.commit()
+
+    def print_summary(self) -> str:
+        """
+        Returns a string detailing some summary information on how many files have passed validation
+        """
+        # Get data from db
+        dat = self.conn.execute("SELECT filename, status from filename").fetchall()
+        # Parse numbers
+        num_files = len(dat)
+        num_pass = sum([1 for d in dat if d[1] == "pass"])
+        num_fail = sum([1 for d in dat if d[1] == "fail"])
+        # Write summary message
+        summary_message = "Output summary:\n    "
+        summary_message += f"Files Checked: {num_files}\n    "
+        summary_message += f"Files Passed: {num_pass}\n    "
+        summary_message += f"Files Failed: {num_fail}\n    "
+        # All files passed
+        if num_pass == num_files:
+            summary_message += "All files passed! "
+        # Some files failed
+        else:
+            summary_message += f"See results file ({self.db_file}) for more information."
+            # Add more detail here later? - could break down by fields, etc.
+
+        return summary_message
