@@ -1,4 +1,3 @@
-import argparse
 import os
 import re
 from pathlib import Path
@@ -90,6 +89,13 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     dbFile : str, optional
         Name of SQLite database file to contain results
     """
+    # Make sure hlsp name is valid:
+    if not FieldRule.matchHlspName(hlsp_name):
+        msg = f"Invalid name for HLSP collection: {hlsp_name}"
+        logger.error(msg)
+        raise ValueError(msg)
+
+    # Beging file name checking
     logger.critical(f"Evaluating {len(file_list)} files for HLSP collection {hlsp_name}")
     if Path(dbFile).is_file():
         logger.warning(f"Database file {dbFile} already exists. Overwriting File.")
@@ -99,6 +105,7 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     db.create_db()
 
     # Evaluate each filename
+    # tqdm creates the progress bar: https://tqdm.github.io/docs/tqdm/
     for f in tqdm(file_list):
         logger.debug(f"Examining {f.name}")
         hfn = HlspFileName(f, hlsp_name)
@@ -157,40 +164,3 @@ def check_single_filename(inFile, hlspName) -> None:
         logger_msg += f"  {p}: {v} \n"
     logger_msg += f"Final Score: {file_rec['status'].upper()}"
     logger.critical(logger_msg)
-
-
-if __name__ == "__main__":
-    """HLSP filename validator top-level application.
-    """
-
-    def validHlspName(hlsp_name: str):
-        if not FieldRule.matchHlspName(hlsp_name):
-            raise argparse.ArgumentTypeError(f"Invalid name for HLSP collection: {hlsp_name}")
-        return hlsp_name
-
-    descr_text = "Validate names for a directory of HLSP science products"
-    parser = argparse.ArgumentParser(description=descr_text)
-    parser.add_argument("hlsp_name", type=validHlspName, help="Name of HLSP collection")
-    parser.add_argument("base_dir", type=str, default=".", help="Path of HLSP directory tree")
-    parser.add_argument(
-        "-p", "--pattern", type=str, default="*.*", help="File name search pattern to limit which files to test"
-    )
-    parser.add_argument(
-        "-d",
-        "--dbFile",
-        type=str,
-        default="",
-        help="Results database filename (defaults to: results_<hlsp_name>.db)",
-    )
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable diagnostic output")
-    args = parser.parse_args()
-
-    if args.verbose:
-        logger.setLevel("DEBUG")
-
-    logger.info(f"HLSP name = {args.hlsp_name}")
-    if not args.dbFile:
-        args.dbFile = f"results_{args.hlsp_name}.db"
-
-    file_list = get_file_paths(args.base_dir, search_pattern=args.pattern)
-    check_filenames(args.hlsp_name, file_list, args.dbFile)

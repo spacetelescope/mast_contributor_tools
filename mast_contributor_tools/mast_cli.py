@@ -14,6 +14,7 @@ from mast_contributor_tools.filename_check.fc_app import check_filenames, check_
 
 # ==========================================
 # CLI commands for mast contributor tools
+# click package docs: https://pypi.org/project/click/
 # ==========================================
 @click.group("mct")
 def cli() -> None:

@@ -61,17 +61,6 @@ To test a single filename (this does not have to be a real file):
 mct check_filenames my-hlsp --filename='hlsp_my-hlsp_readme.md'
 ```
 
-
-## Alternate calling sequence
-
-This application is normally called from the shell, where `my-hlsp-name` is the intended identifier in MAST of the HLSP collection.
-
-> `python fc_app.py my-hlsp-name '/path/to/files'`
-
-The *hlsp_filename* module itself has an entry point that will evaluate any string as an HLSP filename (except for matching the HLSP collection name). It may be useful to test a set of sample files before creating too many collection files to ensure that they will be compliant.
-
-> `python __main__.py my-hlsp-name hlsp_my-hlsp-name_readme.md`
-
 ### Resources
 
 The file name checking app makes use of the following:
