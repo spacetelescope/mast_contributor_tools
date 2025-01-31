@@ -11,7 +11,7 @@ from mast_contributor_tools.utils.logger_config import setup_logger
 
 logger = setup_logger(__name__)
 
-FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.\w+)?(\.[\w]+(\.gz|\.zip)?)$")
+FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.[\w\-]+)?(\.[\w]+(\.gz|\.zip)?)$")
 
 
 def get_file_paths(
@@ -54,13 +54,11 @@ def get_file_paths(
         base_path = Path(hlsp_path)
 
     # Search for files matching the pattern
-    file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if re.match(FILE_REGEX, p.name)]
+    file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern)]
 
     # Exclude files
     if exclude_pattern:
-        exclude_list = [
-            p.relative_to(base_path) for p in base_path.rglob(exclude_pattern) if re.match(FILE_REGEX, p.name)
-        ]
+        exclude_list = [p.relative_to(base_path) for p in base_path.rglob(exclude_pattern)]
         file_list = [f for f in file_list if f not in exclude_list]
 
     # Limit number of files returned to first n rows for testing purposes
@@ -94,6 +92,14 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
         msg = f"Invalid name for HLSP collection: {hlsp_name}"
         logger.error(msg)
         raise ValueError(msg)
+
+    # Make sure all files in list match expected regex pattern
+    file_list_match = [f for f in file_list if re.match(FILE_REGEX, f.name)]
+    if len(file_list_match) != len(file_list):
+        logger.warning(
+            f"Skipping {len(file_list) - len(file_list_match)} of {len(file_list)} files which have invalid names."
+        )
+        file_list = file_list_match
 
     # Beging file name checking
     logger.critical(f"Evaluating {len(file_list)} files for HLSP collection {hlsp_name}")
