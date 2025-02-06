@@ -1,5 +1,4 @@
 import os
-import re
 from pathlib import Path
 from typing import Union
 
@@ -11,8 +10,6 @@ from mast_contributor_tools.utils.logger_config import setup_logger
 
 logger = setup_logger(__name__)
 
-FILE_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.[\w\-]+)?(\.[\w]+(\.gz|\.zip)?)$")
-
 
 def get_file_paths(
     hlsp_path: str,
@@ -20,10 +17,8 @@ def get_file_paths(
     exclude_pattern: Union[str, None] = None,
     max_n: Union[int, None] = None,
 ) -> list[Path]:
-    """Build a list of filename Paths relative to the given directory
-
-    The filenames are matched to a regex to filter out non-relevant files. The
-    expression can be tested at: https://regex101.com/
+    """
+    Build a list of filename Paths relative to the given directory.
 
     Parameters
     ----------
@@ -40,31 +35,32 @@ def get_file_paths(
         skip all of the png files.
 
     max_n : int, optional
-        Search pattern to exclude files from testing. For example, '*.png' will only
-        skip all of the png files.
+        Maximum number of files to check, for testing purposes. For example,
+        max_n=10 will only check the first 10 files found.
 
     Returns
     -------
     list[Path]
         A list of filename Paths contained within the given directory
     """
+    # Set current directory if no directory specified
     if not hlsp_path:
         base_path = Path.cwd()
     else:
         base_path = Path(hlsp_path)
 
     # Search for files matching the pattern
-    file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern)]
+    file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if p.is_file()]
 
     # Exclude files
     if exclude_pattern:
-        exclude_list = [p.relative_to(base_path) for p in base_path.rglob(exclude_pattern)]
+        exclude_list = [p.relative_to(base_path) for p in base_path.rglob(exclude_pattern) if p.is_file()]
         file_list = [f for f in file_list if f not in exclude_list]
 
     # Limit number of files returned to first n rows for testing purposes
     if max_n:
-        if max_n < len(file_list):
-            file_list = file_list[:max_n]
+        if int(max_n) < len(file_list):
+            file_list = file_list[: int(max_n)]
 
     # Raise error if no files are found
     if len(file_list) == 0:
@@ -87,22 +83,21 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     dbFile : str, optional
         Name of SQLite database file to contain results
     """
-    # Make sure hlsp name is valid:
-    if not FieldRule.matchHlspName(hlsp_name):
-        msg = f"Invalid name for HLSP collection: {hlsp_name}"
+    # Make sure hlsp name is valid
+    if not FieldRule.hlsp_expr.match(hlsp_name):
+        msg = (
+            f"Invalid hlsp_name for HLSP collection: '{hlsp_name}'.\n"
+            "The HLSP name must follow these rules: \n"
+            "\t 1. The first character must be a lowercase letter \n"
+            "\t 2. The middle characters can be lowercase letters, numbers, or a hyphen ‘-‘ \n"
+            "\t 3. The last character must be a lowercase letter or a number \n"
+            "\t 4. The hlsp_name must be 20 characters or less in length"
+        )
         logger.error(msg)
         raise ValueError(msg)
 
-    # Make sure all files in list match expected regex pattern
-    file_list_match = [f for f in file_list if re.match(FILE_REGEX, f.name)]
-    if len(file_list_match) != len(file_list):
-        logger.warning(
-            f"Skipping {len(file_list) - len(file_list_match)} of {len(file_list)} files which have invalid names."
-        )
-        file_list = file_list_match
-
     # Beging file name checking
-    logger.critical(f"Evaluating {len(file_list)} files for HLSP collection {hlsp_name}")
+    logger.critical(f"Evaluating {len(file_list)} files for HLSP collection '{hlsp_name}'")
     if Path(dbFile).is_file():
         logger.warning(f"Database file {dbFile} already exists. Overwriting File.")
         os.remove(dbFile)
@@ -114,8 +109,8 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     # tqdm creates the progress bar: https://tqdm.github.io/docs/tqdm/
     for f in tqdm(file_list):
         logger.debug(f"Examining {f.name}")
-        hfn = HlspFileName(f, hlsp_name)
         try:
+            hfn = HlspFileName(f, hlsp_name)
             hfn.partition()
         except ValueError:
             logger.error(f"Invalid name: {f.name}, skipping...")
@@ -141,18 +136,30 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
     logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
 
 
-def check_single_filename(inFile, hlspName) -> None:
+def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
     """HLSP filename module CLI driver.
 
     Parameters
     ----------
-    inFile : str
-        Name of example HLSP product
-    hlspName : str
-        Name of example HLSP collection
+    file_name : str
+        File name of an HLSP product to test: for example 'hlsp_my-hlsp_readme.txt'.
+        This is a string, and does not need to be a real file.
+    hlsp_name : str, optional
+        Name of example HLSP collection. For example, 'my-hlsp'.
+        If not supplied, the hlsp_name is inferred using the second field of the filename.
     """
-    fp = Path(inFile)
-    hfn = HlspFileName(fp, hlspName)
+    # Infer hlsp_name from the file name if it wasn't provided
+    if not hlsp_name:
+        if len(file_name.split("_")) > 2:
+            hlsp_name = file_name.split("_")[1].lower()
+        else:
+            msg = f"Could not infer HLSP name from filename '{file_name}'. Not enough parts in filename."
+            logger.error(msg)
+            raise ValueError(msg)
+
+    # Check file name fields
+    fp = Path(file_name)
+    hfn = HlspFileName(fp, hlsp_name)
     hfn.partition()
     hfn.create_fields()
     elements = hfn.evaluate_fields()
@@ -165,7 +172,7 @@ def check_single_filename(inFile, hlspName) -> None:
             logger_msg += f"  {p}: {v} \n"
         logger.debug(logger_msg)
 
-    logger_msg = "Evaluating filename: \n"
+    logger_msg = f"Evaluating filename: {file_name} \n"
     for p, v in file_rec.items():
         logger_msg += f"  {p}: {v} \n"
     logger_msg += f"Final Score: {file_rec['status'].upper()}"

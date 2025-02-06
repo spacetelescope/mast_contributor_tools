@@ -49,9 +49,10 @@ def test_Hlsp_SQLiteDb_create(mock_connection) -> None:
         ("filename", "status"),
         ("fields", "file_ref"),
         ("fields", "name"),
-        ("fields", "capitalization"),
-        ("fields", "length"),
         ("fields", "value"),
+        ("fields", "capitalization_score"),
+        ("fields", "length_score"),
+        ("fields", "value_score"),
         ("fields", "severity"),
     ],
 )
@@ -101,11 +102,12 @@ def test_add_filename(file_record) -> None:
 @pytest.mark.parametrize(
     "field_record",
     [
-        ("hlsp_fake_file.fits", "hlsp_str", "pass", "pass", "pass", "N/A"),
-        ("hlsp_fake_file.fits", "hlsp_name", "pass", "fail", "pass", "fatal"),
+        ("hlsp_fake_file.fits", "hlsp_str", "hlsp", "pass", "pass", "pass", "N/A"),
+        ("hlsp_fake_file.fits", "hlsp_name", "fake", "pass", "fail", "pass", "fatal"),
         (
             "hlsp_fake_file.fits",
             "mission",
+            "file",
             "pass",
             "pass",
             "unrecognized",
@@ -122,10 +124,11 @@ def test_add_fields(field_record) -> None:
             {
                 "file_ref": field_record[0],
                 "name": field_record[1],
-                "capitalization": field_record[2],
-                "length": field_record[3],
-                "value": field_record[4],
-                "severity": field_record[5],
+                "value": field_record[2],
+                "capitalization_score": field_record[3],
+                "length_score": field_record[4],
+                "value_score": field_record[5],
+                "severity": field_record[6],
             }
         ]
     )
@@ -156,9 +159,10 @@ def test_add_fields_xfail(field_record) -> None:
                 {
                     "file_ref": field_record[0],
                     "name": field_record[1],
-                    "capitalization": field_record[2],
-                    "length": field_record[3],
-                    "value": field_record[4],
+                    "value": field_record[0].split("_")[1],
+                    "capitalization_score": field_record[2],
+                    "length_score": field_record[3],
+                    "value_score": field_record[4],
                     "severity": field_record[5],
                 }
             ]

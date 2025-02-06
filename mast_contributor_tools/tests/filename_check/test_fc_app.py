@@ -19,10 +19,12 @@ def fake_directory() -> list[Path]:
 
 
 @mock.patch("pathlib.Path.rglob")
-def test_get_file_paths(mock_rglob) -> None:
+@mock.patch("pathlib.Path.is_file")
+def test_get_file_paths(mock_isfile, mock_rglob) -> None:
     """Test get_file_paths() function"""
     # Mock rglob to return the filelist in fake_directory
     mock_rglob.return_value = fake_directory()
+    mock_isfile.return_value = True
     # Run function
     output = get_file_paths("fake-directory")
     # assert rglob was called

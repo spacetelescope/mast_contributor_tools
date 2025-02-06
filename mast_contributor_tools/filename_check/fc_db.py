@@ -15,9 +15,10 @@ FIELDS_TABLE = """
         CREATE TABLE IF NOT EXISTS fields (
         file_ref  TEXT NOT NULL,
 	    name  TEXT NOT NULL,
-	    capitalization  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization" IN ('pass', 'fail')),
-	    length  TEXT NOT NULL DEFAULT 'fail' CHECK("length" IN ('pass', 'fail')),
-	    value  TEXT NOT NULL DEFAULT 'fail' CHECK("value" IN ('pass', 'fail', 'unrecognized')),
+        value TEXT NOT NULL,
+	    capitalization_score  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization_score" IN ('pass', 'fail')),
+	    length_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
+	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'unrecognized')),
 	    severity  TEXT NOT NULL DEFAULT 'N/A' CHECK("severity" IN ('fatal', 'unrecognized',
             'warning', 'N/A')),
 	    FOREIGN KEY(file_ref) REFERENCES filename_db(filename)
@@ -25,15 +26,17 @@ FIELDS_TABLE = """
         """
 PROBLEMS_VIEW = """
         CREATE VIEW IF NOT EXISTS problems as
-        select fn.path, fn.filename, fn.n_elements, fl.name, fl.capitalization, fl.length,
-        fl.value, fl.severity
+        select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.capitalization_score, fl.length_score,
+        fl.value_score, fl.severity
         from filename as fn, fields as fl
         where fn.filename = fl.file_ref
         AND fl.severity != 'N/A';
         """
 
 INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:status,:n_elements)"""
-INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:capitalization,:length,:value,:severity)"""
+INSERT_FIELD_RECORD = (
+    """INSERT INTO fields VALUES(:file_ref,:name,:value,:capitalization_score,:length_score,:value_score,:severity)"""
+)
 
 
 class Hlsp_SQLiteDb:

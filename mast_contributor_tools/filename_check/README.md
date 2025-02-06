@@ -17,7 +17,6 @@ The various options for this command are described below:
 | Flag  | Description | Default Value |
 | ------------- | ------------- | ------------- |
 | `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory  | `'.'`, the current directory |
-| `-f` or `--filename` | Test a single filename: does not have to be a real file | None |
 | `-p` or `--pattern` | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files |
 | `-e` or `--exclude` | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None |
 | `-n` or `--max_n` | Maximum number of files to check, for testing purposes. | None (all files) |
@@ -47,18 +46,31 @@ mct check_filenames my-hlsp -dir='.' -p='*.*' --dbFile='results_my-hlsp.db'
 To check all files in a specified directory matching a certain file pattern:
 
 ```
-mct check_filenames my-hlsp --directory='subdir' --pattern='*.fits'
+mct check_filenames my-hlsp --directory='/path/to/hlsp-directory/' --pattern='*.fits'
 ```
 
-This example will only check files ending with ".fits" in the directory "subdir"
+This example will only check files ending with ".fits" in the directory "/path/to/hlsp-directory/"
+
+
+You can also use this to check a subdirectory of the current directory, for example:
+
+```
+mct check_filenames my-hlsp --directory='subdir/' --pattern='*.fits'
+```
 
 
 ### Example Usage: Test a single filename
 
-To test a single filename (this does not have to be a real file):
+If you only want to test a single filename, use the `check_filename` command instead:
 
 ```
-mct check_filenames my-hlsp --filename='hlsp_my-hlsp_readme.md'
+mct check_filename hlsp_my-hlsp_readme.md
+```
+
+The file name does not have to be a real file; it is tested as a string. You can also call this command on multiple file names at once using the syntax `mct check_filename [FILE 1] [FILE 2] [FILE 3] ...`: For example:
+
+```
+mct check_filename hlsp_my-hlsp_hst_wfc3_multi_galaxy1_v1_spec.fits hlsp_my-hlsp_hst_wfc3_multi_galaxy2_v1_spec.fits
 ```
 
 ### Resources

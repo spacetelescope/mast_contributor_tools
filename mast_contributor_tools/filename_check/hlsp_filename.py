@@ -7,7 +7,10 @@ from pathlib import Path
 
 import yaml
 
-# Fetch configurations for the module
+# ==========================================
+# Setup some configurations for this module
+# ==========================================
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(BASE_DIR, "fc_config.yaml"), "r") as f:
     cfg = yaml.safe_load(f)
@@ -34,6 +37,44 @@ FILTERS = set(filt_list)
 
 SCORE = {False: "fail", True: "pass"}
 
+# Define REGEX pattern rules for various fields
+# Use https://regex101.com to verify these and explore more examples
+
+# File Name Expression:
+# "^[a-zA-Z0-9]": The first character must be a letter or a number
+# "[\w\-]+": The middle characters can be word characters (\w for 'word') or a hyphen (\-)
+# Note: \w is equivalent to [a-zA-Z0-9_]: any letter, number, or underscore.
+# "(\.[\w\-\.]+)?": There can optionally be a period follwed by more word characters in the middle (for example "v1.0_spec"")
+# "(\.[\w]+": The file should end with "." follwed by a word (like ".fits" or ."jpg")
+# "(\.gz|\.zip)?)$": the file can optionally end in .gz or .zip too
+# Note this expression is intentionally too generous; this is used to search for files to test, not to actually test the files
+# For example, this regex allows the first character to be a number, when the rules require the name to start with 'hlsp'
+# In that case, the file would match this pattern and therefore be added to the list to test, but it would fail the tests due to the value
+FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.[\w\-\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
+
+# HLSP Name Expression:
+# "^[a-z]"" : The first character must be a lowercase letter
+# "[a-z0-9-]*" : The middle characers can be lowercase letters, numbers, or a hyphen '-'
+# "[a-z0-9]$" : The last character must be a lowercase letter or a number
+HLSPNAME_REGEX = re.compile(r"^[a-z][a-z0-9-]*[a-z0-9]$")
+
+# Target Name Expression:
+# "^[a-zA-Z0-9]" : The first character must be a letter or a number
+# "[a-zA-Z0-9+\-.]*" : middle characters can be letters, numbers, or some special characters are  allowed: '+' and '-' and '.'
+# "[a-zA-Z0-9]$" : Last character must be a letter or a number (no special characters)
+TARGET_REGEX = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
+
+# Version Expression:
+# "^v" : must start with "v"
+# "[0-9]{0,2}" Next zero to two characters must be numbers
+# "([.][0-9]{0,2})": There can be up to two "." or "p" followed by up to two more numbers
+# "[0-9]$" : the last character must be a number
+VERSION_REGEX = re.compile(r"^v[0-9]{0,2}([.p][0-9]{0,2}){0,2}[0-9]$")
+
+# =============================
+# Classes for field rules
+# =============================
+
 
 class FieldRule:
     """Rules for filename validation.
@@ -43,25 +84,10 @@ class FieldRule:
     validate the version or target fields can be verified at https://regex101.com
     """
 
-    # HLSP Name Expression:
-    # "^[a-z]"" : The first character must be a lowercase letter
-    # "[a-z0-9-]*" : The middle characers can be lowercase letters, numbers, or a hyphen '-'
-    # "[a-z0-9]$" : The last character must be a lowercase letter or a number
-    hlsp_expr = re.compile(r"^[a-z][a-z0-9-]*[a-z0-9]$")
-
-    # Target Name Expression:
-    # "^[a-zA-Z0-9]" : The first character must be a letter or a number
-    # "[a-zA-Z0-9+\-.]*" : middle characters can be letters, numbers, or
-    #   some special characters are  allowed: '+' and '-' and '.'
-    # "[a-zA-Z0-9]$" : Last character must be a letter or a number (no special characters)
-    target_expr = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
-
-    # Version Expression:
-    # "^v" : must start with "v"
-    # "[0-9]{0,2}" Next zero to two characters must be numbers
-    # "([.][0-9]{0,2})": There can be up to two "." followed by up to two more numbers
-    # "[0-9]$" : the last character must be a number
-    version_expr = re.compile(r"^v[0-9]{0,2}([.][0-9]{0,2}){0,2}[0-9]$")
+    # Define expressions for pattern matching
+    hlsp_expr = HLSPNAME_REGEX
+    target_expr = TARGET_REGEX
+    version_expr = VERSION_REGEX
 
     def length(value: str, max_length: int) -> bool:
         return len(value) <= max_length
@@ -139,10 +165,15 @@ class FilenameFieldAB(ABC):
 
     def get_scores(self):
         return {
+            # Name of Field: for example 'mission' or 'product_type'
             "name": self.name,
-            "capitalization": SCORE[self.cap_eval],
-            "length": SCORE[self.len_eval],
-            "value": SCORE[self.value_eval],
+            # value of the field: for example 'jwst' or 'spec'
+            "value": self.value,
+            # Results from each validation check
+            "capitalization_score": SCORE[self.cap_eval],
+            "length_score": SCORE[self.len_eval],
+            "value_score": SCORE[self.value_eval],
+            # Final Score
             "severity": self.severity,
         }
 
@@ -156,9 +187,7 @@ class ExtensionField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.matchChoice(self.value, EXTENSION_TYPES)
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
 
 
 class FilterField(FilenameFieldAB):
@@ -186,9 +215,7 @@ class HlspField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.matchChoice(self.value, ["hlsp"])
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
 
 
 class HlspNameField(FilenameFieldAB):
@@ -204,9 +231,7 @@ class HlspNameField(FilenameFieldAB):
         self.value_eval = FieldRule.matchHlspName(self.value) and FieldRule.matchChoice(
             self.value, [self.hlsp_ref_name]
         )
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
 
 
 class InstrumentField(FilenameFieldAB):
@@ -218,9 +243,7 @@ class InstrumentField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.matchMultiChoice(self.value, INSTRUMENTS)
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
 
 
 class MissionField(FilenameFieldAB):
@@ -281,9 +304,7 @@ class VersionField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.matchVersion(self.value)
-        self.severity = FieldRule.severity(
-            self.cap_eval and self.len_eval and self.value_eval
-        )
+        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
 
 
 class GenericField(FilenameFieldAB):
@@ -341,11 +362,16 @@ class HlspFileName:
 
     def __init__(self, filepath: Path, hlsp_name: str) -> None:
         self.filepath = filepath
+        # Check that filename is of the right form
+        if not re.match(FILENAME_REGEX, self.filepath.name):
+            raise ValueError(f"Invalid file name for testing: {self.filepath.name}")
+
+        # Check that the HLSP name is valid
         if FieldRule.matchHlspName(hlsp_name):
             self.hlspName = hlsp_name
         else:
             raise ValueError(f"Invalid HLSP name: {hlsp_name}")
-        self.fields = []
+        self.fields: list[FilenameFieldAB] = []
 
     def partition(self) -> None:
         """Partition the filepath into path+filename, and filename into fields"""
