@@ -6,13 +6,72 @@ This application will examine each file within a user-specified directory folder
 
 ## Calling sequence
 
-This application is normally called from the shell, where `my-hlsp-name` is the intended identifier in MAST of the HLSP collection.
+This application can be called from the command line using the `mct` command. To view information on the arguments and options for this command, you can use:
 
-> `python fc_app.py my-hlsp-name '/path/to/files'`
+```
+mct check_filenames --help
+```
 
-The *hlsp_filename* module itself has an entry point that will evaluate any string as an HLSP filename (except for matching the HLSP collection name). It may be useful to test a set of sample files before creating too many collection files to ensure that they will be compliant.
+The various options for this command are described below:
 
-> `python __main__.py hlsp_my-file-name_readme.md`
+| Flag  | Description | Default Value |
+| ------------- | ------------- | ------------- |
+| `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory  | `'.'`, the current directory |
+| `-p` or `--pattern` | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files |
+| `-e` or `--exclude` | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None |
+| `-n` or `--max_n` | Maximum number of files to check, for testing purposes. | None (all files) |
+| `-db` or `--dbFile` | Name of Results database file |  `results_<hlsp_name>.db` |
+| `-v` or `--verbose` | Enables verbose output for more information |  `False` |
+| `--help`| Prints information about this command |   |
+
+
+### Example Usage: Check all files in the current directory
+
+To check all files in the current working directory, run the command:
+
+```
+mct check_filenames <my-hlsp>
+```
+
+where `<my-hlsp>'`is the name of your HLSP.
+
+This command is also equivalent to:
+
+```
+mct check_filenames my-hlsp -dir='.' -p='*.*' --dbFile='results_my-hlsp.db'
+```
+
+### Example Usage: Check all files matching a pattern in a specified directory
+
+To check all files in a specified directory matching a certain file pattern:
+
+```
+mct check_filenames my-hlsp --directory='/path/to/hlsp-directory/' --pattern='*.fits'
+```
+
+This example will only check files ending with ".fits" in the directory "/path/to/hlsp-directory/"
+
+
+You can also use this to check a subdirectory of the current directory, for example:
+
+```
+mct check_filenames my-hlsp --directory='subdir/' --pattern='*.fits'
+```
+
+
+### Example Usage: Test a single filename
+
+If you only want to test a single filename, use the `check_filename` command instead:
+
+```
+mct check_filename hlsp_my-hlsp_readme.md
+```
+
+The file name does not have to be a real file; it is tested as a string. You can also call this command on multiple file names at once using the syntax `mct check_filename [FILE 1] [FILE 2] [FILE 3] ...`: For example:
+
+```
+mct check_filename hlsp_my-hlsp_hst_wfc3_multi_galaxy1_v1_spec.fits hlsp_my-hlsp_hst_wfc3_multi_galaxy2_v1_spec.fits
+```
 
 ### Resources
 

@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mast_contributor_tools"
-description = "This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). "
+description = "This package contains a set of tools for use by MAST community contributors (High Level Science Products and MAST Community Contributed Missions). "
 requires-python = ">=3.11"
 readme = { file = "README.md", content-type = "text/x-rst" }
 license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
@@ -16,7 +16,8 @@ authors = [
 ]
 dependencies = [
     "click >= 8.1.0",
-    "pyyaml >6.0.1",
+    "pyyaml > 6.0.1",
+    "tqdm >= 4.67.1"
 ]
 dynamic = ["version"]
 
@@ -57,6 +58,9 @@ ignore = ["PLR", "PLC0206"]  # Ignore specific Pylint refactor messages
 
 [project.urls]
 repository = "https://github.com/spacetelescope/mast_contributor_tools"
+
+[project.scripts]
+mct = "mast_contributor_tools.mast_cli:cli"
 
 [tool.setuptools]
 zip-safe = false

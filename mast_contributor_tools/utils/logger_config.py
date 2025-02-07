@@ -2,7 +2,7 @@ import logging
 import os
 
 
-def setup_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
+def setup_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     """Create a custom logger."""
 
     logger = logging.getLogger(name)
@@ -10,7 +10,7 @@ def setup_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
 
     # Create handlers
     c_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), "app.log"))
+    f_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), "../mct.log"))
     c_handler.setLevel(level)
     f_handler.setLevel(level)
 

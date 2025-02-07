@@ -15,9 +15,10 @@ FIELDS_TABLE = """
         CREATE TABLE IF NOT EXISTS fields (
         file_ref  TEXT NOT NULL,
 	    name  TEXT NOT NULL,
-	    capitalization  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization" IN ('pass', 'fail')),
-	    length  TEXT NOT NULL DEFAULT 'fail' CHECK("length" IN ('pass', 'fail')),
-	    value  TEXT NOT NULL DEFAULT 'fail' CHECK("value" IN ('pass', 'fail', 'unrecognized')),
+        value TEXT NOT NULL,
+	    capitalization_score  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization_score" IN ('pass', 'fail')),
+	    length_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
+	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'unrecognized')),
 	    severity  TEXT NOT NULL DEFAULT 'N/A' CHECK("severity" IN ('fatal', 'unrecognized',
             'warning', 'N/A')),
 	    FOREIGN KEY(file_ref) REFERENCES filename_db(filename)
@@ -25,17 +26,17 @@ FIELDS_TABLE = """
         """
 PROBLEMS_VIEW = """
         CREATE VIEW IF NOT EXISTS problems as
-        select fn.path, fn.filename, fn.n_elements, fl.name, fl.capitalization, fl.length,
-        fl.value, fl.severity
+        select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.capitalization_score, fl.length_score,
+        fl.value_score, fl.severity
         from filename as fn, fields as fl
         where fn.filename = fl.file_ref
         AND fl.severity != 'N/A';
         """
 
-INSERT_FILE_RECORD = (
-    """INSERT INTO filename VALUES(:path,:filename,:status,:n_elements)"""
+INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:status,:n_elements)"""
+INSERT_FIELD_RECORD = (
+    """INSERT INTO fields VALUES(:file_ref,:name,:value,:capitalization_score,:length_score,:value_score,:severity)"""
 )
-INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:capitalization,:length,:value,:severity)"""
 
 
 class Hlsp_SQLiteDb:
@@ -105,3 +106,28 @@ class Hlsp_SQLiteDb:
         """
         self.conn.executemany(INSERT_FIELD_RECORD, elements)
         self.conn.commit()
+
+    def print_summary(self) -> str:
+        """
+        Returns a string detailing some summary information on how many files have passed validation
+        """
+        # Get data from db
+        dat = self.conn.execute("SELECT filename, status from filename").fetchall()
+        # Parse numbers
+        num_files = len(dat)
+        num_pass = sum([1 for d in dat if d[1] == "pass"])
+        num_fail = sum([1 for d in dat if d[1] == "fail"])
+        # Write summary message
+        summary_message = "Output summary:\n    "
+        summary_message += f"Files Checked: {num_files}\n    "
+        summary_message += f"Files Passed: {num_pass}\n    "
+        summary_message += f"Files Failed: {num_fail}\n    "
+        # All files passed
+        if num_pass == num_files:
+            summary_message += "All files passed! "
+        # Some files failed
+        else:
+            summary_message += f"See results file ({self.db_file}) for more information."
+            # Add more detail here later? - could break down by fields, etc.
+
+        return summary_message

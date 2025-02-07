@@ -21,6 +21,7 @@ import pytest
 
 from mast_contributor_tools.filename_check.hlsp_filename import (
     EXTENSION_TYPES,
+    FILENAME_REGEX,
     FILTERS,
     INSTRUMENTS,
     MISSIONS,
@@ -42,9 +43,7 @@ from mast_contributor_tools.filename_check.hlsp_filename import (
 # ==============================================
 # Helper Functions for evaluating scores
 # =============================================
-def assert_scores_match(
-    recieved_score: dict[str, str], expected_score: list[str]
-) -> None:
+def assert_scores_match(recieved_score: dict[str, str], expected_score: list[str]) -> None:
     """
     Helper function to compares the recieved score to the
     expected score to make sure that they match for a given field
@@ -59,9 +58,9 @@ def assert_scores_match(
     """
     # Convert expected_score list into dict
     expected_score_dict = {
-        "capitalization": expected_score[0],
-        "length": expected_score[1],
-        "value": expected_score[2],
+        "capitalization_score": expected_score[0],
+        "length_score": expected_score[1],
+        "value_score": expected_score[2],
         "severity": expected_score[3],
     }
 
@@ -271,6 +270,7 @@ def test_FilterField(test_value: str, expected_score: list[str]) -> None:
         ("v1.2.3", ["pass", "pass", "pass", "N/A"]),
         ("v12.34.56", ["pass", "pass", "pass", "N/A"]),
         ("v01", ["pass", "pass", "pass", "N/A"]),
+        ("v1p0p1", ["pass", "pass", "pass", "N/A"]),  # "p" is allowed in place of "."
         # Expected to Fail
         ("dr1", ["pass", "pass", "fail", "fatal"]),
         ("1.2.3", ["fail", "pass", "fail", "fatal"]),  # does not start with v
@@ -379,8 +379,8 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
             "pass",
         ),
         # Real examples
-        (  # real version is 'v1p0p1' which fails
-            "hlsp_phangs-jwst_jwst_nircam_ngc1385_f335m_v1_img.fits",
+        (
+            "hlsp_phangs-jwst_jwst_nircam_ngc1385_f335m_v1p0p1_img.fits",
             "phangs-jwst",
             "pass",
         ),
@@ -397,6 +397,11 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
         (
             "hlsp_tica_tess_ffi_s0084-o2-01023889-cam1-ccd1_tess_v01_img.fits",
             "tica",
+            "pass",
+        ),
+        (
+            "hlsp_judo_hst_wfc3_jupiter-20120919_f275w_v1.0_npole-globalmap.fits",
+            "judo",
             "pass",
         ),
         (  # example using multi
@@ -432,20 +437,23 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
         ),
     ],
 )
-def test_HlspFileName_pass(
+def test_HlspFileName(
     test_filename: str,
     hlsp_name: str,
     expected_evaluation: list[str],
 ) -> None:
     """Tests for file names that are expected to run (no errors), but still pass/fail accordingly"""
+    # Make sure filename matches the regex
+    assert FILENAME_REGEX.match(test_filename), f"Filename {test_filename} does not match regex {FILENAME_REGEX}"
+    # Test the filename
     hfn = HlspFileName(Path(test_filename), hlsp_name)
     hfn.partition()
     hfn.create_fields()
     elements = hfn.evaluate_fields()
     received_evaluation = hfn.evaluate_filename()["status"]
-    assert (
-        received_evaluation == expected_evaluation
-    ), f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
+    assert received_evaluation == expected_evaluation, (
+        f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
+    )
 
 
 # Tests for file names that are expected to raise errors
@@ -474,9 +482,7 @@ def test_HlspFileName_errors(
         hfn.create_fields()
     except Exception as e:
         # Assert correct error was raised
-        assert (
-            e.__class__ == expected_error
-        ), f"Wrong error raised: Expected {expected_error}, raised {e.__class__}"
+        assert e.__class__ == expected_error, f"Wrong error raised: Expected {expected_error}, raised {e.__class__}"
     else:
         # if it made it this far, no errors were raised - that's a problem for this test
         assert False, f"No error was raised when evaluating filename '{test_filename}'"

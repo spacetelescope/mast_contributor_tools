@@ -27,6 +27,7 @@ ExtensionTypes:
  - pdf
  - png
  - readme
+ - rst
  - tar.gz
  - tif
  - txt
