@@ -65,7 +65,7 @@ def assert_scores_match(recieved_score: dict[str, str], expected_score: list[str
     }
 
     # Test each value individually
-    for test_key in expected_score_dict.keys():
+    for test_key in list(expected_score_dict.keys()):
         test_name = recieved_score["name"]
         eval_msg = (
             f"Error in field '{test_name}.{test_key}':"
