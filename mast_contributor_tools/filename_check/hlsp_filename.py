@@ -50,7 +50,7 @@ SCORE = {False: "fail", True: "pass"}
 # Note this expression is intentionally too generous; this is used to search for files to test, not to actually test the files
 # For example, this regex allows the first character to be a number, when the rules require the name to start with 'hlsp'
 # In that case, the file would match this pattern and therefore be added to the list to test, but it would fail the tests due to the value
-FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.[\w\-\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
+FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-\+]+(\.[\w\-\+\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
 
 # HLSP Name Expression:
 # "^[a-z]"" : The first character must be a lowercase letter
