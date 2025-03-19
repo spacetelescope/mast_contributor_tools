@@ -424,6 +424,11 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
             "my-hlsp",
             "pass",
         ),
+        (  # example with + sign
+            "hlsp_lacos_hst_acs-wfc3_j012910+145935_uv-opt_v1.0_img.fits",
+            "lacos",
+            "pass",
+        ),
         # Expected to Fail
         (
             "hlsp_fake-hlsp_hst_wfc3_VEGA_f160w_v1_img.fits",

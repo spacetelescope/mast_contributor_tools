@@ -42,15 +42,15 @@ SCORE = {False: "fail", True: "pass"}
 
 # File Name Expression:
 # "^[a-zA-Z0-9]": The first character must be a letter or a number
-# "[\w\-]+": The middle characters can be word characters (\w for 'word') or a hyphen (\-)
+# "[\w\-\+]+": The middle characters can be word characters (\w for 'word') or a hyphen (\-) or a plus sign (\+)
 # Note: \w is equivalent to [a-zA-Z0-9_]: any letter, number, or underscore.
-# "(\.[\w\-\.]+)?": There can optionally be a period follwed by more word characters in the middle (for example "v1.0_spec"")
+# "(\.[\w\-\+\.]+)?": There can optionally be a period follwed by more word characters in the middle (for example "v1.0_spec"")
 # "(\.[\w]+": The file should end with "." follwed by a word (like ".fits" or ."jpg")
 # "(\.gz|\.zip)?)$": the file can optionally end in .gz or .zip too
 # Note this expression is intentionally too generous; this is used to search for files to test, not to actually test the files
 # For example, this regex allows the first character to be a number, when the rules require the name to start with 'hlsp'
 # In that case, the file would match this pattern and therefore be added to the list to test, but it would fail the tests due to the value
-FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-]+(\.[\w\-\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
+FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-\+]+(\.[\w\-\+\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
 
 # HLSP Name Expression:
 # "^[a-z]"" : The first character must be a lowercase letter
