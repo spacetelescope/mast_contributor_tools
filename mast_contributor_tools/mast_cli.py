@@ -34,8 +34,10 @@ def cli() -> None:
 @click.option(
     "-dir", "--directory", type=str, default=".", help="Path of HLSP directory tree; tests all files in that directory"
 )
-@click.option("-p", "--pattern", default="*.*", help="File pattern to limit testing, for example 'hlsp_*_spec.fits'")
-@click.option("-e", "--exclude", default="", help="File pattern to exclude from testing, for example '*.png'")
+@click.option(
+    "-p", "--pattern", default="*.*", help="File pattern to limit testing, for example 'hlsp\\_\\*\\_spec.fits'"
+)
+@click.option("-e", "--exclude", default="", help="File pattern to exclude from testing, for example '\\*.png'")
 @click.option("-n", "--max_n", default=None, help="Maximum number of files to check, for testing purposes.")
 @click.option("-db", "--dbFile", default="", help="Results database filename (defaults to: results_<hlsp_name>.db)")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
