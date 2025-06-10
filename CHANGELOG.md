@@ -8,8 +8,8 @@
 ### Changed
 
 ### Added
-[PR # 8](https://github.com/spacetelescope/mast_contributor_tools/pull/8)
-    - Setting Sphinx Autodc
+[PR # 14](https://github.com/spacetelescope/mast_contributor_tools/pull/14)
+    - Setting up Sphinx Autodoc
     - CI/CD update for docs
 [PR # 7](https://github.com/spacetelescope/mast_contributor_tools/pull/7)
     - Adding unit tests for file name checker
