@@ -17,14 +17,15 @@ authors = [
 dependencies = [
     "click >= 8.1.0",
     "pyyaml > 6.0.1",
-    "tqdm >= 4.67.1"
+    "tqdm >= 4.67.1",
+    "setuptools-scm >= 8.3.1"
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit >=4.0.1",
-    "ruff >= 0.8.2",
+    "pre-commit >=4.2.0",
+    "ruff >= 0.11.13",
 ]
 test = [
     "pytest",
@@ -33,9 +34,20 @@ test = [
     "pytest-mock",
 ]
 docs = [
+    "linkify-it-py",
+    "myst-parser",
     "sphinx",
+    "sphinx-astropy",
+    "sphinx-autobuild",
     "sphinx-automodapi",
+    "sphinx-rtd-theme",
+    "sphinx-copybutton",
+    "enchant",
+    "sphinxcontrib-spelling",
+    "sphinx_click",
+    "tomli; python_version <\"3.11\"",
 ]
+all = ["mast_contrib_tools[dev, test, docs]"]
 
 # Customize ruff lint here. The default setting if not specified will follow the configurations on https://docs.astral.sh/ruff/configuration/
 

@@ -1,5 +1,5 @@
 # MAST_CONTRIBUTOR_TOOLS
-This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions).
+This package contains a set of tools for use by MAST community contributors (High Level Science Products and MAST Community Contributed Missions).
 
 ## Development Workflow
 There are two main branches for mast_contributor_tools work:
@@ -10,30 +10,46 @@ There are two main branches for mast_contributor_tools work:
 
 ## Installation
 ### Required packages and versions
-- See required packages found in the [conda evn file](envs/mct_env.yml) or [pyproject.toml](pyproject.toml).
+- See required packages found in the [conda evn file](https://github.com/spacetelescope/mast_contributer_tools/blob/dev/) or [pyproject.toml](https://github.com/spacetelescope/mast_contributer_tools/blob/dev/).
 
 ### Conda env installation
 Change `env_name` below with whatever you want to name the environment.
-- Download the conda installation yml file [here](envs/mct_env.yml).
 - In the terminal, run these commands.
 
+
 ```shell
-conda env create -n env_name -f mct_env.yml
+conda create -n env_name python=3.11
 conda activate env_name
 ```
 
+### mast_contributor_tools installation
+#### Installation for regular users
+The **mast_contributor_tools** directory contains the python package itself, installable via pip. This will install the core dependencies defined in `pyproject.toml`.
+```shell
+pip install .
+```
+#### Installation for developers
+If you are interested in developing and contributing to **mast_contributor_tools**, you should install this package with `-e`, it allows you to work on the package's source code and see changes reflected immediately without needing to reinstall.
+
+```shell
+pip install -e . # install editable mode
+```
+To install the optional dependencies for pytest or Sphinx autodoc, run the command below in addition to pip install in editable mode above.
+
+```shell
+pip install .[dev,test,docs] # install the dependencies of dev, test, docs
+```
+or
+```shell
+pip install .[all] # "all" includes the dependencies of dev, test, docs
+```
 ### (Optional for Development) VSCode settings.json
 
-If you decide to use VSCode for your development, you can use the [workspace settings.json](.vscode/settings.json). You should choose your python interpreter locally by setting your conda environment.
+If you decide to use VSCode for your development, you can use the **.vscode/settings.json**. You should choose your python interpreter locally by setting your conda environment.
 
-### mast_contributor_tools installation
-The `mast_contributor_tools` directory contains the python package itself, installable via pip.
-```shell
-pip install -e .
-```
 ## pre-commit for development
 
-[pre-commit](https://pre-commit.com/) allows all collaborators push their commits compliant with the same set of lint and format rules in [pyproject.toml](pyproject.toml) by checking all files in the project at different stages of the git workflow. It runs commands specified in the [.pre-commit-config.yaml](.pre-commit-config.yaml) config file and runs checks before committing or pushing, to catch errors that would have caused a build failure before they reach CI.
+[pre-commit](https://pre-commit.com/) allows all collaborators push their commits compliant with the same set of lint and format rules in **pyproject.toml** by checking all files in the project at different stages of the git workflow. It runs commands specified in the **.pre-commit-config.yaml** config file and runs checks before committing or pushing, to catch errors that would have caused a build failure before they reach CI.
 
 ### Install pre-commit
 You will need to install `pre-commit` manually.
@@ -68,11 +84,38 @@ which will run all test scripts in the `tests` directory and output the results.
 ```
 pytest tests/filename_check/test_hlsp_filename.py
 ```
+### Sphinx documentation set up
+Sphinx will create the documentation automatically using the module docstrings.
+Use `sphinx-apidoc` to automatically generate API documentation from your docstrings.
+
+Run this command in the main project level,
+```shell
+
+sphinx-apidoc -o docs/api mast_contributor_tools mast_contributor_tools/tests/* # the last pattern indicates all test modules excluded from API Doc
+```
+To build live-reload documentation, run
+
+```shell
+sphinx-autobuild docs docs/_build/html
+```
+
+For one time build,
+```shell
+make -C docs html
+```
+
+Then navigate to `docs/_build/html` and open `index.html` on your browser to see the built documentation.
+
+To remove existing output,
+
+```shell
+make clean
+```
 
 
 ## Quick Start
 ### Filename Check
-To check if the filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please see [Filename Check Guide](mast_contributor_tools/filename_check/README.md) to get started.
+To check if the filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please see [Filename Check Guide](https://github.com/spacetelescope/mast_contributer_tools/blob/dev/docs/filename_check_readme.md) to get started.
 
 ### Metadata Check
 # License
