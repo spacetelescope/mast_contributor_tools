@@ -11,7 +11,7 @@
             "source.organizeImports": "always"
         }
     },
-    "ruff.configuration": "${workspaceFolder}/.vscode/pyproject.toml",
+    "ruff.configuration": "${workspaceFolder}/pyproject.toml",
     "ruff.organizeImports": true,
     "notebook.formatOnSave.enabled": true,
     "notebook.lineNumbers": "on",
