@@ -15,7 +15,7 @@ import sys
 release = ".version"
 
 project = "mast_contributor_tools"
-author = "Mikulski Archive for Space Telescope at Space Telescope Science Institute"
+author = "Mikulski Archive for Space Telescopes at the Space Telescope Science Institute"
 copyright = f"{datetime.datetime.now().year}, {author}"  # noqa: A001
 
 # -- General configuration ---------------------------------------------------
