@@ -37,11 +37,11 @@ pip install -e . # install editable mode
 To install the optional dependencies for pytest or Sphinx autodoc, run the command below in addition to pip install in editable mode above.
 
 ```shell
-pip install .[dev,test,docs] # install the dependencies of dev, test, docs
+pip install -e .[dev,test,docs] # install the dependencies of dev, test, docs
 ```
 or
 ```shell
-pip install .[all] # "all" includes the dependencies of dev, test, docs
+pip install -e .[all] # "all" includes the dependencies of dev, test, docs
 ```
 ### (Optional for Development) VSCode settings.json
 
