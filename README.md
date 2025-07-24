@@ -39,10 +39,7 @@ To install the optional dependencies for pytest or Sphinx autodoc, run the comma
 ```shell
 pip install -e .[dev,test,docs] # install the dependencies of dev, test, docs
 ```
-or
-```shell
-pip install -e .[all] # "all" includes the dependencies of dev, test, docs
-```
+
 ### (Optional for Development) VSCode settings.json
 
 If you decide to use VSCode for your development, you can use the **.vscode/settings.json**. You should choose your python interpreter locally by setting your conda environment.
