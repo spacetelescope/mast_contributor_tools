@@ -1,8 +1,6 @@
 mast_contributor_tools Documentation
 ------------------------------------
 
-This is the documentation for mast_contributor_tools.
-
 .. toctree::
    :maxdepth: 3
    :caption: GETTING STARTED
