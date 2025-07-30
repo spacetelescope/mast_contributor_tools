@@ -172,5 +172,5 @@ mast_contributor_tools based on its use in the README file for the
 
 For more useful information, check out the following links:
 
-- [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting and HLSP to MAST.
+- [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting an HLSP to MAST.
 - [MAST Help Desk](https://outerspace.stsci.edu/display/MASTDOCS/Archive+Support) - Please contact the help desk or send an email to [mast_contrib.stsci.edu](mailto:mast_contrib.stsci.edu) if you have any questions about using this package!

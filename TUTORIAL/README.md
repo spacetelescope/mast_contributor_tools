@@ -123,9 +123,9 @@ Congratulations! You have completed this tutorial and now know the basic usage o
 
 
 # Additional Resources
-More tutorials will be added here in the future! In the meantime, check out the following links for more useufl information:
+More tutorials will be added here in the future! In the meantime, check out the following links for more useful information:
 
-- [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting and HLSP to MAST.
+- [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting an HLSP to MAST.
 - [MAST Help Desk](https://outerspace.stsci.edu/display/MASTDOCS/Archive+Support) - Please contact the help desk or send an email to [mast_contrib.stsci.edu](mailto:mast_contrib.stsci.edu) if you have any questions about using this package!
 
 
