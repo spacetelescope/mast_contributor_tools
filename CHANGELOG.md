@@ -8,10 +8,15 @@
 ### Changed
 
 ### Added
+[PR # 14](https://github.com/spacetelescope/mast_contributor_tools/pull/14)
+    - Setting up Sphinx Autodoc
+    - CI/CD update for docs
 [PR # 7](https://github.com/spacetelescope/mast_contributor_tools/pull/7)
     - Adding unit tests for file name checker
+
 [PR # 3](https://github.com/spacetelescope/mast_contributor_tools/pull/3)
     - GitHub CI/CD action
     - pre-commit-hook installation
+
 [PR # 1](https://github.com/spacetelescope/mast_contributor_tools/pull/1)
     - Initial codebase commit for `filename_check`
