@@ -1,5 +1,7 @@
 # MAST_CONTRIBUTOR_TOOLS
-This package contains a set of tools for use by MAST community contributors (High Level Science Products and MAST Community Contributed Missions).
+This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections.
+
+Visit the [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) for full documentation, instructions, and policies about the process of submitting data to MAST.
 
 ## Development Workflow
 There are two main branches for mast_contributor_tools work:
@@ -115,10 +117,17 @@ make clean
 
 
 ## Quick Start
-### Filename Check
-To check if the filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please see [Filename Check Guide](https://github.com/spacetelescope/mast_contributer_tools/blob/dev/docs/filename_check_readme.md) to get started.
+### Tutorials
 
-### Metadata Check
+The [`tutorials/`](tutorials/) folder of this repository contains some example data and step-by-step instructions for how to run this code.
+
+### Filename Checker
+To check if filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), refer to the [Filename Checker Guide](docs/filename_check_readme.md) to get started.
+
+### Metadata Checker
+
+Under development - check back later!
+
 # License
 
 
@@ -158,3 +167,10 @@ Note: This disclaimer was originally written by
 `PyCon talk <https://www.youtube.com/watch?v=6Uj746j9Heo>`_, and was adapted by
 mast_contributor_tools based on its use in the README file for the
 `MetPy project <https://github.com/Unidata/MetPy>`_.
+
+# Additional Resources
+
+For more useful information, check out the following links:
+
+- [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting and HLSP to MAST.
+- [MAST Help Desk](https://outerspace.stsci.edu/display/MASTDOCS/Archive+Support) - Please contact the help desk or send an email to [mast_contrib.stsci.edu](mailto:mast_contrib.stsci.edu) if you have any questions about using this package!
