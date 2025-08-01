@@ -28,7 +28,7 @@ The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_
 
 ## Step 1: Investigating the Tutorial data.
 
-The [`tutorial-data/`](tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial". 
+The [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial". 
 
 There are three different fake fits files containing spectra for different hypothetical galaixes:
 
@@ -127,5 +127,4 @@ More tutorials will be added here in the future! In the meantime, check out the 
 
 - [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting an HLSP to MAST.
 - [MAST Help Desk](https://outerspace.stsci.edu/display/MASTDOCS/Archive+Support) - Please contact the help desk or send an email to [mast_contrib@stsci.edu](mailto:mast_contrib@stsci.edu) if you have any questions about using this package!
-
 
