@@ -1,12 +1,12 @@
 # MAST_CONTRIBUTOR_TOOLS
-This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections.
+This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections. It is a work in progress. Currently, `Filename Check` is available, and `Metadata Check` will be coming soon.
 
 Visit the [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) for full documentation, instructions, and policies about the process of submitting data to MAST.
 
 ## Development Workflow
 There are two main branches for mast_contributor_tools work:
 
-- The **dev** branch contains ongoing development work and all new work should be done in branches that are merged against **dev**.
+- The **dev** branch contains ongoing development work. All new work should be done in branches that are merged into **dev**.
 
 - The **main** branch contains the latest stable release of `mast_contributor_tools`.
 
@@ -14,9 +14,9 @@ There are two main branches for mast_contributor_tools work:
 ### Required packages and versions
 - See required packages found in the [conda evn file](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/pyproject.toml).
 
-### Conda env installation
-Change `env_name` below with whatever you want to name the environment.
-- In the terminal, run these commands.
+### Conda environment
+Replace `env_name` with the desired name for your environment.
+- In the terminal, run the following commands.
 
 
 ```shell
@@ -24,19 +24,19 @@ conda create -n env_name python=3.11
 conda activate env_name
 ```
 
-### mast_contributor_tools installation
+### mast_contributor_tools
 #### Installation for regular users
-The **mast_contributor_tools** directory contains the python package itself, installable via pip. This will install the core dependencies defined in `pyproject.toml`.
+The **mast_contributor_tools** directory contains the python package itself, which can be installable via pip. This will also install the core dependencies defined in `pyproject.toml`.
 ```shell
 pip install .
 ```
 #### Installation for developers
-If you are interested in developing and contributing to **mast_contributor_tools**, you should install this package with `-e`, it allows you to work on the package's source code and see changes reflected immediately without needing to reinstall.
+If you are interested in developing and contributing to **mast_contributor_tools**, you should install this package with `-e` flag, it allows you to work on the package's source code and see changes reflected immediately without needing to reinstall.
 
 ```shell
 pip install -e . # install editable mode
 ```
-To install the optional dependencies for pytest or Sphinx autodoc, run the command below in addition to pip install in editable mode above.
+To install the optional dependencies for pytest or Sphinx autodoc, run the command below in addition to the `pip install` command in editable mode above.
 
 ```shell
 pip install -e .[dev,test,docs] # install the dependencies of dev, test, docs
@@ -82,7 +82,7 @@ This package includes a test suite built with `pytest`. After installing, you ca
 pytest
 ```
 
-which will run all test scripts in the `tests` directory and output the results. Each `.py` file in the source code directory has a corresponding `_test.py` file in the tests directory. The tests can calso be called on a single file, for example:
+This command will run all test scripts in the `tests` directory and output the results. Each `.py` file in the source code directory has a corresponding `test_*.py` file in the tests directory. The tests can also be called on a single file, for example:
 
 ```
 pytest tests/filename_check/test_hlsp_filename.py
@@ -96,18 +96,18 @@ Run this command in the main project level,
 
 sphinx-apidoc -o docs/api mast_contributor_tools mast_contributor_tools/tests/* # the last pattern indicates all test modules excluded from API Doc
 ```
-To build live-reload documentation, run
-
-```shell
-sphinx-autobuild docs docs/_build/html
-```
-
 For one time build,
 ```shell
 make -C docs html
 ```
 
 Then navigate to `docs/_build/html` and open `index.html` on your browser to see the built documentation.
+
+To build live-reload documentation, run the following command. You need to open a web browser and enter the URL that sphinx-build serves to veiw the live, auto-updating Sphinx docs, for instance, `http://127.0.0.1:8000`.
+
+```shell
+sphinx-autobuild docs docs/_build/html
+```
 
 To remove existing output,
 
@@ -121,8 +121,8 @@ make clean
 
 The [`tutorials/`](tutorials/) folder of this repository contains some example data and step-by-step instructions for how to run this code.
 
-### Filename Checker
-To check if filenames are compliant with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), refer to the [Filename Checker Guide](docs/filename_check_readme.md) to get started.
+### Filename Check
+To check if the filenames comply with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please refer to [Filename Checker Guide](docs/filename_check_readme.md) to get started.
 
 ### Metadata Checker
 
@@ -130,10 +130,9 @@ Under development - check back later!
 
 # License
 
-
 This project is Copyright (c) MAST Staff and licensed under
 the terms of the BSD 3-Clause license. This package is based upon
-the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`_
+the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`
 which is licensed under the BSD 3-clause licence. See the licenses folder for
 more information.
 

@@ -1,6 +1,6 @@
 # Filename Check
 
-This application will examine each file within a user-specified directory folder for compliance with the HLSP filename requirements. See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for details. The results are saved to an SQLite3 database. Prior to a final delivery of a HLSP collection to MAST, contributors should fix all filenames where reported failures have a severity of 'fatal'.
+This application will examine each file within a user-specified directory folder for compliance with the HLSP filename requirements. Refer to the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for details. The results are saved to an SQLite3 database. Prior to a final delivery of a HLSP collection to MAST, contributors should fix all filenames where reported failures have a severity of 'fatal'.
 
 **Note:** Once your HLSP collection has been delivered to MAST, this same tool will be used to re-validate the product filenames. MAST staff will contact you to resolve issues.
 
@@ -8,21 +8,21 @@ This application will examine each file within a user-specified directory folder
 
 This application can be called from the command line using the `mct` command. To view information on the arguments and options for this command, you can use:
 
-```
+```shell
 mct check_filenames --help
 ```
 
 The various options for this command are described below:
 
-| Flag  | Description | Default Value |
-| ------------- | ------------- | ------------- |
-| `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory  | `'.'`, the current directory |
-| `-p` or `--pattern` | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files |
-| `-e` or `--exclude` | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None |
-| `-n` or `--max_n` | Maximum number of files to check, for testing purposes. | None (all files) |
-| `-db` or `--dbFile` | Name of Results database file |  `results_<hlsp_name>.db` |
-| `-v` or `--verbose` | Enables verbose output for more information |  `False` |
-| `--help`| Prints information about this command |   |
+| Flag                       | Description                                                                | Default Value                      |
+| ---------------------------| -------------------------------------------------------------------------- | ---------------------------------- |
+| `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory                    | `'.'`, the current directory       |
+| `-p` or `--pattern`     | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files           |
+| `-e` or `--exclude`     | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None                 |
+| `-n` or `--max_n`       | Maximum number of files to check, for testing purposes.                       | None (all files)                   |
+| `-db` or `--dbFile`     | Name of Results database file                                                 | `results_<hlsp_name>.db`           |
+| `-v` or `--verbose`     | Enables verbose output for more information                                   | `False`                            |
+| `--help`                | Prints information about this command                                         |                                    |
 
 
 ### Example Usage: Check all files in the current directory
@@ -33,7 +33,7 @@ To check all files in the current working directory, run the command:
 mct check_filenames <my-hlsp>
 ```
 
-where `<my-hlsp>'`is the name of your HLSP.
+where `<my-hlsp>` is the name of your HLSP.
 
 This command is also equivalent to:
 
@@ -75,7 +75,7 @@ mct check_filename hlsp_my-hlsp_hst_wfc3_multi_galaxy1_v1_spec.fits hlsp_my-hlsp
 
 ### Resources
 
-The file name checking app makes use of the following:
+The file name checking application makes use of the following:
 
 * input: yaml file of observatory/instrument/filter combinations
 * input: yaml file of recognized product semantic types (e.g., `spec`, or `drz`)and filename extensions (e.g., `fits`, `png`)
@@ -84,11 +84,11 @@ The file name checking app makes use of the following:
 ## Filename components
 Names of science files must follow the naming scheme described below.
 
->hlsp_proj-id_observatory_instrument_target_opt-elem_version_product-type.extension
+`hlsp_proj-id_observatory_instrument_target_opt-elem_version_product-type.extension`
 
-File names are divided into **fields** separated by underscores. There can be up to 9 fields, though some fields are optional for certain file semantic types. Fields are evaluated against rules for captalization, special characters, and length; the contents of each field are validated against known values to the extent possible. The results of the evaluation for each field of a file is written to an output database.
+File names are divided into **fields** separated by underscores (`_`). There can be up to 9 fields, though some fields are optional for certain file semantic types. Fields are evaluated against rules for captalization, special characters, and length; the contents of each field are validated against known values to the extent possible. The results of the evaluation for each field of a file is written to an output database.
 
-Some fields are composed of **elements**, separated by hyphens (e.g., `lmc-flows`,`hst-jwst`, `acs-wfc3`, or `f160w-f335m-f444w`). Elements in fields that specify the (observatory, instruments, filters) triplet are checked for consistency with known combinations. For instance, if observatory is `jwst` only, `wfc3` and `f775w` cannot be the instrument and filter field values respectively. The end of the last field is composed of elements delimited by periods, the last one (or two) of which comprise a file extension.
+Some fields are composed of **elements**, separated by hyphens (e.g., `lmc-flows`,`hst-jwst`, `acs-wfc3`, or `f160w-f335m-f444w`). Elements in fields that specify the (observatory, instruments, filters) triplet are checked for consistency with known combinations. For instance, if observatory is `jwst` only, `wfc3` and `f775w` cannot be the instrument and filter field values respectively. Refer to the `mast_contributor_tools/filename_ckeck/oif.yaml` file for the list of the combinations. The end of the last field is composed of elements delimited by periods, the last one (or two) of which comprise a file extension.
 
 ## Filename evaluation
 
