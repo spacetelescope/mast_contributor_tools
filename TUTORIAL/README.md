@@ -111,7 +111,7 @@ mct check_filenames {HLSP-NAME}
 
 which will check all of the files in the current directory be default, but you can also specific a directory path with the `--directory={directory-path}` option.
 
-Use this command to run the filename checker against everything in the [`tutorial-data/`](tutorial-data/) directory:
+Use this command to run the filename checker against everything in the [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial-data/) directory:
 
 ```shell
 mct check_filenames mct-tutorial --directory='tutorial-data/'
