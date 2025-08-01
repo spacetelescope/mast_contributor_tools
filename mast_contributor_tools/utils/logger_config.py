@@ -58,6 +58,8 @@ class CustomLoggingFormatter(logging.Formatter):
             if n_failed > 0:  # make text red if any files failed
                 log_fmt = bold_red + msg_format + reset
 
+        if not log_fmt:
+            log_fmt = grey + msg_format + reset
         return log_fmt
 
     def format(self, record) -> str:
