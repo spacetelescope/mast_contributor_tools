@@ -50,9 +50,12 @@ class CustomLoggingFormatter(logging.Formatter):
             log_fmt = yellow + msg_format + reset
 
         # Total score for file list
-        n_failed = re.search("Files Failed: (\d+)").group(1)
-        if n_failed > 0:
-            log_fmt = bold_red + msg_format + reset
+        if "All files passed!" in record.msg:
+            log_fmt = green + msg_format + reset
+        elif "Files Failed" in record.msg:
+            n_failed = re.search("Files Failed: (\d+)", record.msg).group(1)
+            if int(n_failed) > 0:  # make text red if any files failed
+                log_fmt = bold_red + msg_format + reset
 
         return log_fmt
 
