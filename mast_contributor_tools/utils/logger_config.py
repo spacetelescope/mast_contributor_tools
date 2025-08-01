@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 
 class CustomLoggingFormatter(logging.Formatter):
@@ -25,6 +26,7 @@ class CustomLoggingFormatter(logging.Formatter):
         reset = "\x1b[0m"
         msg_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
+        # Set color by log message level
         FORMATS = {
             logging.DEBUG: grey + msg_format + reset,
             logging.INFO: grey + msg_format + reset,
@@ -36,6 +38,7 @@ class CustomLoggingFormatter(logging.Formatter):
         log_fmt = FORMATS.get(record.levelno)
 
         # Additional logic if specific strings are present in log message
+        # Individual file checks
         if "Final Score: PASS" in record.msg:
             log_fmt = green + msg_format + reset
         elif "Final Score: FAIL" in record.msg:
@@ -45,6 +48,11 @@ class CustomLoggingFormatter(logging.Formatter):
             log_fmt = bold_red + msg_format + reset
         elif "severity: unrecognized" in record.msg:
             log_fmt = yellow + msg_format + reset
+
+        # Total score for file list
+        n_failed = re.search("Files Failed: (\d+)").group(1)
+        if n_failed > 0:
+            log_fmt = bold_red + msg_format + reset
 
         return log_fmt
 

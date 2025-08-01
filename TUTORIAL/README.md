@@ -4,7 +4,7 @@ This folder contains a basic tutorial for the `mast_contributor_tools` package t
 
 ## Installation
 
-For full installation instructions, refer to the [`README.md`](../README.md) file at the top-level of this repository. This package is installable via pip and can be installed using this command from the top-level folder of this repository:
+For full installation instructions, refer to the [`README.md`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/README.md) file at the top-level of this repository. This package is installable via pip and can be installed using this command from the top-level folder of this repository:
 
 ```shell
 pip install .
@@ -24,7 +24,7 @@ If this imports successfully, you are ready to go!
 ## Introduction 
 The filename checker is an automated way to test if your data filenames are compliant with the [HLSP filenaming policies](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention). 
 
-The [Filename Checker Guide](../docs/filename_check_readme.md) included in this repository contains full instructions on how to use the Filename Checker, so please refer to that for more detailed information! This folder contains a basic tutorial to follow-along and learn how to use the file name checker, but the [Filename Checker Guide](../docs/filename_check_readme.md) is the best resource for more general appplications.
+The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) included in this repository contains full instructions on how to use the Filename Checker, so please refer to that for more detailed information! This folder contains a basic tutorial to follow-along and learn how to use the file name checker, but the [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) is the best resource for more general appplications.
 
 ## Step 1: Investigating the Tutorial data.
 
