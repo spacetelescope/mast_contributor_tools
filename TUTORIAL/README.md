@@ -40,7 +40,7 @@ One catalog file containing measurements from those galaxies:
 - `hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits`
 
 And one README file describing our fake HLSP:
-- `hlsp_mct-tutorial_v1_readme.txt`
+- `hlsp_mct-tutorial_readme.txt`
 
 Note that these files are totally empty and are just used for the purpose of this tutorial.
 
@@ -80,7 +80,7 @@ Final Score: PASS
 
 ### Step 3b: An example file name which fails
 
-Next, here's an example of a file name which fails validation. MAST filenames are required to be all-lowercase, so we can use some uppercase characters in our file name to check this:
+Next, here's an example of a file name which fails validation. HLSP filenames are required to be all-lowercase, so we can use some uppercase characters in our file name to check this:
 
 ```shell
 mct check_filename HLSP_mct-tutorial_JWST_nirspec_GALAXY1_multi_v1_spec.fits
@@ -95,9 +95,9 @@ Final Score: FAIL
 But why did it fail? You can use the verbose flag (`-v`) to investigate and learn more information:
 
 ```shell
-mct check_filename -v HLSP_mct-tutorial_JWST_nirspec_galaxy1_multi_v1_spec.fits
+mct check_filename -v HLSP_mct-tutorial_JWST_nirspec_GALAXY1_multi_v1_spec.fits
 ```
-This will print out a lot more information than the previous command, but specifically, it will show that this filename failed because the "`HLSP`" and "`JWST`" parts recieved a `capitalization_score: fail`.
+This will print out a lot more information than the previous command, but specifically, it will show that this filename failed because the "`HLSP`", "`JWST`", and "`GALAXY1`" parts recieved a `capitalization_score: fail`.
 
 ## Step 4: Check all file names in a directory
 
