@@ -21,6 +21,12 @@ mast_contributor_tools Documentation
    cli.rst
    api/modules.rst
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Tutorials
+
+   tutorial_readme
+   
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
