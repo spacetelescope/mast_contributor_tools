@@ -8,6 +8,9 @@
 ### Changed
 
 ### Added
+[PR # 15](https://github.com/spacetelescope/mast_contributor_tools/pull/15)
+    - Adding a tutorial with examples for the file name checker
+
 [PR # 14](https://github.com/spacetelescope/mast_contributor_tools/pull/14)
     - Setting up Sphinx Autodoc
     - CI/CD update for docs
