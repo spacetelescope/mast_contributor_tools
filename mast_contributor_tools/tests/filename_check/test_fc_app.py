@@ -35,7 +35,12 @@ def test_get_file_paths(mock_isfile, mock_rglob) -> None:
     # Test the max_n argument performs as expected
     output = get_file_paths("fake-directory", max_n=2)
     assert len(output) == 2
-
+    # Test that the search_pattern argument performs as expected
+    output = get_file_paths("fake-directory", search_pattern='*1.fits')
+    assert len(output) == 1
+    # Test that the exclude_pattern argument performs as expected
+    output = get_file_paths("fake-directory", exclude_pattern='*1.fits')
+    assert len(output) == 2
 
 @mock.patch("mast_contributor_tools.filename_check.fc_app.HlspFileName")
 @mock.patch("mast_contributor_tools.filename_check.fc_app.Hlsp_SQLiteDb")

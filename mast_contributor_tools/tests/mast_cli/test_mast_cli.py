@@ -53,7 +53,7 @@ def test_filenames_cli_defaults(mock_checkfiles, mock_filepaths) -> None:
     # Assert logging level is correct
     assert logger.level == logging.getLevelNamesMapping()["INFO"]
     # Assert get_file_paths called with right arguments
-    mock_filepaths.assert_called_with(".", search_pattern="*.*", exclude_pattern="", max_n=None)
+    mock_filepaths.assert_called_with(".", from_file='', search_pattern="*.*", exclude_pattern="", max_n=None)
     # Assert check_filenames was called with right arguments
     mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), dbFile="results_my-hlsp.db")
 
@@ -87,12 +87,25 @@ def test_filenames_cli_fileparams(mock_checkfiles, mock_singlefile, mock_filepat
     # Assert it ran successfully
     assert output.exit_code == 0
     # Assert get_file_paths called with right arguments
-    mock_filepaths.assert_called_with(".", search_pattern="*.fits", exclude_pattern="*.png", max_n="2")
+    mock_filepaths.assert_called_with(".", from_file='', search_pattern="*.fits", exclude_pattern="*.png", max_n="2")
     # Assert check_filenames was called with right arguments
     mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), dbFile="results_my-hlsp.db")
     # Assert check_single_filename was not called
     mock_singlefile.assert_not_called()
 
+def test_filenames_cli_fromfile(mock_checkfiles, mock_singlefile, mock_filepaths) -> None:
+    # Test multiple file names from a file list
+    # equivalent to command "mct check_filenames --from_file='file_list.txt'"
+    runner = CliRunner()
+    output = runner.invoke(filenames_cli, ["my-hlsp", "--from_file=file_list.txt", "--pattern=*.fits", "--exclude=*.png", "--max_n=2"])
+    # Assert it ran successfully
+    assert output.exit_code == 0
+    # Assert get_file_paths called with right arguments
+    mock_filepaths.assert_called_with(".", from_file='file_list.txt', search_pattern="*.fits", exclude_pattern="*.png", max_n="2")
+    # Assert check_filenames was called with right arguments
+    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), dbFile="results_my-hlsp.db")
+    # Assert check_single_filename was not called
+    mock_singlefile.assert_not_called()
 
 def test_filenames_cli_singlefile(mock_checkfiles, mock_singlefile, mock_filepaths) -> None:
     """Test different flags are working as expected for the single filename checker CLI"""
