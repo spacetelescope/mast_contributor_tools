@@ -99,11 +99,24 @@ mct check_filename -v HLSP_mct-tutorial_JWST_nirspec_GALAXY1_multi_v1_spec.fits
 ```
 This will print out a lot more information than the previous command, but specifically, it will show that this filename failed because the "`HLSP`", "`JWST`", and "`GALAXY1`" parts recieved a `capitalization_score: fail`.
 
-## Step 4: Check all file names in a directory
+## Step 4: Checking multiple file names at once
 
-Checking one filename at a time is useful for troubleshooting, but a more common application would be to check all files in a directory at the same time. 
+Checking one filename at a time is useful for troubleshooting, but a more common application would be to check multiple file names at the same time. There's a few ways to do this: by supplying the file names directly, by providing a text file with a list of the file names, or by checking all the files in a specified directory.
 
-The synatax to use for this is:
+
+### Step 4a: Check multiple file names in one command
+
+The `mct check_filename` command also accepts multiple files at once for checking. Simply provide each file name in a list separated by spaces:
+
+```shell
+mct check_filename hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits
+```
+
+### Step 4b: Check all file names in a directory
+
+The most common application of the file name checker tool would be to check all files in a specified directory.
+
+The syntax to use for this is:
 
 ```shell
 mct check_filenames {HLSP-NAME}
@@ -119,10 +132,42 @@ mct check_filenames mct-tutorial --directory='tutorial-data/'
 
 You should receieve an output message that 5 files were checked, and that all files passed!
 
-Congratulations! You have completed this tutorial and now know the basic usage of the MAST Contributor's Tools Filename Checker.
+
+### Step 4c: Check all file names from a list 
+
+You can also check multiple file names at once using a list in a text file. This command is useful if you want to check a large number of file names at once, but the files do not exist yet. 
+
+This command reads in a list from the `tutorial_file_list.txt` file, and checks each file name against the standards. 
+
+```shell
+mct check_filenames mct-tutorial --from_file='tutorial_file_list.txt'
+```
+
+You should receieve an output message that 8 files were checked, and that all files passed!
+
+
+### Step 4d. Selecting or Excluding files
+
+If you want to test only certain file names, you can also use the `--pattern` option to specify a specific search pattern, or `--exclude` to exlude certain files.
+
+For example, this command only checks the files matching the pattern `*_spec.fits`, skipping over the catalog file and the readme:
+
+```shell
+mct check_filenames mct-tutorial --directory='tutorial-data/'  --pattern='*_spec.fits'
+```
+The output message will report that this command only checked 3 files, but all 3 files pass!
+
+This `--exclude` option does the opposite, checking everything except for the files matching the pattern:
+
+```shell
+mct check_filenames mct-tutorial --directory='tutorial-data/'  --exclude='*_spec.fits'
+```
+The output message will report that this command only checked 2 files, but both files passed.
 
 
 # Additional Resources
+Congratulations! You have completed this tutorial and now know the basic usage of the MAST Contributor's Tools Filename Checker.
+
 More tutorials will be added here in the future! In the meantime, check out the following links for more useful information:
 
 - [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting an HLSP to MAST.

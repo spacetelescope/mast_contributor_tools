@@ -17,6 +17,7 @@ The various options for this command are described below:
 | Flag                       | Description                                                                | Default Value                      |
 | ---------------------------| -------------------------------------------------------------------------- | ---------------------------------- |
 | `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory                    | `'.'`, the current directory       |
+| `-file` or `--from_file` | Path to a text file containing a list of filenames to check, instead of scanning a directory | None; the default mode is to scan a directory
 | `-p` or `--pattern`     | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files           |
 | `-e` or `--exclude`     | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None                 |
 | `-n` or `--max_n`       | Maximum number of files to check, for testing purposes.                       | None (all files)                   |
@@ -24,12 +25,13 @@ The various options for this command are described below:
 | `-v` or `--verbose`     | Enables verbose output for more information                                   | `False`                            |
 | `--help`                | Prints information about this command                                         |                                    |
 
+A step-by-step tutorial for learing how to use the file name checker can be found in the [`TUTORIAL/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial_readme.md) folder.
 
 ### Example Usage: Check all files in the current directory
 
 To check all files in the current working directory, run the command:
 
-```
+```shell 
 mct check_filenames <my-hlsp>
 ```
 
@@ -37,7 +39,7 @@ where `<my-hlsp>` is the name of your HLSP.
 
 This command is also equivalent to:
 
-```
+```shell 
 mct check_filenames my-hlsp -dir='.' -p='*.*' --dbFile='results_my-hlsp.db'
 ```
 
@@ -45,7 +47,7 @@ mct check_filenames my-hlsp -dir='.' -p='*.*' --dbFile='results_my-hlsp.db'
 
 To check all files in a specified directory matching a certain file pattern:
 
-```
+```shell 
 mct check_filenames my-hlsp --directory='/path/to/hlsp-directory/' --pattern='*.fits'
 ```
 
@@ -54,22 +56,37 @@ This example will only check files ending with ".fits" in the directory "/path/t
 
 You can also use this to check a subdirectory of the current directory, for example:
 
-```
+```shell 
 mct check_filenames my-hlsp --directory='subdir/' --pattern='*.fits'
 ```
 
+### Example Usage: Check all files supplied in a file list
+
+If the files do not exist yet or no directory path is available, you can also supply a text file containing a list of file names to check using the `--from-file` option: 
+
+```shell 
+mct check_filenames my-hlsp --from_file='/path/to/file_list.txt'
+```
+
+In this example, the contents of `file_list.txt` should be a text file with one file name on each line. For example:
+``` 
+file1.fits
+file2.fits
+file3.fits
+...
+```
 
 ### Example Usage: Test a single filename
 
 If you only want to test a single filename, use the `check_filename` command instead:
 
-```
+```shell 
 mct check_filename hlsp_my-hlsp_readme.md
 ```
 
 The file name does not have to be a real file; it is tested as a string. You can also call this command on multiple file names at once using the syntax `mct check_filename [FILE 1] [FILE 2] [FILE 3] ...`: For example:
 
-```
+```shell 
 mct check_filename hlsp_my-hlsp_hst_wfc3_multi_galaxy1_v1_spec.fits hlsp_my-hlsp_hst_wfc3_multi_galaxy2_v1_spec.fits
 ```
 
