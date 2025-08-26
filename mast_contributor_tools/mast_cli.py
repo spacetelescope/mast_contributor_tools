@@ -10,7 +10,6 @@ from typing import Union
 import click
 
 from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, get_file_paths, logger
-from pathlib import Path
 
 # ==========================================
 # Command Line Interface (CLI) commands for mast contributor tools
