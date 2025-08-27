@@ -94,6 +94,7 @@ SemanticTypes:
  - syn
  - source
  - spec
+ - spec1d
  - spec2d
  - spec3d
  - sr
