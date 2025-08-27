@@ -165,18 +165,31 @@ class FilenameFieldAB(ABC):
         self.len_eval = FieldRule.length(self.value, self.max_len)
 
     def get_scores(self):
-        return {
-            # Name of Field: for example 'mission' or 'product_type'
-            "name": self.name,
-            # value of the field: for example 'jwst' or 'spec'
-            "value": self.value,
-            # Results from each validation check
-            "capitalization_score": SCORE[self.cap_eval],
-            "length_score": SCORE[self.len_eval],
-            "value_score": SCORE_LAX[self.value_eval],
-            # Final Score
-            "severity": self.severity,
-        }
+        # Remove if-else after refactor for making evals non-boolean
+        if self.name in ("hlsp_str", "hlsp_name", "target_name", "version_id"):
+            return {
+                # Name of Field: for example 'mission' or 'product_type'
+                "name": self.name,
+                # value of the field: for example 'jwst' or 'spec'
+                "value": self.value,
+                # Results from each validation check
+                "capitalization_score": SCORE[self.cap_eval],
+                "length_score": SCORE[self.len_eval],
+                "value_score": SCORE[self.value_eval],
+                # Final Score
+                "severity": self.severity,
+            }
+        else:
+            # Switch value_score to SCORE_LAX for the following fields:
+            # missions, instruments, filters, product type, extension
+            return {
+                "name": self.name,
+                "value": self.value,
+                "capitalization_score": SCORE[self.cap_eval],
+                "length_score": SCORE[self.len_eval],
+                "value_score": SCORE_LAX[self.value_eval],  # SCORE_LAX
+                "severity": self.severity,
+            }
 
 
 class ExtensionField(FilenameFieldAB):
