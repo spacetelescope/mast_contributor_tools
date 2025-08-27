@@ -148,7 +148,7 @@ You should receieve an output message that 8 files were checked, and that all fi
 
 ### Step 4d. Selecting or Excluding files
 
-If you want to test only certain file names, you can also use the `--pattern` option to specify a specific search pattern, or `--exclude` to exlude certain files.
+If you want to test only certain file names, you can also use the `--pattern` option to specify a specific search pattern, or `--exclude` to exclude certain files.
 
 For example, this command only checks the files matching the pattern `*_spec.fits`, skipping over the catalog file and the readme:
 
