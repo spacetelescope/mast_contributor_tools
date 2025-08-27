@@ -124,10 +124,10 @@ class Hlsp_SQLiteDb:
         summary_message += f"Files Failed: {num_fail}\n    "
         # All files passed
         if num_pass == num_files:
-            summary_message += "All files passed! "
+            summary_message += "All files passed! If any fields were marked with a score of 'review' (e.g. with a severity of 'unrecognized'), please consult with your MAST staff contact. Unrecognized values are very often necessary and good, but require review."
         # Some files failed
         else:
-            summary_message += f"See results file ({self.db_file}) for more information."
+            summary_message += f"See results file ({self.db_file}) for more information. Some files did not meet our criteria. Note: only fields with a score of 'fail' and a severity of 'fatal' contributed to this result."
             # Add more detail here later? - could break down by fields, etc.
 
         return summary_message
