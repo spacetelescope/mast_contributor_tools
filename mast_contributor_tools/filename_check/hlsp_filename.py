@@ -36,6 +36,7 @@ for m in MISSIONS:
 FILTERS = set(filt_list)
 
 SCORE = {False: "fail", True: "pass"}
+SCORE_LAX = {False: "review", True: "pass"}
 
 # Define REGEX pattern rules for various fields
 # Use https://regex101.com to verify these and explore more examples
@@ -172,7 +173,7 @@ class FilenameFieldAB(ABC):
             # Results from each validation check
             "capitalization_score": SCORE[self.cap_eval],
             "length_score": SCORE[self.len_eval],
-            "value_score": SCORE[self.value_eval],
+            "value_score": SCORE_LAX[self.value_eval],
             # Final Score
             "severity": self.severity,
         }

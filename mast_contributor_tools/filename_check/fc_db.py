@@ -18,7 +18,7 @@ FIELDS_TABLE = """
         value TEXT NOT NULL,
 	    capitalization_score  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization_score" IN ('pass', 'fail')),
 	    length_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
-	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'unrecognized')),
+	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'review')),
 	    severity  TEXT NOT NULL DEFAULT 'N/A' CHECK("severity" IN ('fatal', 'unrecognized',
             'warning', 'N/A')),
 	    FOREIGN KEY(file_ref) REFERENCES filename_db(filename)
