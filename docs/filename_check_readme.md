@@ -105,12 +105,12 @@ See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTD
 * field length in characters
 * content of the text, if applicable
 
-The evaluation values are one of `pass`, `fail`, or (for field values) `review` and `unrecognized`.
+The evaluation scores for overall file names are one of `pass` or `fail`. The evaluation scores for individual fields are one of `pass`, `fail`, or `review` (requires review by MAST staff).
 
 Failing evaluations do not necessarily indicate a problem. The severity is one of:
 
 * **fatal** - correction required
-* **unrecognized** - value is not recognized. This is often unavoidable and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
+* **unrecognized** - value is not recognized, in a field where unrecognized values are allowed. This is often unavoidable and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
 * **warning** - correction may not be necessary
 * **N/A** - no correction necessary
 
