@@ -271,7 +271,7 @@ class ProductField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchChoice(self.value, SEMANTIC_TYPES)
+        self.value_eval = FieldRule.matchMultiChoice(self.value, SEMANTIC_TYPES)
         self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
         # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
         if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
