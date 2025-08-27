@@ -52,10 +52,14 @@ SemanticTypes:
  - download
  - drz
  - ens
+ - evt
+ - exon
  - exp
  - ffi
  - gamma
+ - hp
  - hsi
+ - i2d
  - img
  - kappa
  - lc
@@ -79,6 +83,7 @@ SemanticTypes:
  - psi
  - raw
  - rms
+ - s3d
  - sed
  - segment
  - sens
@@ -93,6 +98,7 @@ SemanticTypes:
  - spec3d
  - sr
  - stack
+ - tds
  - tpf
  - warp
  - wave
