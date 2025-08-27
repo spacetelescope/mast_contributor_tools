@@ -25,7 +25,7 @@ FIELDS_TABLE = """
         );
         """
 PROBLEMS_VIEW = """
-        CREATE VIEW IF NOT EXISTS problems as
+        CREATE VIEW IF NOT EXISTS potential_problems as
         select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.capitalization_score, fl.length_score,
         fl.value_score, fl.severity
         from filename as fn, fields as fl

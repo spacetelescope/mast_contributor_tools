@@ -118,6 +118,6 @@ The results database may be examined programmatically with python or other langu
 
 * filename - file path, name, number of fields, status
 * fields - field attributes for each filename, and evaluation
-* problems (view) - selects all instances where an error, warning, or unrecognized value was identified
+* potential_problems (view) - selects all instances where an error, warning, or unrecognized value was identified. Non-fatal warnings and unrecognized values are not always real problems; these will be reviewed by MAST staff.
 
-The **problems** view may be filtered to select only fatal errors.
+The **potential_problems** view may be filtered to select only fatal errors.
