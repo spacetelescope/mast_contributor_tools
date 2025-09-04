@@ -18,14 +18,14 @@ FIELDS_TABLE = """
         value TEXT NOT NULL,
 	    capitalization_score  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization_score" IN ('pass', 'fail')),
 	    length_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
-	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'unrecognized')),
+	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'review')),
 	    severity  TEXT NOT NULL DEFAULT 'N/A' CHECK("severity" IN ('fatal', 'unrecognized',
             'warning', 'N/A')),
 	    FOREIGN KEY(file_ref) REFERENCES filename_db(filename)
         );
         """
 PROBLEMS_VIEW = """
-        CREATE VIEW IF NOT EXISTS problems as
+        CREATE VIEW IF NOT EXISTS potential_problems as
         select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.capitalization_score, fl.length_score,
         fl.value_score, fl.severity
         from filename as fn, fields as fl
@@ -124,10 +124,10 @@ class Hlsp_SQLiteDb:
         summary_message += f"Files Failed: {num_fail}\n    "
         # All files passed
         if num_pass == num_files:
-            summary_message += "All files passed! "
+            summary_message += "All files passed! If any fields were marked with a score of 'review' and a non-fatal severity (e.g. 'unrecognized'), please consult with your MAST staff contact. Unrecognized values are very often necessary and good, but require review."
         # Some files failed
         else:
-            summary_message += f"See results file ({self.db_file}) for more information."
+            summary_message += f"See results file ({self.db_file}) for more information. Some files did not meet our criteria. Note: only fields with a severity of 'fatal' contributed to this result."
             # Add more detail here later? - could break down by fields, etc.
 
         return summary_message

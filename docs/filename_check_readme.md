@@ -105,19 +105,19 @@ See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTD
 * field length in characters
 * content of the text, if applicable
 
-The evaluation values are one of `pass`, `fail`, or (for field values) `unrecognized`.
+The evaluation scores for overall file names are one of `pass` or `fail`. The evaluation scores for individual fields are one of `pass`, `fail`, or `review` (requires review by MAST staff).
 
 Failing evaluations do not necessarily indicate a problem. The severity is one of:
 
 * **fatal** - correction required
-* **unrecognized** - value is not recognized
-* **warning** - correctionn may not be necessary
+* **unrecognized** - value is not recognized, in a field where unrecognized values are allowed. This is often unavoidable and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
+* **warning** - correction may not be necessary
 * **N/A** - no correction necessary
 
 The results database may be examined programmatically with python or other languages. We recommend viewing it interactively with the [DB Browser for SQLite](https://sqlitebrowser.org/). The database contains three tables:
 
 * filename - file path, name, number of fields, status
 * fields - field attributes for each filename, and evaluation
-* problems (view) - selects all instances where an error or warning was identified
+* potential_problems (view) - selects all instances where an error, warning, or unrecognized value was identified. Non-fatal warnings and unrecognized values are not always real problems; these will be reviewed by MAST staff.
 
-The **problems** view may be filtered to select only fatal errors.
+The **potential_problems** view may be filtered to select only fatal errors.

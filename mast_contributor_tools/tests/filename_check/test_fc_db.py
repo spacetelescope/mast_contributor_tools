@@ -110,7 +110,7 @@ def test_add_filename(file_record) -> None:
             "file",
             "pass",
             "pass",
-            "unrecognized",
+            "review",
             "unrecognized",
         ),
     ],
