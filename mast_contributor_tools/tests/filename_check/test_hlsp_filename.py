@@ -158,13 +158,13 @@ def test_HlspNameField(
         ("sdss", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
         # Expected to give warnings
-        ("fake-mission", ["pass", "pass", "fail", "unrecognized"]),
+        ("fake-mission", ["pass", "pass", "review", "unrecognized"]),
         # this one should fail, but gives warning. Revisit later
-        ("hst_jwst", ["pass", "pass", "fail", "unrecognized"]),
+        ("hst_jwst", ["pass", "pass", "review", "unrecognized"]),
         # Expected to Fail
         ("HST", ["fail", "pass", "pass", "fatal"]),
-        ("ReallyLongMissionName", ["fail", "fail", "fail", "fatal"]),
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("ReallyLongMissionName", ["fail", "fail", "review", "fatal"]),
+        ("", ["fail", "pass", "review", "fatal"]),  # empty string
     ],
 )
 def test_MissionField(
@@ -189,7 +189,7 @@ def test_MissionField(
         ("nircam-nirspec", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
         ("NIRSPEC", ["fail", "pass", "pass", "fatal"]),
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("", ["fail", "pass", "review", "fatal"]),  # empty string
     ],
 )
 def test_InstrumentField(
@@ -244,11 +244,11 @@ def test_TargetField(test_value: str, expected_score: list[str]) -> None:
         ("u", ["pass", "pass", "pass", "N/A"]),
         ("multi", ["pass", "pass", "pass", "N/A"]),
         ("g102-f435w", ["pass", "pass", "pass", "N/A"]),
-        # Expeced to give warning
-        ("fakefilter", ["pass", "pass", "fail", "unrecognized"]),  # not in list
+        # Expected to give warning
+        ("fakefilter", ["pass", "pass", "review", "unrecognized"]),  # not in list
         # Expected to Fail
         ("F435W", ["fail", "pass", "pass", "fatal"]),  # caps
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("", ["fail", "pass", "review", "fatal"]),  # empty string
     ],
 )
 def test_FilterField(test_value: str, expected_score: list[str]) -> None:
@@ -300,11 +300,12 @@ def test_VersionField(test_value: str, expected_score: list[str]) -> None:
         ("drz", ["pass", "pass", "pass", "N/A"]),
         ("lc", ["pass", "pass", "pass", "N/A"]),
         ("spec", ["pass", "pass", "pass", "N/A"]),
+        # Expected to give warning
+        ("fake-suffix", ["pass", "pass", "review", "unrecognized"]),
+        ("2dspec", ["pass", "pass", "review", "unrecognized"]),
         # Expected to Fail
-        ("2DSPEC", ["fail", "pass", "fail", "fatal"]),
-        ("2dspec", ["pass", "pass", "fail", "unrecognized"]),
-        ("fake-suffix", ["pass", "pass", "fail", "unrecognized"]),
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("2DSPEC", ["fail", "pass", "review", "fatal"]),
+        ("", ["fail", "pass", "review", "fatal"]),  # empty string
     ],
 )
 def test_ProductField(test_value: str, expected_score: list[str]) -> None:
@@ -328,7 +329,7 @@ def test_ProductField(test_value: str, expected_score: list[str]) -> None:
         ("tar.gz", ["pass", "pass", "pass", "N/A"]),
         # Expected to Fail
         ("JPG", ["fail", "pass", "pass", "fatal"]),
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("", ["fail", "pass", "review", "fatal"]),  # empty string
     ],
 )
 def test_ExtensionField(test_value: str, expected_score: list[str]) -> None:
@@ -456,9 +457,9 @@ def test_HlspFileName(
     hfn.create_fields()
     elements = hfn.evaluate_fields()
     received_evaluation = hfn.evaluate_filename()["status"]
-    assert received_evaluation == expected_evaluation, (
-        f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
-    )
+    assert (
+        received_evaluation == expected_evaluation
+    ), f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
 
 
 # Tests for file names that are expected to raise errors

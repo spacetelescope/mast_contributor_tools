@@ -21,25 +21,95 @@ ExtensionTypes:
  - db
  - ecsv
  - fits
+ - fits.bz2
+ - fits.gz
+ - gif
+ - h5
+ - html
  - jpeg
  - jpg
  - md
  - pdf
  - png
+ - ps
  - readme
  - rst
  - tar.gz
  - tif
  - txt
+ - xml
+ - yaml
  - zip
 
 SemanticTypes:
+ - 1d
+ - 2d
+ - 3d
+ - bayes
+ - cal
  - cat
+ - cbv
+ - cube
+ - deflect
+ - download
+ - drc
  - drz
+ - eclipse
+ - ens
+ - evt
+ - exon
+ - exp
+ - ffi
+ - gamma
+ - hp
+ - hsi
+ - i2d
  - img
+ - kappa
  - lc
+ - lens
+ - line
+ - list
+ - magnif
  - map
+ - mask
+ - mass
  - model
+ - morph
+ - mosaic
+ - nav
+ - obs
+ - param
+ - phot
+ - phys
+ - preview
+ - psf
+ - psi
+ - raw
+ - rms
+ - s3d
+ - sed
+ - segment
+ - sens
+ - s2d
+ - sci
+ - sfr
+ - sim
+ - syn
+ - source
  - spec
+ - spec1d
+ - spec2d
+ - spec3d
+ - sr
+ - stack
+ - tds
+ - tpf
+ - warp
+ - wave
+ - wcs
+ - wht
+ - x1d
+ - z
 
 ...

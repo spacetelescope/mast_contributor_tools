@@ -36,6 +36,7 @@ for m in MISSIONS:
 FILTERS = set(filt_list)
 
 SCORE = {False: "fail", True: "pass"}
+SCORE_LAX = {False: "review", True: "pass"}
 
 # Define REGEX pattern rules for various fields
 # Use https://regex101.com to verify these and explore more examples
@@ -164,18 +165,31 @@ class FilenameFieldAB(ABC):
         self.len_eval = FieldRule.length(self.value, self.max_len)
 
     def get_scores(self):
-        return {
-            # Name of Field: for example 'mission' or 'product_type'
-            "name": self.name,
-            # value of the field: for example 'jwst' or 'spec'
-            "value": self.value,
-            # Results from each validation check
-            "capitalization_score": SCORE[self.cap_eval],
-            "length_score": SCORE[self.len_eval],
-            "value_score": SCORE[self.value_eval],
-            # Final Score
-            "severity": self.severity,
-        }
+        # Remove if-else after refactor for making evals non-boolean
+        if self.name in ("hlsp_str", "hlsp_name", "target_name", "version_id"):
+            return {
+                # Name of Field: for example 'mission' or 'product_type'
+                "name": self.name,
+                # value of the field: for example 'jwst' or 'spec'
+                "value": self.value,
+                # Results from each validation check
+                "capitalization_score": SCORE[self.cap_eval],
+                "length_score": SCORE[self.len_eval],
+                "value_score": SCORE[self.value_eval],
+                # Final Score
+                "severity": self.severity,
+            }
+        else:
+            # Switch value_score to SCORE_LAX for the following fields:
+            # missions, instruments, filters, product type, extension
+            return {
+                "name": self.name,
+                "value": self.value,
+                "capitalization_score": SCORE[self.cap_eval],
+                "length_score": SCORE[self.len_eval],
+                "value_score": SCORE_LAX[self.value_eval],  # SCORE_LAX
+                "severity": self.severity,
+            }
 
 
 class ExtensionField(FilenameFieldAB):
@@ -270,7 +284,7 @@ class ProductField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchChoice(self.value, SEMANTIC_TYPES)
+        self.value_eval = FieldRule.matchMultiChoice(self.value, SEMANTIC_TYPES)
         self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
         # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
         if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
