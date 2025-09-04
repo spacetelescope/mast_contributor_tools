@@ -36,6 +36,7 @@ ExtensionTypes:
  - tar.gz
  - tif
  - txt
+ - xml
  - yaml
  - zip
 
