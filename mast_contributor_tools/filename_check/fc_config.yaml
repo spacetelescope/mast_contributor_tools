@@ -21,6 +21,7 @@ ExtensionTypes:
  - db
  - ecsv
  - fits
+ - fits.bz2
  - fits.gz
  - gif
  - h5
