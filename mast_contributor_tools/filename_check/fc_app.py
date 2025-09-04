@@ -13,6 +13,7 @@ logger = setup_logger(__name__)
 
 def get_file_paths(
     hlsp_path: str,
+    from_file: str = "",
     search_pattern: str = "*.*",
     exclude_pattern: Union[str, None] = None,
     max_n: Union[int, None] = None,
@@ -25,6 +26,9 @@ def get_file_paths(
     hlsp_path : str
         Head of directory containing HLSP collection files. The base directory
         defaults to the current working directory.
+
+    from_file : str, optional
+        Path to a text file containing a list of filenames to check, instead of scanning a directory
 
     search_pattern : str, optional
         Search pattern to limit files to test. For example, '*.fits' will only
@@ -49,13 +53,26 @@ def get_file_paths(
     else:
         base_path = Path(hlsp_path)
 
-    # Search for files matching the pattern
-    file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if p.is_file()]
+    # If a from_file was given, create the file list from that
+    if from_file:
+        # Raise error if file does not exist
+        if not os.path.exists(from_file):
+            msg = f"File '{from_file}' does not exist."
+            logger.error(msg)
+            raise FileNotFoundError(msg)
+        else:
+            with open(from_file, 'r') as f:
+                file_list = [Path(filename.strip('\n')) for filename in f.readlines()]
+    # Otherwise, scan the contents of the directory
+    else:
+        file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if p.is_file()]
 
-    # Exclude files
+    # Match against the search pattern
+    file_list = [f for f in file_list if f.match(search_pattern)]
+
+    # Exclude files from exclude_pattern
     if exclude_pattern:
-        exclude_list = [p.relative_to(base_path) for p in base_path.rglob(exclude_pattern) if p.is_file()]
-        file_list = [f for f in file_list if f not in exclude_list]
+        file_list =  [f for f in file_list if not f.match(exclude_pattern)]
 
     # Limit number of files returned to first n rows for testing purposes
     if max_n:
@@ -64,7 +81,10 @@ def get_file_paths(
 
     # Raise error if no files are found
     if len(file_list) == 0:
-        msg = f"No files found to check against filename rules in directory ({base_path})."
+        if from_file:
+            msg = f"No files found to check against filename rules in file ({from_file})."
+        else:
+            msg = f"No files found to check against filename rules in directory ({base_path})."
         logger.error(msg)
         raise FileNotFoundError(msg)
 

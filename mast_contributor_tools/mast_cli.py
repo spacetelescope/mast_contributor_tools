@@ -11,7 +11,6 @@ import click
 
 from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, get_file_paths, logger
 
-
 # ==========================================
 # Command Line Interface (CLI) commands for mast contributor tools
 # Implemented using the click pacakge: https://pypi.org/project/click/
@@ -35,6 +34,9 @@ def cli() -> None:
     "-dir", "--directory", type=str, default=".", help="Path of HLSP directory tree; tests all files in that directory"
 )
 @click.option(
+    "-file", "--from_file", type=str, default="", help="Path to a text file containing a list of filenames to check, instead of scanning a directory"
+)
+@click.option(
     "-p", "--pattern", default="*.*", help="File pattern to limit testing, for example 'hlsp\\_\\*\\_spec.fits'"
 )
 @click.option("-e", "--exclude", default="", help="File pattern to exclude from testing, for example '\\*.png'")
@@ -44,6 +46,7 @@ def cli() -> None:
 def filenames_cli(
     hlsp_name: str,
     directory: str = ".",
+    from_file: str = "",
     pattern: str = "*.*",
     exclude: str = "",
     max_n: Union[int, None] = None,
@@ -88,8 +91,14 @@ def filenames_cli(
     # make hlsp_name argument lower case
     hlsp_name = hlsp_name.lower()
 
-    # Check all files in the directory
-    file_list = get_file_paths(directory, search_pattern=pattern, exclude_pattern=exclude, max_n=max_n)
+    # Create list of files to check
+    file_list = get_file_paths(directory,
+                               from_file=from_file, 
+                               search_pattern=pattern, 
+                               exclude_pattern=exclude,
+                               max_n=max_n)
+    
+    # Perform the file name check
     check_filenames(hlsp_name, file_list, dbFile=dbfile)
 
 
