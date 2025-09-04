@@ -50,6 +50,7 @@ SemanticTypes:
  - cube
  - deflect
  - download
+ - drc
  - drz
  - ens
  - evt
