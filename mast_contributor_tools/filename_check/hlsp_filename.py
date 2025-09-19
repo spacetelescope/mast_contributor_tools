@@ -36,7 +36,7 @@ for m in MISSIONS:
 FILTERS = set(filt_list)
 
 SCORE = {False: "fail", True: "pass"}
-SCORE_LAX = {False: "review", True: "pass"}
+SCORE_LAX = {False: "needs review", True: "pass"}
 
 # Define REGEX pattern rules for various fields
 # Use https://regex101.com to verify these and explore more examples
@@ -55,9 +55,9 @@ FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-\+]+(\.[\w\-\+\.]+)?(\.[\w]+(\.gz
 
 # HLSP Name Expression:
 # "^[a-z]"" : The first character must be a lowercase letter
-# "[a-z0-9-]*" : The middle characers can be lowercase letters, numbers, or a hyphen '-'
+# "[a-z0-9-]*" : The middle characters can be lowercase letters, numbers, or a hyphen '-'
 # "[a-z0-9]$" : The last character must be a lowercase letter or a number
-HLSPNAME_REGEX = re.compile(r"^[a-z][a-z0-9-]*[a-z0-9]$")
+HLSPNAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$")
 
 # Target Name Expression:
 # "^[a-zA-Z0-9]" : The first character must be a letter or a number
@@ -72,6 +72,22 @@ TARGET_REGEX = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
 # "[0-9]$" : the last character must be a number
 VERSION_REGEX = re.compile(r"^v[0-9]{0,2}([.p][0-9]{0,2}){0,2}[0-9]$")
 
+
+# Expression for all file extension:
+# "^[a-zA-Z]"" : The first character must be a lowercase or uppercase letter
+# "[a-z0-9.]*" : The middle characters can be letters, numbers, or a period '.'
+# "[a-z0-9]$" : The last character must be a letter or a number
+EXTENSION_REGEX = re.compile(r"^[a-zA-Z]*[a-zA-Z0-9.]*[a-zA-Z0-9]*$")
+
+
+# Expression for all other fields: telescope, instrument, filter, etc.:
+# (this is purposefully generous on captilization - a different test checks for that and want to avoid confusion)
+# "^[a-zA-Z]"" : The first character must be a lowercase or uppercase letter
+# "[a-z0-9-]*" : The middle characters can be letters, numbers, or a hyphen '-'
+# "[a-z0-9]$" : The last character must be a letter or a number
+OTHER_REGEX = re.compile(r"^[a-zA-Z]*[a-zA-Z0-9-]*[a-zA-Z0-9]*$")
+
+
 # =============================
 # Classes for field rules
 # =============================
@@ -85,62 +101,64 @@ class FieldRule:
     validate the version or target fields can be verified at https://regex101.com
     """
 
-    # Define expressions for pattern matching
-    hlsp_expr = HLSPNAME_REGEX
-    target_expr = TARGET_REGEX
-    version_expr = VERSION_REGEX
-
     def length(value: str, max_length: int) -> bool:
-        return len(value) <= max_length
+        """Test if the character count is non-zero and within the limit for that field.
+        Returns 'pass' or 'fail' based on results."""
+        return SCORE[(len(value) <= max_length) and (len(value) > 0)]
 
     def capitalization(value: str) -> bool:
-        return value.islower()
+        """Test the captilizaiton: the entire filename must be lowercase.
+        Returns 'pass' or 'fail' based on results."""
+        return SCORE[value.islower()]
 
-    # Rules for field values
-    def matchHlspName(value: str) -> bool:
-        return FieldRule.hlsp_expr.match(value) is not None
+    def match_pattern(value: str, regex_expr: re.Pattern) -> bool:
+        """Test that the field contains no forbidden characters.
+        Returns 'pass' or 'fail' based on results."""
+        return SCORE[regex_expr.match(value) is not None]
 
-    def matchTarget(value: str) -> bool:
-        return FieldRule.target_expr.match(value) is not None
+    def match_choice(value: str, choice_list: list[str], score_level="lax") -> bool:
+        """Checks value against a list, typically from oif.yaml.
+        Returns 'pass' or 'needs review' or 'fail' based on results.
+        The optional 'score_level' argument determins if 'fail' or 'needs review' is returned (default lax)"""
+        if score_level == "lax":
+            return SCORE_LAX[value.lower() in choice_list]
+        else:
+            return SCORE[value.lower() in choice_list]
 
-    def matchVersion(value: str) -> bool:
-        return FieldRule.version_expr.match(value) is not None
-
-    def matchChoice(value: str, choice_list: list[str]) -> bool:
-        return value.lower() in choice_list
-
-    def matchMultiChoice(value: str, choice_list: list[str]) -> bool:
+    def match_multi_choice(value: str, choice_list: list[str], score_level="lax") -> bool:
+        """Checks multiple values against a list, typically from oif.yaml.
+        Returns 'pass' or 'needs review' or 'fail' based on results.
+        The optional 'score_level' argument determins if 'fail' or 'needs review' is returned (default lax)"""
         # match all elements in a hyphenated value to the choice_list
-        return all([(v.lower() in choice_list) for v in value.split("-")])
-
-    def severity(condition: bool) -> str:
-        if condition:
-            return "N/A"
+        if score_level == "lax":
+            return SCORE_LAX[all([(v.lower() in choice_list) for v in value.split("-")])]
         else:
-            return "fatal"
+            return SCORE[all([(v.lower() in choice_list) for v in value.split("-")])]
 
-    def severity_lax(condition: bool) -> str:
-        if condition:
-            return "N/A"
+    def field_verdict(scores: list[str]) -> str:
+        """Determine the final verdict for this field: 'pass', 'needs review' or 'fail',
+        determined as the worst of the input scores."""
+        if "fail" in scores:
+            verdict = "fail"
+        elif "needs review" in scores:
+            verdict = "needs review"
         else:
-            return "unrecognized"
+            verdict = "pass"
+
+        return verdict.upper()
 
 
 class FilenameFieldAB(ABC):
     """Template for Filename Field classes.
 
     Each field of a filename in an HLSP collection will be evaluated for:
-    length, capitalization, and often a match against valid values.
+    length, capitalization, content, and often a match against valid values.
     Each evaluation results in a score, which is one of:
-    - 'pass'
-    - 'fail'
-    - 'N/A'
-    - 'unrecognized'
+    - 'pass' for no detected problems
+    - 'fail' for a detected problem that must be fixed
+    - 'needs review' for a possible but non-fatal problem that requires review by MAST Staff
 
-    The overall severity of the set of evaluations is one of:
-    - 'N/A' for no detected problem
-    - 'fatal' for a detected problem that must be fixed
-    - 'unrecognized' for a possible but non-fatal problem
+    The final verdict of the set of evaluations is determined as the worst of the input scores.
 
     Parameters
     ----------
@@ -154,54 +172,64 @@ class FilenameFieldAB(ABC):
         self.name = field_name
         self.value = field_value
         self.max_len = fieldLengthPolicy[field_name]
+
+        # Set regex pattern based on field name
+        if self.name == "hlsp_name":
+            self.regex_pattern = HLSPNAME_REGEX
+        elif self.name == "target_name":
+            self.regex_pattern = TARGET_REGEX
+        elif self.name == "version_id":
+            self.regex_pattern = VERSION_REGEX
+        elif self.name == "extension":
+            self.regex_pattern = EXTENSION_REGEX
+        else:
+            self.regex_pattern = OTHER_REGEX
+
+        # Capitalization Evaluation
         self.cap_eval = False
+        # Character Length Evaluation
         self.len_eval = False
+        # Format Evaluation (no forbidden characters)
+        self.format_eval = False
+        # Value Evaluation (recognized entries for telescope, filter, etc.)
         self.value_eval = False
-        self.severity = "fatal"
+        # Final Verdict
+        self.field_verdict = "fail"
 
     @abstractmethod
     def evaluate(self):
+        """Evaluate the field for each rule"""
         self.cap_eval = FieldRule.capitalization(self.value)
         self.len_eval = FieldRule.length(self.value, self.max_len)
+        self.format_eval = FieldRule.match_pattern(self.value, self.regex_pattern)
 
     def get_scores(self):
-        # Remove if-else after refactor for making evals non-boolean
-        if self.name in ("hlsp_str", "hlsp_name", "target_name", "version_id"):
-            return {
-                # Name of Field: for example 'mission' or 'product_type'
-                "name": self.name,
-                # value of the field: for example 'jwst' or 'spec'
-                "value": self.value,
-                # Results from each validation check
-                "capitalization_score": SCORE[self.cap_eval],
-                "length_score": SCORE[self.len_eval],
-                "value_score": SCORE[self.value_eval],
-                # Final Score
-                "severity": self.severity,
-            }
-        else:
-            # Switch value_score to SCORE_LAX for the following fields:
-            # missions, instruments, filters, product type, extension
-            return {
-                "name": self.name,
-                "value": self.value,
-                "capitalization_score": SCORE[self.cap_eval],
-                "length_score": SCORE[self.len_eval],
-                "value_score": SCORE_LAX[self.value_eval],  # SCORE_LAX
-                "severity": self.severity,
-            }
+        """Return final scores"""
+        # Determine the final verdict as the worst of the four scores
+        all_scores = [self.cap_eval, self.len_eval, self.format_eval, self.value_eval]
+        self.field_verdict = FieldRule.field_verdict(all_scores)
+        return {
+            # Name of Field: for example 'mission' or 'product_type'
+            "name": self.name,
+            # value of the field: for example 'jwst' or 'spec'
+            "value": self.value,
+            # Results from each validation check
+            "capitalization_score": self.cap_eval,
+            "length_score": self.len_eval,
+            "format_score": self.format_eval,
+            "value_score": self.value_eval,
+            # Final Score
+            "field_verdict": self.field_verdict,
+        }
 
 
 class ExtensionField(FilenameFieldAB):
-    """A container for attributes of the filename Extension field."""
-
     def __init__(self, value: str) -> None:
         super().__init__("extension", value)
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchChoice(self.value, EXTENSION_TYPES)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
+        self.value_eval = FieldRule.match_choice(self.value, EXTENSION_TYPES)
 
 
 class FilterField(FilenameFieldAB):
@@ -212,12 +240,7 @@ class FilterField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchMultiChoice(self.value, FILTERS)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
-        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
-            # Return "unrecognized" but not fatal warning
-            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        self.value_eval = FieldRule.match_multi_choice(self.value, FILTERS)
 
 
 class HlspField(FilenameFieldAB):
@@ -228,8 +251,7 @@ class HlspField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchChoice(self.value, ["hlsp"])
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
+        self.value_eval = FieldRule.match_choice(self.value, ["hlsp"], score_level="fatal")
 
 
 class HlspNameField(FilenameFieldAB):
@@ -242,10 +264,7 @@ class HlspNameField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         # Assume a valid HLSP name was passed to the constructor
-        self.value_eval = FieldRule.matchHlspName(self.value) and FieldRule.matchChoice(
-            self.value, [self.hlsp_ref_name]
-        )
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
+        self.value_eval = FieldRule.match_choice(self.value, [self.hlsp_ref_name], score_level="fatal")
 
 
 class InstrumentField(FilenameFieldAB):
@@ -256,8 +275,7 @@ class InstrumentField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchMultiChoice(self.value, INSTRUMENTS)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
+        self.value_eval = FieldRule.match_multi_choice(self.value, INSTRUMENTS)
 
 
 class MissionField(FilenameFieldAB):
@@ -268,12 +286,7 @@ class MissionField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchMultiChoice(self.value, MISSIONS)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
-        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
-            # Return "unrecognized" but not fatal warning
-            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        self.value_eval = FieldRule.match_multi_choice(self.value, MISSIONS)
 
 
 class ProductField(FilenameFieldAB):
@@ -284,11 +297,7 @@ class ProductField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchMultiChoice(self.value, SEMANTIC_TYPES)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
-        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
-            self.severity = FieldRule.severity_lax(self.value_eval)
+        self.value_eval = FieldRule.match_multi_choice(self.value, SEMANTIC_TYPES)
 
 
 class TargetField(FilenameFieldAB):
@@ -302,11 +311,7 @@ class TargetField(FilenameFieldAB):
         # A valid target name may contain the following characters in addition to
         # alpha-numeric: + - .
         # but must begin and end with a purely alphanumeric character.
-        self.value_eval = FieldRule.matchTarget(self.value)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
-        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
-            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        self.value_eval = FieldRule.match_pattern(self.value, self.regex_pattern)
 
 
 class VersionField(FilenameFieldAB):
@@ -317,8 +322,7 @@ class VersionField(FilenameFieldAB):
 
     def evaluate(self):
         super().evaluate()
-        self.value_eval = FieldRule.matchVersion(self.value)
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval and self.value_eval)
+        self.value_eval = FieldRule.match_pattern(self.value, self.regex_pattern)
 
 
 class GenericField(FilenameFieldAB):
@@ -335,11 +339,7 @@ class GenericField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         # No restriction on generic field values
-        self.value_eval = True
-        self.severity = FieldRule.severity(self.cap_eval and self.len_eval)
-        # Previous line returns a string - i.e., 'N/A' or 'fatal', not a bool
-        if self.severity == "N/A":  # Keep 'fatal' ranking if applicable
-            self.severity = FieldRule.severity_lax(self.severity and self.value_eval)
+        self.value_eval = "pass"
 
 
 class HlspFileName:
@@ -381,7 +381,7 @@ class HlspFileName:
             raise ValueError(f"Invalid file name for testing: {self.filepath.name}")
 
         # Check that the HLSP name is valid
-        if FieldRule.matchHlspName(hlsp_name):
+        if FieldRule.match_pattern(hlsp_name, HLSPNAME_REGEX):
             self.hlspName = hlsp_name
         else:
             raise ValueError(f"Invalid HLSP name: {hlsp_name}")
@@ -448,18 +448,17 @@ class HlspFileName:
         dict[str, Any]
             Dictionary of file name attributes
         """
-        field_status = [f.severity for f in self.fields]
-        if "fatal" in field_status:
-            status = "fail"
+        field_verdicts = [f.field_verdict for f in self.fields]
+        if "FAIL" in field_verdicts:
+            final_verdict = "fail"
+        elif "NEEDS REVIEW" in field_verdicts:
+            final_verdict = "needs review"
         else:
-            if self.path == ".":  # if current directory, ignore path
-                status = SCORE[FieldRule.capitalization(self.name)]
-            else:
-                status = SCORE[FieldRule.capitalization(self.path)]
+            final_verdict = "pass"
         attr = {
             "path": self.path,
             "filename": self.name,
             "n_elements": self.nFields,
-            "status": status,
+            "final_verdict": final_verdict.upper(),
         }
         return attr

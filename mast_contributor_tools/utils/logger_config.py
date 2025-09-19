@@ -44,9 +44,9 @@ class CustomLoggingFormatter(logging.Formatter):
         elif "Final Score: FAIL" in record.msg:
             log_fmt = bold_red + msg_format + reset
 
-        if "severity: fatal" in record.msg:
+        if "final_verdict: fail" in record.msg:
             log_fmt = bold_red + msg_format + reset
-        elif "severity: unrecognized" in record.msg:
+        elif "final_verdict: review" in record.msg:
             log_fmt = yellow + msg_format + reset
 
         # Total score for file list

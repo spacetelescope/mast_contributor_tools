@@ -7,7 +7,7 @@ FILENAME_TABLE = """
         CREATE TABLE IF NOT EXISTS filename (
 	    path	TEXT NOT NULL DEFAULT '.',
 	    filename	TEXT NOT NULL UNIQUE,
-	    status	TEXT CHECK("status" IN ('pass', 'fail')),
+	    final_verdict	TEXT CHECK("final_verdict" IN ('PASS', 'FAIL', 'NEEDS REVIEW')),
 	    n_elements	INTEGER
         );
         """
@@ -18,25 +18,23 @@ FIELDS_TABLE = """
         value TEXT NOT NULL,
 	    capitalization_score  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization_score" IN ('pass', 'fail')),
 	    length_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
-	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'review')),
-	    severity  TEXT NOT NULL DEFAULT 'N/A' CHECK("severity" IN ('fatal', 'unrecognized',
-            'warning', 'N/A')),
+	    format_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
+	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'needs review')),
+	    field_verdict  TEXT NOT NULL DEFAULT 'FAIL' CHECK("field_verdict" IN ('PASS', 'FAIL', 'NEEDS REVIEW')),
 	    FOREIGN KEY(file_ref) REFERENCES filename_db(filename)
         );
         """
 PROBLEMS_VIEW = """
         CREATE VIEW IF NOT EXISTS potential_problems as
         select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.capitalization_score, fl.length_score,
-        fl.value_score, fl.severity
+        fl.value_score, fl.field_verdict
         from filename as fn, fields as fl
         where fn.filename = fl.file_ref
-        AND fl.severity != 'N/A';
+        AND fl.field_verdict != 'PASS';
         """
 
-INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:status,:n_elements)"""
-INSERT_FIELD_RECORD = (
-    """INSERT INTO fields VALUES(:file_ref,:name,:value,:capitalization_score,:length_score,:value_score,:severity)"""
-)
+INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:final_verdict,:n_elements)"""
+INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:value,:capitalization_score,:length_score,:format_score,:value_score,:field_verdict)"""
 
 
 class Hlsp_SQLiteDb:
@@ -112,22 +110,26 @@ class Hlsp_SQLiteDb:
         Returns a string detailing some summary information on how many files have passed validation
         """
         # Get data from db
-        dat = self.conn.execute("SELECT filename, status from filename").fetchall()
+        dat = self.conn.execute("SELECT filename, final_verdict from filename").fetchall()
         # Parse numbers
         num_files = len(dat)
         num_pass = sum([1 for d in dat if d[1] == "pass"])
+        num_review = sum([1 for d in dat if d[1] == "needs review"])
         num_fail = sum([1 for d in dat if d[1] == "fail"])
         # Write summary message
         summary_message = "Output summary:\n    "
         summary_message += f"Files Checked: {num_files}\n    "
         summary_message += f"Files Passed: {num_pass}\n    "
+        summary_message += f"Files Need Review: {num_review}\n    "
         summary_message += f"Files Failed: {num_fail}\n    "
         # All files passed
         if num_pass == num_files:
-            summary_message += "All files passed! If any fields were marked with a score of 'review' and a non-fatal severity (e.g. 'unrecognized'), please consult with your MAST staff contact. Unrecognized values are very often necessary and good, but require review."
+            summary_message += "All files passed!"
+        elif num_review > 0:
+            summary_message += "If any fields were marked with a score of 'needs review', please consult with your MAST staff contact. Unrecognized values are very often necessary and good, but require review."
         # Some files failed
-        else:
-            summary_message += f"See results file ({self.db_file}) for more information. Some files did not meet our criteria. Note: only fields with a severity of 'fatal' contributed to this result."
+        elif num_fail > 0:
+            summary_message += f"See results file ({self.db_file}) for more information. Some files did not meet our criteria. Note: only fields with a final_verdict of 'fail' contributed to this result."
             # Add more detail here later? - could break down by fields, etc.
 
         return summary_message

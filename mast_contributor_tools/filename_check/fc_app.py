@@ -5,7 +5,7 @@ from typing import Union
 from tqdm import tqdm
 
 from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
-from mast_contributor_tools.filename_check.hlsp_filename import FieldRule, HlspFileName
+from mast_contributor_tools.filename_check.hlsp_filename import HLSPNAME_REGEX, FieldRule, HlspFileName
 from mast_contributor_tools.utils.logger_config import setup_logger
 
 logger = setup_logger(__name__)
@@ -61,8 +61,8 @@ def get_file_paths(
             logger.error(msg)
             raise FileNotFoundError(msg)
         else:
-            with open(from_file, 'r') as f:
-                file_list = [Path(filename.strip('\n')) for filename in f.readlines()]
+            with open(from_file, "r") as f:
+                file_list = [Path(filename.strip("\n")) for filename in f.readlines()]
     # Otherwise, scan the contents of the directory
     else:
         file_list = [p.relative_to(base_path) for p in base_path.rglob(search_pattern) if p.is_file()]
@@ -72,7 +72,7 @@ def get_file_paths(
 
     # Exclude files from exclude_pattern
     if exclude_pattern:
-        file_list =  [f for f in file_list if not f.match(exclude_pattern)]
+        file_list = [f for f in file_list if not f.match(exclude_pattern)]
 
     # Limit number of files returned to first n rows for testing purposes
     if max_n:
@@ -104,7 +104,7 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
         Name of SQLite database file to contain results
     """
     # Make sure hlsp name is valid
-    if not FieldRule.hlsp_expr.match(hlsp_name):
+    if not FieldRule.match_pattern(hlsp_name, HLSPNAME_REGEX):
         msg = (
             f"Invalid hlsp_name for HLSP collection: '{hlsp_name}'.\n"
             "The HLSP name must follow these rules: \n"
@@ -149,7 +149,7 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
                 logger.error(f"Error adding {f.name}: {e}")
             else:
                 db.add_fields(elements)
-            logger.debug(f"    Score for {f.name}: {file_rec['status']}")
+            logger.debug(f"    Verdict for {f.name}: {file_rec['final_verdict']}")
 
     logger.critical(db.print_summary())  # print summary information on how many files passed
     db.close_db()
@@ -185,15 +185,26 @@ def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
     elements = hfn.evaluate_fields()
     file_rec = hfn.evaluate_filename()
 
+    # TODO: Add more helpful outputs here for each failure cases?
+    # Define list of suggested solution for each rule
+    suggested_solutions = {
+        "capitalization_score": "File names should be all lowercase.",
+        "length_score": "Character length is too long.",
+        "format_score": "Forbidden characters detected. Value should be alphanumeric with hyphens, although some special characters are allowed in the 'target_name' or 'version' fields.",
+        "value_score": "Unrecognized value or combination. Requires review by MAST staff.",
+    }
+
     # Display resuls
     for e in elements:
         logger_msg = "Individual Field evaluations: \n"
         for p, v in e.items():
-            logger_msg += f"  {p}: {v} \n"
+            logger_msg += f"  {p}: '{v}' \n"
+            if (v in ["review", "fail"]) and (p in suggested_solutions.keys()):
+                logger_msg += f"\t HINT: {suggested_solutions[p]} \n"
         logger.debug(logger_msg)
 
     logger_msg = f"Evaluating filename: {file_name} \n"
     for p, v in file_rec.items():
         logger_msg += f"  {p}: {v} \n"
-    logger_msg += f"Final Score: {file_rec['status'].upper()}"
+    logger_msg += f"Final Verdict: {file_rec['final_verdict'].upper()}"
     logger.critical(logger_msg)
