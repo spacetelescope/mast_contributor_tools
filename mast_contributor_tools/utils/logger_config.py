@@ -41,12 +41,14 @@ class CustomLoggingFormatter(logging.Formatter):
         # Individual file checks
         if "Final Score: PASS" in record.msg:
             log_fmt = green + msg_format + reset
+        elif "Final Score: NEEDS REVIEW" in record.msg:
+            log_fmt = yellow + msg_format + reset
         elif "Final Score: FAIL" in record.msg:
             log_fmt = bold_red + msg_format + reset
 
-        if "final_verdict: fail" in record.msg:
+        if "final_verdict: FAIL" in record.msg:
             log_fmt = bold_red + msg_format + reset
-        elif "final_verdict: review" in record.msg:
+        elif "final_verdict: NEEDS REVIEW" in record.msg:
             log_fmt = yellow + msg_format + reset
 
         # Total score for file list
