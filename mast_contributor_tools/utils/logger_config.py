@@ -39,11 +39,11 @@ class CustomLoggingFormatter(logging.Formatter):
 
         # Additional logic if specific strings are present in log message
         # Individual file checks
-        if "Final Score: PASS" in record.msg:
+        if "Final Verdict: PASS" in record.msg:
             log_fmt = green + msg_format + reset
-        elif "Final Score: NEEDS REVIEW" in record.msg:
+        elif "Final Verdict: NEEDS REVIEW" in record.msg:
             log_fmt = yellow + msg_format + reset
-        elif "Final Score: FAIL" in record.msg:
+        elif "Final Verdict: FAIL" in record.msg:
             log_fmt = bold_red + msg_format + reset
 
         if "final_verdict: FAIL" in record.msg:
