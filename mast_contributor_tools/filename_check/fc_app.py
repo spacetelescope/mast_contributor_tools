@@ -149,7 +149,7 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
                 logger.error(f"Error adding {f.name}: {e}")
             else:
                 db.add_fields(elements)
-            logger.debug(f"    Verdict for {f.name}: {file_rec['final_verdict']}")
+            logger.debug(f"Verdict for {f.name}: '{file_rec['final_verdict']}'")
 
     logger.critical(db.print_summary())  # print summary information on how many files passed
     db.close_db()
@@ -199,12 +199,12 @@ def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
         logger_msg = "Individual Field evaluations: \n"
         for p, v in e.items():
             logger_msg += f"  {p}: '{v}' \n"
-            if (v in ["review", "fail"]) and (p in suggested_solutions.keys()):
+            if (v.lower() in ["needs review", "fail"]) and (p in suggested_solutions.keys()):
                 logger_msg += f"\t HINT: {suggested_solutions[p]} \n"
         logger.debug(logger_msg)
 
     logger_msg = f"Evaluating filename: {file_name} \n"
     for p, v in file_rec.items():
         logger_msg += f"  {p}: {v} \n"
-    logger_msg += f"Final Verdict: {file_rec['final_verdict'].upper()}"
+    logger_msg += f"Final Verdict: '{file_rec['final_verdict'].upper()}'"
     logger.critical(logger_msg)

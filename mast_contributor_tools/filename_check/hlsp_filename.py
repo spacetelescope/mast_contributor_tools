@@ -404,15 +404,10 @@ class HlspFileName:
     def create_fields(self) -> None:
         """Create Field objects for each field in the filename."""
         nf = self.nFields
-        # The first two fields are: 'hslp' and the acronnym of the collection
+        # The first two fields are: 'hlsp' and the acronnym of the collection
         self.fields.append(HlspField(self.fieldvals[0]))
         self.fields.append(HlspNameField(self.fieldvals[1], self.hlspName))
-        # The last two fields are: the file semantic type and the extension
-        self.fields.append(ExtensionField(self.fieldvals[nf - 1]))
-        self.fields.append(ProductField(self.fieldvals[nf - 2]))
-        # Files should have a version field unless the product_type is readme
-        if self.fieldvals[nf - 2].lower() not in ["readme"]:
-            self.fields.append(VersionField(self.fieldvals[nf - 3]))
+
         # If there are 9 fields, assume the rest of the fields are present in order
         if nf == 9:
             self.fields.append(MissionField(self.fieldvals[2]))
@@ -424,6 +419,14 @@ class HlspFileName:
         elif 5 < nf < 9:
             for i in range(2, nf - 3):
                 self.fields.append(GenericField(self.fieldvals[i], i - 1))
+
+        # Files should have a version field unless the product_type is readme
+        if self.fieldvals[nf - 2].lower() not in ["readme"]:
+            self.fields.append(VersionField(self.fieldvals[nf - 3]))
+
+        # The last two fields are: the file semantic type and the extension
+        self.fields.append(ProductField(self.fieldvals[nf - 2]))
+        self.fields.append(ExtensionField(self.fieldvals[nf - 1]))
 
     def evaluate_fields(self):
         """Evaluate attributes of each field

@@ -38,18 +38,13 @@ class CustomLoggingFormatter(logging.Formatter):
         log_fmt = FORMATS.get(record.levelno)
 
         # Additional logic if specific strings are present in log message
-        # Individual file checks
-        if "Final Verdict: PASS" in record.msg:
+        # Individual field and file verdicts
+        if ": 'FAIL'" in record.msg:
+            log_fmt = bold_red + msg_format + reset
+        elif ": 'NEEDS REVIEW'" in record.msg:
+            log_fmt = yellow + msg_format + reset
+        elif ": 'PASS'" in record.msg:
             log_fmt = green + msg_format + reset
-        elif "Final Verdict: NEEDS REVIEW" in record.msg:
-            log_fmt = yellow + msg_format + reset
-        elif "Final Verdict: FAIL" in record.msg:
-            log_fmt = bold_red + msg_format + reset
-
-        if "final_verdict: FAIL" in record.msg:
-            log_fmt = bold_red + msg_format + reset
-        elif "final_verdict: NEEDS REVIEW" in record.msg:
-            log_fmt = yellow + msg_format + reset
 
         # Total score for file list
         if "All files passed!" in record.msg:
