@@ -101,22 +101,22 @@ class FieldRule:
     validate the version or target fields can be verified at https://regex101.com
     """
 
-    def length(value: str, max_length: int) -> bool:
+    def length(value: str, max_length: int) -> str:
         """Test if the character count is non-zero and within the limit for that field.
         Returns 'pass' or 'fail' based on results."""
         return SCORE[(len(value) <= max_length) and (len(value) > 0)]
 
-    def capitalization(value: str) -> bool:
+    def capitalization(value: str) -> str:
         """Test the captilizaiton: the entire filename must be lowercase.
         Returns 'pass' or 'fail' based on results."""
         return SCORE[value.islower()]
 
-    def match_pattern(value: str, regex_expr: re.Pattern) -> bool:
+    def match_pattern(value: str, regex_expr: re.Pattern) -> str:
         """Test that the field contains no forbidden characters.
         Returns 'pass' or 'fail' based on results."""
         return SCORE[regex_expr.match(value) is not None]
 
-    def match_choice(value: str, choice_list: list[str], score_level="lax") -> bool:
+    def match_choice(value: str, choice_list: list[str], score_level="lax") -> str:
         """Checks value against a list, typically from oif.yaml.
         Returns 'pass' or 'needs review' or 'fail' based on results.
         The optional 'score_level' argument determines if 'fail' or 'needs review' is returned (default lax)"""
@@ -125,7 +125,7 @@ class FieldRule:
         else:
             return SCORE[value.lower() in choice_list]
 
-    def match_multi_choice(value: str, choice_list: list[str], score_level="lax") -> bool:
+    def match_multi_choice(value: str, choice_list: list[str], score_level="lax") -> str:
         """Checks multiple values against a list, typically from oif.yaml.
         Returns 'pass' or 'needs review' or 'fail' based on results.
         The optional 'score_level' argument determines if 'fail' or 'needs review' is returned (default lax)"""
