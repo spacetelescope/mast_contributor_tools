@@ -119,7 +119,7 @@ class FieldRule:
     def match_choice(value: str, choice_list: list[str], score_level="lax") -> bool:
         """Checks value against a list, typically from oif.yaml.
         Returns 'pass' or 'needs review' or 'fail' based on results.
-        The optional 'score_level' argument determins if 'fail' or 'needs review' is returned (default lax)"""
+        The optional 'score_level' argument determines if 'fail' or 'needs review' is returned (default lax)"""
         if score_level == "lax":
             return SCORE_LAX[value.lower() in choice_list]
         else:
@@ -128,7 +128,7 @@ class FieldRule:
     def match_multi_choice(value: str, choice_list: list[str], score_level="lax") -> bool:
         """Checks multiple values against a list, typically from oif.yaml.
         Returns 'pass' or 'needs review' or 'fail' based on results.
-        The optional 'score_level' argument determins if 'fail' or 'needs review' is returned (default lax)"""
+        The optional 'score_level' argument determines if 'fail' or 'needs review' is returned (default lax)"""
         # match all elements in a hyphenated value to the choice_list
         if score_level == "lax":
             return SCORE_LAX[all([(v.lower() in choice_list) for v in value.split("-")])]

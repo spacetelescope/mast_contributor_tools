@@ -189,9 +189,9 @@ def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
     # Define list of suggested solution for each rule
     suggested_solutions = {
         "capitalization_score": "File names should be all lowercase.",
-        "length_score": "Character length is too long.",
+        "length_score": "Character length for this field is too long.",
         "format_score": "Forbidden characters detected. Value should be alphanumeric with hyphens, although some special characters are allowed in the 'target_name' or 'version' fields.",
-        "value_score": "Unrecognized value or combination. Requires review by MAST staff.",
+        "value_score": "Unrecognized value or combination. These are often necessary and good, but require review by MAST staff.",
     }
 
     # Display resuls
