@@ -13,6 +13,6 @@ You should now be seeing the `Database Structure` tab highlighted, with a few ta
 
 If you now click on the `Browse Data` tab next to the `Database Structure` tab, you'll be able to view the table itself, which should have the `fields` table selected:
 
-![DB Browser for SQLite after opening filename check DB file](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial_images/mast_contributor_tools/TUTORIAL/tutorial_images/DB_Browser_Table_Data_View.png)
+![DB Browser for SQLite after opening filename check DB file](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial_images/DB_Browser_Table_Data_View.png)
 
 The `fields` table contains the results of the file name check for every single field within each filename analyzed. For instance, if you checked 5 filenames with 8 fields each, the `fields` table should have 5*8 = 40 rows. Meanwhile, the `filename` table (which you can access by clicking on the Table box below the tabs and to the left), contains one row per file, indicating the verdict of the filename check on that filename. Finally, the `potential_problems` table lists all potential problems indicated in the `fields` table.
