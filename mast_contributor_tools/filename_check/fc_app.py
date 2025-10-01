@@ -1,4 +1,5 @@
 import os
+import textwrap
 from pathlib import Path
 from typing import Union
 
@@ -200,7 +201,13 @@ def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
         for p, v in e.items():
             logger_msg += f"  {p}: '{v}' \n"
             if (v.lower() in ["needs review", "fail"]) and (p in suggested_solutions.keys()):
-                logger_msg += f"\t HINT: {suggested_solutions[p]} \n"
+                # Wrap text to the same indent level
+                logger_msg += textwrap.fill(
+                    f"\tHINT: {suggested_solutions[p]}",
+                    subsequent_indent="\t",
+                    width=os.get_terminal_size().columns - 5,  # Extra 5 to account for the tab
+                )
+                logger_msg += "\n"
         logger.debug(logger_msg)
 
     logger_msg = f"Evaluating filename: {file_name} \n"
