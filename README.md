@@ -132,13 +132,13 @@ Under development - check back later!
 
 This project is Copyright (c) MAST Staff and licensed under
 the terms of the BSD 3-Clause license. This package is based upon
-the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`
+the [Openastronomy packaging guide](https://github.com/OpenAstronomy/packaging-guide)
 which is licensed under the BSD 3-clause licence. See the licenses folder for
 more information.
 
 # Contributing
 
-We love contributions! mast_contributor_tools is open source,
+We love contributions! `mast_contributor_tools` is open source,
 built on open source, and we'd love to have you hang out in our community.
 
 **Imposter syndrome disclaimer**: We want your help. No, really.
@@ -162,10 +162,10 @@ a whole, because you're coming to the project with fresh eyes, so you can see
 the errors and assumptions that seasoned contributors have glossed over.
 
 Note: This disclaimer was originally written by
-`Adrienne Lowe <https://github.com/adriennefriend>`_ for a
-`PyCon talk <https://www.youtube.com/watch?v=6Uj746j9Heo>`_, and was adapted by
-mast_contributor_tools based on its use in the README file for the
-`MetPy project <https://github.com/Unidata/MetPy>`_.
+[Adrienne Lowe](https://github.com/adriennefriend) for a
+[PyCon talk](https://www.youtube.com/watch?v=6Uj746j9Heo) and was adapted by
+`mast_contributor_tools` based on its use in the README file for the
+[MetPy project](https://github.com/Unidata/MetPy).
 
 # Additional Resources
 

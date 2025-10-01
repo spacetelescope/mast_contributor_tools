@@ -8,6 +8,10 @@
 ### Changed
 
 ### Added
+[PR # 23](https://github.com/spacetelescope/mast_contributor_tools/pull/23)
+    - Refactoring file name checker for updated non-boolean verdicts: now 'pass', 'needs review', or 'fail'
+    - added 'format_score' field test for better handling of special characters
+
 [PR # 15](https://github.com/spacetelescope/mast_contributor_tools/pull/15)
     - Adding a tutorial with examples for the file name checker
 
