@@ -10,6 +10,13 @@ There are two main branches for mast_contributor_tools work:
 
 - The **main** branch contains the latest stable release of `mast_contributor_tools`.
 
+- MAJOR.MINOR.PATCH versioning is used for releases. New features and bug fixes are merged into **dev** and released to **main** as new versions when ready. Refer to [Semantic versioning](https://semver.org/) for more details, but in brief:
+    - MAJOR version: Big changes, breaking changes
+    - MINOR version: New features, backwards compatible
+    - PATCH version: Bug fixes, backwards compatible
+    - New releases are tagged in git with the version number, e.g. `v1.0.0`.
+    - Release notes are maintained in the `CHANGELOG.md`
+
 ## Installation
 ### Required packages and versions
 - See required packages found in the [conda evn file](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/pyproject.toml).
