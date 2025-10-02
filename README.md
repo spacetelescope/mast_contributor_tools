@@ -1,5 +1,5 @@
 # MAST_CONTRIBUTOR_TOOLS
-This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections. It is a work in progress. Currently, `Filename Check` is available, and `Metadata Check` will be coming soon.
+This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections. It is a work in progress. We welcome your feedback and collaboration. Currently, `Filename Check` is available, and `Metadata Check` will be coming soon.
 
 Visit the [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) for full documentation, instructions, and policies about the process of submitting data to MAST.
 
@@ -137,7 +137,7 @@ Under development - check back later!
 
 # License
 
-This project is Copyright (c) MAST Staff and licensed under
+This project is Copyright (c) Mikulski Archive for Space Telescopes and licensed under
 the terms of the BSD 3-Clause license. This package is based upon
 the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`
 which is licensed under the BSD 3-clause licence. See the licenses folder for

@@ -7,12 +7,16 @@
 import datetime
 import os
 import sys
+from importlib.metadata import version
 
 # -- Project information -----------------------------------------------------
 # The full version, including alpha/beta/rc tags
 
-# release = __version__
-release = ".version"
+# Full version string
+version = version("mast_contributor_tools")
+# Short release version for Sphinx (optional)
+release = version.split("+", 1)[0]
+
 
 project = "mast_contributor_tools"
 author = "Mikulski Archive for Space Telescopes at the Space Telescope Science Institute"
@@ -24,22 +28,21 @@ copyright = f"{datetime.datetime.now().year}, {author}"  # noqa: A001
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
-    "myst_parser",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.inheritance_diagram",
-    "sphinx.ext.graphviz",
-    "sphinx_copybutton",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.doctest",
-    "sphinx.ext.mathjax",
-    "sphinx_automodapi.automodapi",
-    "sphinx_automodapi.smart_resolver",
-    "sphinxcontrib.spelling",
-    "sphinx_click",
+    "myst_parser",  # enables Markdown (MyST)
+    "sphinx.ext.autodoc",  # Auto-generate API docs from Python docstrings
+    "sphinx.ext.intersphinx",  # Link cross-references to other projects' docs
+    "sphinx.ext.todo",  # Support for .. todo:: directives in docs
+    "sphinx.ext.coverage",  # Check doc coverage for modules/classes/functions
+    "sphinx_copybutton",  # Add a "copy" button to all code blocks
+    "sphinx.ext.viewcode",  # adds [source] links
+    "sphinx.ext.napoleon",  # for Google/NumPy style docstrings
+    "sphinx.ext.doctest",  # Run doctest examples in docs to verify they work
+    "sphinx.ext.mathjax",  # Render LaTeX-style math using MathJax in HTML
+    "sphinx_automodapi.automodapi",  # Astropy tool: auto-generate API docs with nice summaries
+    "sphinx_automodapi.smart_resolver",  # Astropy tool: smarter cross-references for API docs
+    "sphinxcontrib.spelling",  # Spell checker for docs (uses `pyenchant`)
+    "sphinx_click",  # Generate docs automatically for click-based CLIs
+    "sphinx.ext.autosummary",  # Generate summary tables and stub pages for documented objects (requires autosummary_generate = True)
 ]
 
 autosummary_generate = True
@@ -80,8 +83,15 @@ intersphinx_mapping = {"python": ("https://docs.python.org/", None)}
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "sphinx_rtd_theme"  # "alabaster"
-
+html_theme = "sphinx_book_theme"  # "sphinx_rtd_theme"  # "bootstrap-astropy" # "alabaster" #
+html_theme_options = {
+    "repository_url": "https://github.com/spacetelescope/bibcat/",
+    "use_repository_button": True,  # shows the GitHub icon button
+    "use_edit_page_button": True,  # adds an "edit this page" link
+    "use_issues_button": True,  # adds a link to GitHub issues
+    "repository_branch": "dev",  #  default branch
+    "path_to_docs": "docs",  # <-- path to docs
+}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
