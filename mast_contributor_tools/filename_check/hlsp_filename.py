@@ -54,9 +54,9 @@ SCORE_LAX = {False: "needs review", True: "pass"}
 FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-\+]+(\.[\w\-\+\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
 
 # HLSP Name Expression:
-# "^[a-z]"" : The first character must be a lowercase letter
-# "[a-z0-9-]*" : The middle characters can be lowercase letters, numbers, or a hyphen '-'
-# "[a-z0-9]$" : The last character must be a lowercase letter or a number
+# "^[a-zA-Z]"" : The first character must be a lowercase letter
+# "[a-zA-Z0-9-]*" : The middle characters can be lowercase letters, numbers, or a hyphen '-'
+# "[a-zA-Z0-9]$" : The last character must be a lowercase letter or a number
 HLSPNAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$")
 
 # Target Name Expression:
@@ -66,7 +66,7 @@ HLSPNAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$")
 TARGET_REGEX = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9+\-.]*[a-zA-Z0-9]$")
 
 # Version Expression:
-# "^v" : must start with "v"
+# "^v" : must start with lowercase "v"
 # "[0-9]{0,2}" Next zero to two characters must be numbers
 # "([.][0-9]{0,2})": There can be up to two "." or "p" followed by up to two more numbers
 # "[0-9]$" : the last character must be a number
@@ -75,16 +75,16 @@ VERSION_REGEX = re.compile(r"^v[0-9]{0,2}([.p][0-9]{0,2}){0,2}[0-9]$")
 
 # Expression for all file extension:
 # "^[a-zA-Z]"" : The first character must be a lowercase or uppercase letter
-# "[a-z0-9.]*" : The middle characters can be letters, numbers, or a period '.'
-# "[a-z0-9]$" : The last character must be a letter or a number
+# "[a-zA-Z0-9.]*" : The middle characters can be letters, numbers, or a period '.'
+# "[a-zA-Z0-9]*$" : The last character must be a letter or a number
 EXTENSION_REGEX = re.compile(r"^[a-zA-Z]*[a-zA-Z0-9.]*[a-zA-Z0-9]*$")
 
 
 # Expression for all other fields: telescope, instrument, filter, etc.:
 # (this is purposefully generous on captilization - a different test checks for that and want to avoid confusion)
 # "^[a-zA-Z]"" : The first character must be a lowercase or uppercase letter
-# "[a-z0-9-]*" : The middle characters can be letters, numbers, or a hyphen '-'
-# "[a-z0-9]$" : The last character must be a letter or a number
+# "[a-zA-Z0-9-]*" : The middle characters can be letters, numbers, or a hyphen '-'
+# "[a-zA-Z0-9]$" : The last character must be a letter or a number
 OTHER_REGEX = re.compile(r"^[a-zA-Z]*[a-zA-Z0-9-]*[a-zA-Z0-9]*$")
 
 
