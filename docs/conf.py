@@ -19,7 +19,7 @@ release = version.split("+", 1)[0]
 
 
 project = "mast_contributor_tools"
-author = "Mikulski Archive for Space Telescopes at the Space Telescope Science Institute"
+author = "MAST staff"
 copyright = f"{datetime.datetime.now().year}, {author}"  # noqa: A001
 
 # -- General configuration ---------------------------------------------------
