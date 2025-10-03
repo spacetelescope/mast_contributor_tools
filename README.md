@@ -1,5 +1,5 @@
-# MAST_CONTRIBUTOR_TOOLS
-This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections. It is a work in progress. Currently, `Filename Check` is available, and `Metadata Check` will be coming soon.
+# MAST CONTRIBUTOR TOOLS
+This package contains a set of tools for use by MAST community contributors preparing High Level Science Products (HLSP) or MAST Community Contributed Missions (MCCM) data collections. It is a work in progress. We welcome your feedback and collaboration. Currently, `Filename Check` is available, and `Metadata Check` will be coming soon.
 
 Visit the [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) for full documentation, instructions, and policies about the process of submitting data to MAST.
 
@@ -10,9 +10,16 @@ There are two main branches for mast_contributor_tools work:
 
 - The **main** branch contains the latest stable release of `mast_contributor_tools`.
 
+- MAJOR.MINOR.PATCH versioning is used for releases. New features and bug fixes are merged into **dev** and released to **main** as new versions when ready. Refer to [Semantic versioning](https://semver.org/) for more details, but in brief:
+    - MAJOR version: Big changes, breaking changes
+    - MINOR version: New features, backwards compatible
+    - PATCH version: Bug fixes, backwards compatible
+    - New releases are tagged in git with the version number, e.g. `v1.0.0`.
+    - Release notes are maintained in the `CHANGELOG.md`
+
 ## Installation
 ### Required packages and versions
-- See required packages found in the [conda evn file](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/pyproject.toml).
+- See required packages found in the [conda evn file](https://github.com/spacetelescope/mast_contributor_tools/blob/main/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/main/pyproject.toml).
 
 ### Conda environment
 Replace `env_name` with the desired name for your environment.
@@ -119,10 +126,10 @@ make clean
 ## Quick Start
 ### Tutorials
 
-The [`TUTORIAL/`](https://github.com/spacetelescope/mast_contributor_tools/tree/dev/TUTORIAL/) folder of this repository contains some example data and step-by-step instructions for how to run this code.
+The [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder of this repository contains some example data and step-by-step instructions for how to run this code.
 
 ### Filename Check
-To check if the filenames comply with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please refer to [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) to get started.
+To check if the filenames comply with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please refer to [Filename Checker Guide](https://mast-contributor-tools.readthedocs.io/en/latest/filename_check_readme.html) to get started.
 
 ### Metadata Checker
 
@@ -130,7 +137,7 @@ Under development - check back later!
 
 # License
 
-This project is Copyright (c) MAST Staff and licensed under
+This project is Copyright (c) Mikulski Archive for Space Telescopes and licensed under
 the terms of the BSD 3-Clause license. This package is based upon
 the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`
 which is licensed under the BSD 3-clause licence. See the licenses folder for
