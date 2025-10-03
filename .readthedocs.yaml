@@ -10,7 +10,7 @@ build:
   tools:
     python: "3.11"
   commands:
-      - sphinx-apidoc -o docs/api/ mast_contributor_tools mast_contributor_tools/tests/*
+      - python -m sphinx.apidoc -o docs/api/ mast_contributor_tools mast_contributor_tools/tests/*
       - make -C docs html
 
 # Build documentation in the "docs/" directory with Sphinx
