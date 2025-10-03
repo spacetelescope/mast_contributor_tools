@@ -20,7 +20,7 @@ release = version.split("+", 1)[0]
 
 project = "mast_contributor_tools"
 author = "MAST staff"
-copyright = f"{datetime.datetime.now().year}, {author}"  # noqa: A001
+copyright = "2023, Mikulski Archive for Space Telescopes (MAST)"
 
 # -- General configuration ---------------------------------------------------
 
