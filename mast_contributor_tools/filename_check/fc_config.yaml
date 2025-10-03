@@ -86,6 +86,7 @@ SemanticTypes:
  - psf
  - psi
  - raw
+ - readme
  - rms
  - s3d
  - sed

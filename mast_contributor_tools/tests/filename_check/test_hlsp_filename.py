@@ -1,17 +1,17 @@
 """
 Tests for mast_contributor_tools/filename_check/hlsp_filename.py
 
-Each test recieves four scores: [capitalization, length, value, severity]:
+Each test recieves four scores: [capitalization, length, value, field_verdict]:
 - "Captalization" checks the capitilzation rules for this field, generally
 required to be lowercase
 - "Length" checks the character length, with the upper limit set for each field,
 for example, the "HLSP name" must be less than 20 characters.
-- "Value" checks the value of the field for additional rules; for example, the
-target name is allowed to include some special characters, and the instrument must
-be valid for the telescope name.
-- "Severity" is the overall score, combining these three tests. Generally "N/A" if
-the filename passes validation, "fatal" if it fails, or "unrecognized" for non-fatal
-warnings.
+- "Format" checks the overall format of the field against a regex pattern. For example, the
+target name is allowed to include some special characters like '+' while other fields do not
+- "Value" checks the value of the field for additional rules; for example,
+the instrument must be valid for the telescope name.
+- "Field Verdict" is the overall score, either "PASS", "NEEDS REVIEW", or "FAIL",
+ decided as the lowest score from these four tests.
 """
 
 from pathlib import Path
@@ -60,8 +60,9 @@ def assert_scores_match(recieved_score: dict[str, str], expected_score: list[str
     expected_score_dict = {
         "capitalization_score": expected_score[0],
         "length_score": expected_score[1],
-        "value_score": expected_score[2],
-        "severity": expected_score[3],
+        "format_score": expected_score[2],
+        "value_score": expected_score[3],
+        "field_verdict": expected_score[4],
     }
 
     # Test each value individually
@@ -82,16 +83,18 @@ def assert_scores_match(recieved_score: dict[str, str], expected_score: list[str
 # HlspField
 @pytest.mark.parametrize(
     "test_value, expected_score",
-    # expected_score is: [capitalization, length, value, severity]
+    # expected_score is: [capitalization, length, format, value, field_verdict]
     [
         # Expected to Pass
-        ("hlsp", ["pass", "pass", "pass", "N/A"]),
+        ("hlsp", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to Fail = anything else
-        ("HLSP", ["fail", "pass", "pass", "fatal"]),  # no caps
-        ("hst", ["pass", "pass", "fail", "fatal"]),  # not "hlsp"
-        ("banana", ["pass", "fail", "fail", "fatal"]),  # not "hlsp"
-        ("123-hlsp", ["pass", "fail", "fail", "fatal"]),  # not "hlsp"
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("HLSP", ["fail", "pass", "pass", "pass", "FAIL"]),  # no caps
+        ("hst", ["pass", "pass", "pass", "fail", "FAIL"]),  # not "hlsp"
+        ("banana", ["pass", "fail", "pass", "fail", "FAIL"]),  # not "hlsp"
+        ("123-hlsp", ["pass", "fail", "pass", "fail", "FAIL"]),  # not "hlsp"
+        ("", ["fail", "fail", "pass", "fail", "FAIL"]),  # empty string
+        ("h.lp", ["pass", "pass", "fail", "fail", "FAIL"]),  # special characters
+        ("hlsp!", ["pass", "fail", "fail", "fail", "FAIL"]),  # special characters
     ],
 )
 def test_HlspField(
@@ -109,29 +112,30 @@ def test_HlspField(
 # HlspNameField
 @pytest.mark.parametrize(
     "test_value, ref_name, expected_score",
-    # expected_score is: [capitalization, length, value, severity]
+    # expected_score is: [capitalization, length, format, value, field_verdict]
     [
         # Expected to Pass
-        ("my-hlsp", "my-hlsp", ["pass", "pass", "pass", "N/A"]),
-        ("tica", "tica", ["pass", "pass", "pass", "N/A"]),
-        ("phangs-jwst", "phangs-jwst", ["pass", "pass", "pass", "N/A"]),
+        ("my-hlsp", "my-hlsp", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("tica", "tica", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("phangs-jwst", "phangs-jwst", ["pass", "pass", "pass", "pass", "PASS"]),
         # caps okay for ref_name, but not for field value
-        ("my-hlsp", "MY-HLSP", ["pass", "pass", "pass", "N/A"]),
+        ("my-hlsp", "MY-HLSP", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to Fail
-        ("MY-HLSP", "my-hlsp", ["fail", "pass", "fail", "fatal"]),  # caps
-        ("wrong-name", "my-hlsp", ["pass", "pass", "fail", "fatal"]),  # name mismatch
+        ("MY-HLSP", "my-hlsp", ["fail", "pass", "pass", "pass", "FAIL"]),  # caps
+        ("wrong-name", "my-hlsp", ["pass", "pass", "pass", "fail", "FAIL"]),  # name mismatch
         # spaces, special characters
-        ("my hlsp", "my hlsp", ["pass", "pass", "fail", "fatal"]),
-        ("my-hlsp!", "my-hlsp!", ["pass", "pass", "fail", "fatal"]),
-        ("2hlsp", "2-my-hlsp", ["pass", "pass", "fail", "fatal"]),
-        ("hlsp+hlsp", "hlsp+hlsp", ["pass", "pass", "fail", "fatal"]),
+        ("my hlsp", "my hlsp", ["pass", "pass", "fail", "pass", "FAIL"]),
+        ("my-hlsp!", "my-hlsp!", ["pass", "pass", "fail", "pass", "FAIL"]),
+        ("my.hlsp", "my.hlsp", ["pass", "pass", "fail", "pass", "FAIL"]),
+        ("2hlsp", "2-my-hlsp", ["pass", "pass", "fail", "fail", "FAIL"]),
+        ("hlsp+hlsp", "hlsp+hlsp", ["pass", "pass", "fail", "pass", "FAIL"]),
         # current character limits <= 20 characters
         (
             "really-really-long-hlsp-name",
             "really-really-long-hlsp-name",
-            ["pass", "fail", "pass", "fatal"],
+            ["pass", "fail", "pass", "pass", "FAIL"],
         ),
-        ("", "", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("", "", ["fail", "fail", "fail", "pass", "FAIL"]),  # empty string
     ],
 )
 def test_HlspNameField(
@@ -152,19 +156,20 @@ def test_HlspNameField(
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("hst", ["pass", "pass", "pass", "N/A"]),
-        ("jwst", ["pass", "pass", "pass", "N/A"]),
-        ("hst-jwst", ["pass", "pass", "pass", "N/A"]),
-        ("sdss", ["pass", "pass", "pass", "N/A"]),
-        ("multi", ["pass", "pass", "pass", "N/A"]),
+        ("hst", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("jwst", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("hst-jwst", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("sdss", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to give warnings
-        ("fake-mission", ["pass", "pass", "review", "unrecognized"]),
-        # this one should fail, but gives warning. Revisit later
-        ("hst_jwst", ["pass", "pass", "review", "unrecognized"]),
+        ("roman", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
+        ("fake-mission", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         # Expected to Fail
-        ("HST", ["fail", "pass", "pass", "fatal"]),
-        ("ReallyLongMissionName", ["fail", "fail", "review", "fatal"]),
-        ("", ["fail", "pass", "review", "fatal"]),  # empty string
+        ("hst_jwst", ["pass", "pass", "fail", "needs review", "FAIL"]),
+        ("hst.jwst", ["pass", "pass", "fail", "needs review", "FAIL"]),
+        ("HST", ["fail", "pass", "pass", "pass", "FAIL"]),
+        ("ReallyLongMissionName", ["fail", "fail", "pass", "needs review", "FAIL"]),
+        ("", ["fail", "fail", "pass", "needs review", "FAIL"]),  # empty string
     ],
 )
 def test_MissionField(
@@ -184,12 +189,15 @@ def test_MissionField(
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("nirspec", ["pass", "pass", "pass", "N/A"]),
-        ("multi", ["pass", "pass", "pass", "N/A"]),
-        ("nircam-nirspec", ["pass", "pass", "pass", "N/A"]),
+        ("nirspec", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("nircam-nirspec", ["pass", "pass", "pass", "pass", "PASS"]),
+        # Expected wanrings
+        ("mystery-camera", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         # Expected to Fail
-        ("NIRSPEC", ["fail", "pass", "pass", "fatal"]),
-        ("", ["fail", "pass", "review", "fatal"]),  # empty string
+        ("STIS", ["fail", "pass", "pass", "pass", "FAIL"]),
+        ("my.instrument", ["pass", "pass", "fail", "needs review", "FAIL"]),
+        ("", ["fail", "fail", "pass", "needs review", "FAIL"]),  # empty string
     ],
 )
 def test_InstrumentField(
@@ -209,21 +217,21 @@ def test_InstrumentField(
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("vega", ["pass", "pass", "pass", "N/A"]),
-        ("m31", ["pass", "pass", "pass", "N/A"]),
-        ("multi", ["pass", "pass", "pass", "N/A"]),
-        ("ngc1385", ["pass", "pass", "pass", "N/A"]),
-        ("obj-123", ["pass", "pass", "pass", "N/A"]),
-        ("2m04215943+1932063", ["pass", "pass", "pass", "N/A"]),
-        ("j152447.75-p041919.8", ["pass", "pass", "pass", "N/A"]),
-        ("2mass-j09512393-p3542490", ["pass", "pass", "pass", "N/A"]),
-        ("sdssj085259.22-p031320.6", ["pass", "pass", "pass", "N/A"]),
-        ("1saxj1032.3-p5051", ["pass", "pass", "pass", "N/A"]),
+        ("vega", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("m31", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("ngc1385", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("obj-123", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("2m04215943+1932063", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("j152447.75-p041919.8", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("2mass-j09512393-p3542490", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("sdssj085259.22-p031320.6", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("1saxj1032.3-p5051", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to Fail
-        ("M31", ["fail", "pass", "pass", "fatal"]),  # caps
-        ("2M04215943+1932063", ["fail", "pass", "pass", "fatal"]),
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
-        ("123+456", ["fail", "pass", "pass", "fatal"]),  # all digits
+        ("M31", ["fail", "pass", "pass", "pass", "FAIL"]),  # caps
+        ("2M04215943+1932063", ["fail", "pass", "pass", "pass", "FAIL"]),
+        ("", ["fail", "fail", "fail", "fail", "FAIL"]),  # empty string
+        ("123+456", ["fail", "pass", "pass", "pass", "FAIL"]),  # all digits
     ],
 )
 def test_TargetField(test_value: str, expected_score: list[str]) -> None:
@@ -240,15 +248,15 @@ def test_TargetField(test_value: str, expected_score: list[str]) -> None:
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("f435w", ["pass", "pass", "pass", "N/A"]),
-        ("u", ["pass", "pass", "pass", "N/A"]),
-        ("multi", ["pass", "pass", "pass", "N/A"]),
-        ("g102-f435w", ["pass", "pass", "pass", "N/A"]),
+        ("f435w", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("u", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("g102-f435w", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to give warning
-        ("fakefilter", ["pass", "pass", "review", "unrecognized"]),  # not in list
+        ("fakefilter", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),  # not in list
         # Expected to Fail
-        ("F435W", ["fail", "pass", "pass", "fatal"]),  # caps
-        ("", ["fail", "pass", "review", "fatal"]),  # empty string
+        ("F435W", ["fail", "pass", "pass", "pass", "FAIL"]),  # caps
+        ("", ["fail", "fail", "pass", "needs review", "FAIL"]),  # empty string
     ],
 )
 def test_FilterField(test_value: str, expected_score: list[str]) -> None:
@@ -265,22 +273,22 @@ def test_FilterField(test_value: str, expected_score: list[str]) -> None:
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("v1", ["pass", "pass", "pass", "N/A"]),
-        ("v2.3", ["pass", "pass", "pass", "N/A"]),
-        ("v1.2.3", ["pass", "pass", "pass", "N/A"]),
-        ("v12.34.56", ["pass", "pass", "pass", "N/A"]),
-        ("v01", ["pass", "pass", "pass", "N/A"]),
-        ("v1p0p1", ["pass", "pass", "pass", "N/A"]),  # "p" is allowed in place of "."
+        ("v1", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("v2.3", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("v1.2.3", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("v12.34.56", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("v01", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("v1p0p1", ["pass", "pass", "pass", "pass", "PASS"]),  # "p" is allowed in place of "."
         # Expected to Fail
-        ("dr1", ["pass", "pass", "fail", "fatal"]),
-        ("1.2.3", ["fail", "pass", "fail", "fatal"]),  # does not start with v
-        ("v1-1", ["pass", "pass", "fail", "fatal"]),  # no hyphens
-        ("v123.4", ["pass", "pass", "fail", "fatal"]),  # too many digits before '.'
-        ("v1.2.3.4", ["pass", "pass", "fail", "fatal"]),  # too many periods
-        ("V1", ["fail", "pass", "fail", "fatal"]),  # caps
-        ("v1.", ["pass", "pass", "fail", "fatal"]),  # ends with period
-        ("v1.a", ["pass", "pass", "fail", "fatal"]),  # no letters allowed
-        ("", ["fail", "pass", "fail", "fatal"]),  # empty string
+        ("dr1", ["pass", "pass", "fail", "fail", "FAIL"]),
+        ("1.2.3", ["fail", "pass", "fail", "fail", "FAIL"]),  # does not start with v
+        ("v1-1", ["pass", "pass", "fail", "fail", "FAIL"]),  # no hyphens
+        ("v123.4", ["pass", "pass", "fail", "fail", "FAIL"]),  # too many digits before '.'
+        ("v1.2.3.4", ["pass", "pass", "fail", "fail", "FAIL"]),  # too many periods
+        ("V1", ["fail", "pass", "fail", "fail", "FAIL"]),  # caps
+        ("v1.", ["pass", "pass", "fail", "fail", "FAIL"]),  # ends with period
+        ("v1.a", ["pass", "pass", "fail", "fail", "FAIL"]),  # no letters allowed
+        ("", ["fail", "fail", "fail", "fail", "FAIL"]),  # empty string
     ],
 )
 def test_VersionField(test_value: str, expected_score: list[str]) -> None:
@@ -297,15 +305,15 @@ def test_VersionField(test_value: str, expected_score: list[str]) -> None:
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("drz", ["pass", "pass", "pass", "N/A"]),
-        ("lc", ["pass", "pass", "pass", "N/A"]),
-        ("spec", ["pass", "pass", "pass", "N/A"]),
+        ("drz", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("lc", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("spec", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to give warning
-        ("fake-suffix", ["pass", "pass", "review", "unrecognized"]),
-        ("2dspec", ["pass", "pass", "review", "unrecognized"]),
+        ("fake-suffix", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
+        ("2dspec", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         # Expected to Fail
-        ("2DSPEC", ["fail", "pass", "review", "fatal"]),
-        ("", ["fail", "pass", "review", "fatal"]),  # empty string
+        ("2DSPEC", ["fail", "pass", "pass", "needs review", "FAIL"]),
+        ("", ["fail", "fail", "pass", "needs review", "FAIL"]),  # empty string
     ],
 )
 def test_ProductField(test_value: str, expected_score: list[str]) -> None:
@@ -322,14 +330,17 @@ def test_ProductField(test_value: str, expected_score: list[str]) -> None:
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("fits", ["pass", "pass", "pass", "N/A"]),
-        ("pdf", ["pass", "pass", "pass", "N/A"]),
-        ("png", ["pass", "pass", "pass", "N/A"]),
-        ("dat", ["pass", "pass", "pass", "N/A"]),
-        ("tar.gz", ["pass", "pass", "pass", "N/A"]),
+        ("fits", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("pdf", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("png", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("dat", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("tar.gz", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("h5", ["pass", "pass", "pass", "pass", "PASS"]),
+        # Expected Review
+        ("blah", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         # Expected to Fail
-        ("JPG", ["fail", "pass", "pass", "fatal"]),
-        ("", ["fail", "pass", "review", "fatal"]),  # empty string
+        ("JPG", ["fail", "pass", "pass", "pass", "FAIL"]),
+        ("", ["fail", "fail", "pass", "needs review", "FAIL"]),  # empty string
     ],
 )
 def test_ExtensionField(test_value: str, expected_score: list[str]) -> None:
@@ -346,14 +357,14 @@ def test_ExtensionField(test_value: str, expected_score: list[str]) -> None:
     "test_value, expected_score",
     [
         # Expected to Pass
-        ("anything", ["pass", "pass", "pass", "N/A"]),
-        ("dashes-are-fine", ["pass", "pass", "pass", "N/A"]),
-        ("pluses-are+fine", ["pass", "pass", "pass", "N/A"]),
-        ("multi", ["pass", "pass", "pass", "N/A"]),
+        ("anything", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("dashes-are-fine", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to fail
-        ("ANYTHING", ["fail", "pass", "pass", "fatal"]),  # caps
-        ("generic-field-name-is-too-long", ["pass", "fail", "pass", "fatal"]),  # caps
-        ("", ["fail", "pass", "pass", "fatal"]),  # empty string fails on caps
+        ("ANYTHING", ["fail", "pass", "pass", "pass", "FAIL"]),  # caps
+        ("generic-field-name-is-too-long", ["pass", "fail", "pass", "pass", "FAIL"]),  # length
+        ("pluses+are+not+fine", ["pass", "pass", "fail", "pass", "FAIL"]),
+        ("", ["fail", "fail", "pass", "pass", "FAIL"]),  # empty string fails on caps
     ],
 )
 def test_GenericField(test_value: str, expected_score: list[str]) -> None:
@@ -377,69 +388,69 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
         (
             "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits",
             "fake-hlsp",
-            "pass",
+            "PASS",
         ),
         # Real examples
         (
             "hlsp_phangs-jwst_jwst_nircam_ngc1385_f335m_v1p0p1_img.fits",
             "phangs-jwst",
-            "pass",
+            "PASS",
         ),
         (
             "hlsp_hff-deepspace_hst_acs-wfc3_all_multi_v1_readme.txt",
             "hff-deepspace",
-            "pass",
+            "PASS",
         ),
         (
             "hlsp_cos-gal_hst_cos_j152447.75-p041919.8_g130m_v1_fullspec.fits",
             "cos-gal",
-            "pass",
+            "NEEDS REVIEW",
         ),
         (
             "hlsp_tica_tess_ffi_s0084-o2-01023889-cam1-ccd1_tess_v01_img.fits",
             "tica",
-            "pass",
+            "PASS",
         ),
         (
             "hlsp_judo_hst_wfc3_jupiter-20120919_f275w_v1.0_npole-globalmap.fits",
             "judo",
-            "pass",
+            "NEEDS REVIEW",
         ),
         (  # example using multi
             "hlsp_my-hlsp_multi_multi_vega_multi_v1_spec.fits",
             "my-hlsp",
-            "pass",
+            "PASS",
         ),
         (  # example using multi in only some fields
             "hlsp_my-hlsp_hst_multi_vega_multi_v1_spec.fits",
             "my-hlsp",
-            "pass",
+            "PASS",
         ),
         (  # example readme with only 4 fields
             "hlsp_my-hlsp_hst_readme.txt",
             "my-hlsp",
-            "pass",
+            "PASS",
         ),
         (  # example catalog
             "hlsp_my-hlsp_alltargets_v1_cat.fits",
             "my-hlsp",
-            "pass",
+            "PASS",
         ),
         (  # example with + sign
-            "hlsp_lacos_hst_acs-wfc3_j012910+145935_uv-opt_v1.0_img.fits",
-            "lacos",
-            "pass",
+            "hlsp_specs_hst_acs_j012910+145935_f250w_v1.0_img.fits",
+            "specs",
+            "PASS",
         ),
         # Expected to Fail
         (
             "hlsp_fake-hlsp_hst_wfc3_VEGA_f160w_v1_img.fits",
             "fake-hlsp",
-            "fail",
+            "FAIL",
         ),
         (
             "hlsp_fake-hlsp_hst_wfc3_VEGA_f160w_v1_img.fits",
             "wrong-name",
-            "fail",
+            "FAIL",
         ),
     ],
 )
@@ -456,10 +467,10 @@ def test_HlspFileName(
     hfn.partition()
     hfn.create_fields()
     elements = hfn.evaluate_fields()
-    received_evaluation = hfn.evaluate_filename()["status"]
-    assert (
-        received_evaluation == expected_evaluation
-    ), f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
+    received_evaluation = hfn.evaluate_filename()["final_verdict"]
+    assert received_evaluation == expected_evaluation, (
+        f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
+    )
 
 
 # Tests for file names that are expected to raise errors

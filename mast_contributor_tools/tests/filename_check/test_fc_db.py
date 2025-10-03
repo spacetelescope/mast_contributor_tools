@@ -1,17 +1,6 @@
 """
 Tests for mast_contributor_tools/filename_check/fc_db.py
 
-Each test recieves four scores: [capitalization, length, value, severity]:
-- "Captalization" checks the capitilzation rules for this field, generally
-required to be lowercase
-- "Length" checks the character length, with the upper limit set for each field,
-for example, the "HLSP name" must be less than 20 characters.
-- "Value" checks the value of the field for additional rules; for example, the
-target name is allowed to include some special characters, and the instrument must
-be valid for the telescope name.
-- "Severity" is the overall score, combining these three tests. Generally "N/A" if
-the filename passes validation, "fatal" if it fails, or "unrecognized" for non-fatal
-warnings.
 """
 
 import os
@@ -46,14 +35,15 @@ def test_Hlsp_SQLiteDb_create(mock_connection) -> None:
     [
         ("filename", "path"),
         ("filename", "filename"),
-        ("filename", "status"),
+        ("filename", "final_verdict"),
         ("fields", "file_ref"),
         ("fields", "name"),
         ("fields", "value"),
         ("fields", "capitalization_score"),
         ("fields", "length_score"),
+        ("fields", "format_score"),
         ("fields", "value_score"),
-        ("fields", "severity"),
+        ("fields", "field_verdict"),
     ],
 )
 def test_Hlsp_SQLiteDb_Columns(table_name: str, expected_column: str) -> None:
@@ -73,9 +63,9 @@ def test_Hlsp_SQLiteDb_Columns(table_name: str, expected_column: str) -> None:
 @pytest.mark.parametrize(
     "file_record",
     [
-        (".", "hlsp_fake_file.fits", "pass", int(9)),
-        (".", "hlsp_fake_file2.fits", "pass", int(9)),
-        ("subdir", "hlsp_fake_file3.fits", "pass", int(9)),
+        (".", "hlsp_fake_file.fits", "PASS", int(9)),
+        (".", "hlsp_fake_file2.fits", "PASS", int(9)),
+        ("subdir", "hlsp_fake_file3.fits", "PASS", int(9)),
     ],
 )
 def test_add_filename(file_record) -> None:
@@ -86,7 +76,7 @@ def test_add_filename(file_record) -> None:
         {
             "path": file_record[0],
             "filename": file_record[1],
-            "status": file_record[2],
+            "final_verdict": file_record[2],
             "n_elements": file_record[3],
         }
     )
@@ -102,16 +92,17 @@ def test_add_filename(file_record) -> None:
 @pytest.mark.parametrize(
     "field_record",
     [
-        ("hlsp_fake_file.fits", "hlsp_str", "hlsp", "pass", "pass", "pass", "N/A"),
-        ("hlsp_fake_file.fits", "hlsp_name", "fake", "pass", "fail", "pass", "fatal"),
+        ("hlsp_fake_file.fits", "hlsp_str", "hlsp", "pass", "pass", "pass", "pass", "PASS"),
+        ("hlsp_fake_file.fits", "hlsp_name", "fake", "pass", "fail", "pass", "pass", "FAIL"),
         (
             "hlsp_fake_file.fits",
             "mission",
             "file",
             "pass",
             "pass",
-            "review",
-            "unrecognized",
+            "pass",
+            "needs review",
+            "NEEDS REVIEW",
         ),
     ],
 )
@@ -127,8 +118,9 @@ def test_add_fields(field_record) -> None:
                 "value": field_record[2],
                 "capitalization_score": field_record[3],
                 "length_score": field_record[4],
-                "value_score": field_record[5],
-                "severity": field_record[6],
+                "format_score": field_record[5],
+                "value_score": field_record[6],
+                "field_verdict": field_record[7],
             }
         ]
     )
@@ -144,9 +136,9 @@ def test_add_fields(field_record) -> None:
 @pytest.mark.parametrize(
     "field_record",
     [
-        ("hlsp_fake_file.fits", "hlsp_str", "BAD-VALUE", "pass", "pass", "N/A"),
-        ("hlsp_fake_file.fits", "mission", "pass", True, "pass", "N/A"),
-        ("hlsp_fake_file.fits", "target", "pass", "pass", "pass", 1),
+        ("hlsp_fake_file.fits", "hlsp_str", "BAD-VALUE", "pass", "pass", "pass", "PASS"),
+        ("hlsp_fake_file.fits", "mission", "pass", True, "pass", "pass", "PASS"),
+        ("hlsp_fake_file.fits", "target", "pass", "pass", "pass", "pass", 1),
     ],
 )
 def test_add_fields_xfail(field_record) -> None:
@@ -162,8 +154,9 @@ def test_add_fields_xfail(field_record) -> None:
                     "value": field_record[0].split("_")[1],
                     "capitalization_score": field_record[2],
                     "length_score": field_record[3],
-                    "value_score": field_record[4],
-                    "severity": field_record[5],
+                    "format_score": field_record[4],
+                    "value_score": field_record[5],
+                    "field_verdict": field_record[6],
                 }
             ]
         )
