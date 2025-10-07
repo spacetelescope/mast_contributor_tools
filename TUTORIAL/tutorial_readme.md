@@ -21,20 +21,20 @@ If this imports successfully, you are ready to go!
 
 # TUTORIAL 1: Filename Checker
 
-## Introduction 
-The filename checker is an automated way to test if your data filenames are compliant with the [HLSP filenaming policies](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention). 
+## Introduction
+The filename checker is an automated way to test if your data filenames are compliant with the [HLSP filenaming policies](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention).
 
-The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) included in this repository contains full instructions on how to use the Filename Checker, so please refer to that for more detailed information! This folder contains a basic tutorial to follow-along and learn how to use the file name checker, but the [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) is the best resource for more general appplications.
+The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) included in this repository contains full instructions on how to use the Filename Checker, so please refer to that for more detailed information! This folder contains a basic tutorial to follow-along and learn how to use the file name checker, but the [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) is the best resource for more general applications.
 
 ## Step 1: Investigating the Tutorial data.
 
-The [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial". 
+The [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial".
 
 There are three different fake fits files containing spectra for different hypothetical galaixes:
 
 - `hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits`
 - `hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits`
-- `hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits` 
+- `hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits`
 
 One catalog file containing measurements from those galaxies:
 - `hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits`
@@ -133,11 +133,11 @@ mct check_filenames mct-tutorial --directory='tutorial-data/'
 You should receieve an output message that 5 files were checked, and that all files passed!
 
 
-### Step 4c: Check all file names from a list 
+### Step 4c: Check all file names from a list
 
-You can also check multiple file names at once using a list in a text file. This command is useful if you want to check a large number of file names at once, but the files do not exist yet. 
+You can also check multiple file names at once using a list in a text file. This command is useful if you want to check a large number of file names at once, but the files do not exist yet.
 
-This command reads in a list from the `tutorial_file_list.txt` file, and checks each file name against the standards. 
+This command reads in a list from the `tutorial_file_list.txt` file, and checks each file name against the standards.
 
 ```shell
 mct check_filenames mct-tutorial --from_file='tutorial_file_list.txt'
@@ -172,4 +172,3 @@ More tutorials will be added here in the future! In the meantime, check out the 
 
 - [HLSP Contributor Guide](https://outerspace.stsci.edu/display/MASTDOCS/HLSP+Contributor+Guide) - Full documentation, instructions, and policies about the process of submitting an HLSP to MAST.
 - [MAST Help Desk](https://outerspace.stsci.edu/display/MASTDOCS/Archive+Support) - Please contact the help desk or send an email to [mast_contrib@stsci.edu](mailto:mast_contrib@stsci.edu) if you have any questions about using this package!
-
