@@ -1,15 +1,32 @@
 mast_contributor_tools Documentation
 ------------------------------------
 
-This is the documentation for mast_contributor_tools.
+.. toctree::
+   :maxdepth: 3
+   :caption: GETTING STARTED
+
+   readme
+   changelog
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: File Name Checker
 
-Indices and tables
-==================
+   filename_check_readme
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Packages and Modules
+
+   cli.rst
+   api/modules.rst
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Tutorials
+
+   tutorial_readme
+   
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

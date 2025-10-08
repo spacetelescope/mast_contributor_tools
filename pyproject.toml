@@ -1,3 +1,50 @@
+[project]
+name = "mast_contributor_tools"
+description = "This package contains a set of tools for use by MAST community contributors (High Level Science Products and MAST Community Contributed Missions). "
+requires-python = ">=3.11"
+readme = { file = "README.md", content-type = "text/x-rst" }
+license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
+authors = [
+  { name = "Mikulski Archive for Space Telescopes", email = "mast_contrib@stsci.edu" },
+]
+dependencies = [
+    "click >= 8.1.0",
+    "pyyaml > 6.0.1",
+    "tqdm >= 4.67.1",
+    "setuptools-scm >= 8.3.1"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit >=4.2.0",
+    "ruff >= 0.11.13",
+]
+test = [
+    "pytest",
+    "pytest-doctestplus",
+    "pytest-cov",
+    "pytest-mock",
+]
+docs = [
+    "linkify-it-py",
+    "myst-parser",
+    "sphinx",
+    "sphinx-astropy",
+    "sphinx-autobuild",
+    "sphinx-automodapi",
+    "sphinx-book-theme",
+    "sphinx-rtd-theme",
+    "sphinx-copybutton",
+    "enchant",
+    "sphinxcontrib-spelling",
+    "sphinx_click",
+    "tomli; python_version <\"3.11\"",
+]
+
+all = ["mast_contributor_tools[dev, test, docs]"]
+# Customize ruff lint here. The default setting if not specified will follow the configurations on https://docs.astral.sh/ruff/configuration/
+
 [build-system]
 requires = [
   "setuptools>=62.1",
@@ -5,30 +52,28 @@ requires = [
   "wheel",]
 build-backend = "setuptools.build_meta"
 
-[project]
-name = "mast_contributor_tools"
-description = "This package contains a set of tools for use by MAST community contributors ((High Level Science Products and MAST Community Contributed Missions). "
-requires-python = ">=3.11"
-readme = { file = "README.md", content-type = "text/x-rst" }
-license = { file = "licenses/LICENSE.rst", content-type = "text/plain" }
-authors = [
-  { name = "MAST Staff", email = "mast_contrib@stsci.edu" },
-]
-dependencies = []
-dynamic = ["version"]
+[tool.ruff]
+line-length = 120
 
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-doctestplus",
-    "pytest-cov"
-]
-docs = [
-    "sphinx",
-    "sphinx-automodapi",
-]
+[tool.ruff.lint]
+select = [
+    "E4",     # pycodestyle (E4xx): Various style errors (like indentation)
+    "E7",     # pycodestyle (E7xx): Statement issues (e.g., multiple statements on one line)
+    "E9",     # pycodestyle (E9xx): Syntax errors detected
+    "F",      # Pyflakes checks: General code correctness
+    "I",      # Import-related checks (e.g., isort ordering)
+    "PL",     # Pylint checks (if integrated)
+    "C901",   # McCabe complexity check: function too complex
+    "RUF010", # Ruff-specific code checks (e.g., invalid `noqa` directives)
+    "W291"    # pycodestyle trailing whitespace errors
+    ]
+ignore = ["PLR"]  # Ignore specific Pylint refactor messages
+
 [project.urls]
 repository = "https://github.com/spacetelescope/mast_contributor_tools"
+
+[project.scripts]
+mct = "mast_contributor_tools.mast_cli:cli"
 
 [tool.setuptools]
 zip-safe = false
@@ -42,12 +87,14 @@ write_to = "mast_contributor_tools/_version.py"
 
 [tool.pytest.ini_options]
 testpaths = [
-  "mast_contributor_tools",
+  "mast_contributor_tools/tests",
   "docs",
 ]
-doctest_plus = "enabled"
-text_file_format = "rst"
-addopts = "--doctest-rst"
+python_files = "test_*.py"
+# commenting these out for now until docs are added
+# doctest_plus = "enabled"
+# text_file_format = "rst"
+# addopts = "--doctest-rst"
 
 [tool.coverage.run]
 omit = [
