@@ -20,7 +20,7 @@ release = version.split("+", 1)[0]
 
 project = "mast_contributor_tools"
 author = "MAST staff"
-copyright = "2023, Mikulski Archive for Space Telescopes (MAST)"
+copyright = "2025, Mikulski Archive for Space Telescopes (MAST)"
 
 # -- General configuration ---------------------------------------------------
 
