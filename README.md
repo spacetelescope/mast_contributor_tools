@@ -19,7 +19,7 @@ There are two main branches for mast_contributor_tools work:
 
 ## Installation
 ### Required packages and versions
-- See required packages found in the [conda evn file](https://github.com/spacetelescope/mast_contributor_tools/blob/main/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/main/pyproject.toml).
+- See required packages found in the [conda env file](https://github.com/spacetelescope/mast_contributor_tools/blob/main/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/main/pyproject.toml).
 
 ### Conda environment
 Replace `env_name` with the desired name for your environment.
