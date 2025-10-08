@@ -4,7 +4,7 @@ This folder contains a basic tutorial for the `mast_contributor_tools` package t
 
 ## Installation
 
-For full installation instructions, refer to the [`README.md`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/README.md) file at the top-level of this repository. This package is installable via pip and can be installed using this command from the top-level folder of this repository:
+For full installation instructions, refer to the [`README.md`](https://github.com/spacetelescope/mast_contributor_tools/blob/main/README.md) file at the top-level of this repository. This package is installable via pip and can be installed using this command from the top-level folder of this repository:
 
 ```shell
 pip install .
@@ -24,11 +24,11 @@ If this imports successfully, you are ready to go!
 ## Introduction
 The filename checker is an automated way to test if your data filenames are compliant with the [HLSP filenaming policies](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention).
 
-The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) included in this repository contains full instructions on how to use the Filename Checker, so please refer to that for more detailed information! This folder contains a basic tutorial to follow-along and learn how to use the file name checker, but the [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/docs/filename_check_readme.md) is the best resource for more general applications.
+The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/main/docs/filename_check_readme.md) included in this repository contains full instructions on how to use the Filename Checker, so please refer to that for more detailed information! This folder contains a basic tutorial to follow-along and learn how to use the file name checker, but the [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_tools/blob/main/docs/filename_check_readme.md) is the best resource for more general applications.
 
 ## Step 1: Investigating the Tutorial data.
 
-The [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial".
+The [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/main/TUTORIAL/tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial".
 
 There are three different fake fits files containing spectra for different hypothetical galaixes:
 
@@ -124,7 +124,7 @@ mct check_filenames {HLSP-NAME}
 
 which will check all of the files in the current directory be default, but you can also specific a directory path with the `--directory={directory-path}` option.
 
-Use this command to run the filename checker against everything in the [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/TUTORIAL/tutorial-data/) directory:
+Use this command to run the filename checker against everything in the [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/main/TUTORIAL/tutorial-data/) directory:
 
 ```shell
 mct check_filenames mct-tutorial --directory='tutorial-data/'
