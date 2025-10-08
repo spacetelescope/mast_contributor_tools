@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 1.0.0 (2025-10-08)
+
 ### Added
 [PR # 24](https://github.com/spacetelescope/mast_contributor_tools/pull/24)
     - Added a GitHub Actions workflow to automatically create a release on pushing a tag to main branch
