@@ -1,13 +1,11 @@
-# Change Log
+# Changelog
 
 ## [Unreleased]
 
-
-### Removed
-
-### Changed
-
 ### Added
+[PR # 24](https://github.com/spacetelescope/mast_contributor_tools/pull/24)
+    - Added a GitHub Actions workflow to automatically create a release on pushing a tag to main branch
+    - Added a readthedocs yaml config file for building docs on readthedocs.org
 [PR # 23](https://github.com/spacetelescope/mast_contributor_tools/pull/23)
     - Refactoring file name checker for updated non-boolean verdicts: now 'pass', 'needs review', or 'fail'
     - added 'format_score' field test for better handling of special characters
@@ -27,3 +25,15 @@
 
 [PR # 1](https://github.com/spacetelescope/mast_contributor_tools/pull/1)
     - Initial codebase commit for `filename_check`
+
+### Changed
+[PR # 24](https://github.com/spacetelescope/mast_contributor_tools/pull/24)
+    - pyproject.toml: update author name and some dependencies
+    - docs/conf.py: change to sphinx-book-theme from sphinx-rtd-theme
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
