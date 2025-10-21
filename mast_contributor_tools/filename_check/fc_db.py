@@ -113,9 +113,9 @@ class Hlsp_SQLiteDb:
         dat = self.conn.execute("SELECT filename, final_verdict from filename").fetchall()
         # Parse numbers
         num_files = len(dat)
-        num_pass = sum([1 for d in dat if d[1] == "pass"])
-        num_review = sum([1 for d in dat if d[1] == "needs review"])
-        num_fail = sum([1 for d in dat if d[1] == "fail"])
+        num_pass = sum([1 for d in dat if d[1].upper() == "PASS"])
+        num_review = sum([1 for d in dat if d[1].upper() == "NEEDS REVIEW"])
+        num_fail = sum([1 for d in dat if d[1].upper() == "FAIL"])
         # Write summary message
         summary_message = "Output summary:\n    "
         summary_message += f"Files Checked: {num_files}\n    "
