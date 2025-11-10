@@ -1,6 +1,20 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+
+### Changed
+
+### Deprecated
+
+### Fixed
+[PR # 29](https://github.com/spacetelescope/mast_contributor_tools/pull/29)
+    - Fixed the repository URL in Documentation
+[PR # 28](https://github.com/spacetelescope/mast_contributor_tools/pull/28)
+    - Fixed a small bug where the final log statement incorrectly counts the number of files that passed.
+### Removed
+
+### Security
 
 ## 1.0.0 (2025-10-08)
 
