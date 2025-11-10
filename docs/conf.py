@@ -85,7 +85,7 @@ intersphinx_mapping = {"python": ("https://docs.python.org/", None)}
 # a list of builtin themes.
 html_theme = "sphinx_book_theme"  # "sphinx_rtd_theme"  # "bootstrap-astropy" # "alabaster" #
 html_theme_options = {
-    "repository_url": "https://github.com/spacetelescope/bibcat/",
+    "repository_url": "https://github.com/spacetelescope/mast_contributor_tools/",
     "use_repository_button": True,  # shows the GitHub icon button
     "use_edit_page_button": True,  # adds an "edit this page" link
     "use_issues_button": True,  # adds a link to GitHub issues
