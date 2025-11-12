@@ -1,4 +1,4 @@
-Copyright (c) 2024, MAST Staff
+Copyright (c) 2025, Mikulski Archive for Space Telescopes
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
