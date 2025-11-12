@@ -10,6 +10,8 @@ from typing import Union
 import click
 
 from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, get_file_paths, logger
+from mast_contributor_tools.metadata_check import validate_fits_file  # added
+from pathlib import Path
 
 
 # ==========================================
@@ -136,6 +138,62 @@ def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
     # Check the file name
     for filename in filenames:
         check_single_filename(filename)
+
+
+# ==========================================
+# CLI command for metadata checker
+# ==========================================
+@cli.command("check_metadata", short_help="Check FITS metadata against HLSP guidelines")
+@click.argument("filenames", nargs=-1)
+@click.option("-hlsp", "--hlsp-name", default="", help="Expected HLSP name to cross-check with header HLSPNAME")
+@click.option("-dir", "--directory", type=str, default=".", help="Path of HLSP directory tree; tests files in that directory")
+@click.option(
+    "-file",
+    "--from_file",
+    type=str,
+    default="",
+    help="Path to a text file containing a list of filenames to check, instead of scanning a directory",
+)
+@click.option("-p", "--pattern", default="*.fits", help="File pattern to limit testing, for example '*.fits'")
+@click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
+def metadata_cli(filenames: tuple[str, ...], hlsp_name: str = "", directory: str = ".", from_file: str = "", pattern: str = "*.fits", verbose: bool = False) -> None:
+    """
+    Command for checking FITS metadata for one or more files.
+
+    Provide file names directly:
+        mct check_metadata file1.fits file2.fits
+
+    Or scan a directory / use a file list:
+        mct check_metadata --directory='tutorial-data/' --pattern='*.fits'
+        mct check_metadata --from_file='file_list.txt'
+    """
+    # Update logger level for verbose
+    if verbose:
+        logger.setLevel("DEBUG")
+        for handler in logger.handlers:
+            handler.setLevel(logger.level)
+
+    # Build list of files to validate
+    if filenames:
+        file_list = [Path(f) for f in filenames]
+    else:
+        # reuse existing helper to build list from directory or from_file
+        file_list = get_file_paths(directory, from_file=from_file, search_pattern=pattern)
+
+    # Validate each file and print a concise summary
+    for fp in file_list:
+        try:
+            summary = validate_fits_file(fp, hlsp_name=hlsp_name if hlsp_name else None)
+        except Exception as e:
+            logger.error("Error validating %s: %s", fp, e)
+            continue
+
+        # Print top-level verdict
+        logger.critical(f"Metadata evaluation for {summary.get('filepath')}: {summary.get('overall_verdict')}")
+        # Print per-key verdicts (compact)
+        for k in summary.get("keys", []):
+            for keyname, info in k.items():
+                logger.debug(f"  {keyname}: {info.get('verdict')} - {info.get('message', '')}")
 
 
 # ==========================================

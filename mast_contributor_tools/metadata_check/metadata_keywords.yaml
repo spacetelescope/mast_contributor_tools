@@ -1,0 +1,57 @@
+Common:
+  required:
+    - DATE-BEG
+    - DATE-END
+    - DOI
+    - EQUINOX
+    - HLSPID
+    - HLSPTARG
+    - HLSPVER
+    - INSTRUME
+    - LICENSE
+    - LICENURL
+    - MJD-BEG
+    - MJD-END
+    - MJD-MID
+    - OBSERVAT
+    - TELESCOP
+    - TIMESYS
+    - XPOSURE
+  recommended:
+    - HLSPLEAD
+    - HLSPNAME
+    - TELAPSE
+  suggested:
+    - PROPOSID
+    - REFERENC
+
+Image:
+  required:
+    - BUNIT
+    - CD1_1
+    - CD1_2
+    - CD2_1
+    - CD2_2
+    - CDELT1
+    - CDELT2
+    - CRPIX1
+    - CRPIX2
+    - CRVAL1
+    - CRVAL2
+    - CTYPE1
+    - CTYPE2
+    - FILTER
+    - PC1_1
+    - PC1_2
+    - PC2_1
+    - PC2_2
+    - DEC_TARG
+    - RA_TARG
+  recommended:
+    - PSFSIZE
+    - WCSAXES
+  suggested:
+    - APERTURE
+    - CUNIT1
+    - CUNIT2
+    - DETECTOR
