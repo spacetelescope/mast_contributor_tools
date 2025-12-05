@@ -24,7 +24,7 @@ Within the `fields` table, your files are evaluated as follows:
 - Format: checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
 - Value: In some cases, the contents of each field are validated against known values to the extent possible.
 
-The evaluation scores for individual fields and the overall file names are one of `PASS`, `NEEDS REVIEW` or `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value. This is often necessary and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
+The evaluation scores for individual fields and the overall file names are one of `PASS`, `NEEDS REVIEW` or `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value. This is often necessary and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff (mast_contrib@stsci.edu) for review.
 
 Within the `filename` table (`Browse Data` tab, then select table `filename` in the top left box), each filename is listed with the overall status (automatically set to the most critical of `PASS`, `NEEDS REVIEW` or `FAIL`) as well as the number of elements identified in the filename. An example is shown below:
 
