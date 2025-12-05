@@ -1,4 +1,4 @@
-# SQLite Tutorial
+# Reading the File Name Checker Results: Tutorial for SQLite files 
 This tutorial will provide a brief tutorial for how to open and use SQLite files, which will be produced upon running the filename checker on your fileset. Please refer to the [`Filename Check README`](../docs/filename_check_readme.md) for additional information about running the filename checker. If this is the first time you've used the Filename Checking software, you may want to run through the [`TUTORIAL README`](../TUTORIAL/tutorial_readme.md) first to familiarize yourself with the process and the SQLite files the software produces.
 
 ## Reading and Interacting with SQLite files
