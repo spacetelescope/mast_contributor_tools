@@ -22,6 +22,7 @@ The various options for this command are described below:
 | `-e` or `--exclude`     | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None                 |
 | `-n` or `--max_n`       | Maximum number of files to check, for testing purposes.                       | None (all files)                   |
 | `-db` or `--dbFile`     | Name of Results database file                                                 | `results_<hlsp_name>.db`           |
+| `-f` or `--output_format`     | Write output to alternate format. Currently supports "csv", "fits", "html" or "excel"                                                 | `db`           |
 | `-v` or `--verbose`     | Enables verbose output for more information                                   | `False`                            |
 | `--help`                | Prints information about this command                                         |                                    |
 
