@@ -159,7 +159,7 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str, output_f
 
     # Write ouput to alternate format if specified
     if output_format != "db":
-        logger.debug(f"Writing to alternate format '{output_format}'")
+        logger.debug(f"Also writing to alternate format '{output_format}'")
         ouput_files = db.write_to_alternate_format(output_format)
         logger.critical(f"Written to {ouput_files}")
 

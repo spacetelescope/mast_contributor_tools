@@ -138,7 +138,7 @@ class Hlsp_SQLiteDb:
 
         return summary_message
 
-    def write_to_alternate_format(self, save_format: str) -> None:
+    def write_to_alternate_format(self, save_format: str) -> list[str]:
         """
         Write out the SQLite DB as an alternate format.
 
@@ -146,6 +146,10 @@ class Hlsp_SQLiteDb:
         ----------
         save_format : str
             Format to save output: 'csv', 'excel', 'html', or 'fits'
+
+        Returns
+        --------
+        files_written: list[str]: List of file names written out
         """
         # Check that input is a valid option
         supported_formats = ["csv", "excel", "fits", "html"]
