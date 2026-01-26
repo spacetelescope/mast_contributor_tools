@@ -47,6 +47,12 @@ def cli() -> None:
 @click.option("-e", "--exclude", default="", help="File pattern to exclude from testing, for example '\\*.png'")
 @click.option("-n", "--max_n", default=None, help="Maximum number of files to check, for testing purposes.")
 @click.option("-db", "--dbFile", default="", help="Results database filename (defaults to: results_<hlsp_name>.db)")
+@click.option(
+    "-f",
+    "--output_format",
+    default="db",
+    help="Write output to alternate format (csv, fits, html, excel)",
+)
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
 def filenames_cli(
     hlsp_name: str,
@@ -56,6 +62,7 @@ def filenames_cli(
     exclude: str = "",
     max_n: Union[int, None] = None,
     dbfile: str = "",
+    output_format: str = "db",
     verbose: bool = False,
 ) -> None:
     """
@@ -102,7 +109,7 @@ def filenames_cli(
     )
 
     # Perform the file name check
-    check_filenames(hlsp_name, file_list, dbFile=dbfile)
+    check_filenames(hlsp_name, file_list, dbFile=dbfile, output_format=output_format)
 
 
 @cli.command("check_filename", short_help="Check a single file name against MAST HLSP naming standards")

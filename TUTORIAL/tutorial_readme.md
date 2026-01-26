@@ -164,6 +164,16 @@ mct check_filenames mct-tutorial --directory='tutorial-data/'  --exclude='*_spec
 ```
 The output message will report that this command only checked 2 files, but both files passed.
 
+### Step 4e. Exporting results to alternate format
+
+If you're not used to working with SQLite `.db` files, you can also save the output to an alternate format using the `--output_format` flag. Currently supported values include "csv", "fits", "html", and "excel". The `.db` file is always written by default, but this option will write an additional file in the chosen format.
+
+For example, this command will save out a html file with the filename checker results in a color-coded table:
+
+```shell
+mct check_filenames mct-tutorial --directory='tutorial-data/' --output_format='html'
+```
+
 
 # Additional Resources
 Congratulations! You have completed this tutorial and now know the basic usage of the MAST Contributor's Tools Filename Checker.

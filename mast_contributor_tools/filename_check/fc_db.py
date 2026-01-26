@@ -2,6 +2,10 @@
 
 import sqlite3
 
+import astropy.io.fits as fits
+import pandas as pd
+from astropy.table import Table
+
 # The following SQL will create am SQLite database
 FILENAME_TABLE = """
         CREATE TABLE IF NOT EXISTS filename (
@@ -133,3 +137,113 @@ class Hlsp_SQLiteDb:
             # Add more detail here later? - could break down by fields, etc.
 
         return summary_message
+
+    def write_to_alternate_format(self, save_format: str) -> list[str]:
+        """
+        Write out the SQLite DB as an alternate format.
+
+        Parameters
+        ----------
+        save_format : str
+            Format to save output: 'csv', 'excel', 'html', or 'fits'
+
+        Returns
+        --------
+        files_written: list[str]: List of file names written out
+        """
+        # Check that input is a valid option
+        supported_formats = ["csv", "excel", "fits", "html"]
+        if save_format.lower() not in supported_formats:
+            msg = f"Save Format '{save_format}' is not supported."
+            msg += f"Please choose from {supported_formats}"
+            raise ValueError(msg)
+
+        # Construct new filename to save to
+        fileroot = self.db_file.strip(".db")
+
+        # Read DB file as pandas dataframe
+        self.conn = sqlite3.connect(self.db_file)
+        filename_data = pd.read_sql_query("SELECT * FROM filename", self.conn)
+        fields_data = pd.read_sql_query("SELECT * FROM fields", self.conn)
+        # Close connection
+        self.conn.close()
+
+        # Save out data in new format
+        # CSV files
+        if save_format == "csv":
+            ouput_filename1 = f"{fileroot}_filenames.csv"
+            ouput_filename2 = f"{fileroot}_fields.csv"
+            filename_data.to_csv(ouput_filename1)
+            fields_data.to_csv(ouput_filename2)
+            files_written = [ouput_filename1, ouput_filename2]
+        # Excel spreadsheet
+        elif save_format == "excel":
+            output_filename = f"{fileroot}.xlsx"
+            # Style dataframe: change color of cell depending on verdict
+            filename_data = filename_data.style.map(color_formatter)
+            fields_data = fields_data.style.map(color_formatter)
+            # Save as one Excel document with two sheets:
+            # One for filenames table and one for fields
+            with pd.ExcelWriter(output_filename) as excel_writer:
+                filename_data.to_excel(excel_writer, sheet_name="FileNames")
+                fields_data.to_excel(excel_writer, sheet_name="Fields")
+            files_written = [output_filename]
+
+        # Fits table
+        elif save_format == "fits":
+            # Save as one fits file with two table extensions:
+            # One for filenames table and one for fields
+            output_filename = f"{fileroot}.fits"
+            hdu_list = fits.HDUList(
+                [
+                    fits.PrimaryHDU(),  # TODO: add some metadata?
+                    fits.table_to_hdu(Table.from_pandas(filename_data), name="FILENAMES"),
+                    fits.table_to_hdu(Table.from_pandas(fields_data), name="FIELDS"),
+                ]
+            )
+            hdu_list.writeto(output_filename, overwrite=True)
+            files_written = [output_filename]
+
+        # Html table
+        elif save_format == "html":
+            ouput_filename1 = f"{fileroot}_filenames.html"
+            ouput_filename2 = f"{fileroot}_fields.html"
+            # Style dataframe: change color of cell depending on verdict
+            filename_data = filename_data.style.map(color_formatter)
+            fields_data = fields_data.style.map(color_formatter)
+            # Then write to html file
+            filename_data.to_html(
+                ouput_filename1,
+                header=True,
+            )
+            fields_data.to_html(
+                ouput_filename2,
+                header=True,
+            )
+            files_written = [ouput_filename1, ouput_filename2]
+
+        else:
+            # No alternate format - only DB file
+            files_written = [self.db_file]
+
+        return files_written
+
+
+def color_formatter(value: str) -> str:
+    """Color mapping for use in write_to_alternate_format().
+    Color-codes table cells based on verdict: green for "PASS", red for "FAIL", etc.
+
+    Parameters
+    ------
+    value: str
+
+    """
+    if str(value).upper() == "PASS":
+        color = "lightgreen"
+    elif str(value).upper() == "FAIL":
+        color = "red"
+    elif str(value).upper() == "NEEDS REVIEW":
+        color = "yellow"
+    else:
+        color = None
+    return "background-color: %s" % color

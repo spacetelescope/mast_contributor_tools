@@ -171,6 +171,27 @@ def test_add_fields_xfail(field_record) -> None:
     test_db.close_db()
 
 
+# Test write_to_alternate_format() function
+@pytest.mark.parametrize(
+    "format, output_filename",
+    [
+        ("csv", "test_file_fields.csv"),
+        ("fits", "test_file.fits"),
+        ("excel", "test_file.xlsx"),
+        ("html", "test_file_filenames.html"),
+    ],
+)
+def test_write_to_alternate_format(format, output_filename):
+    """Test write_to_alternate_format() function"""
+    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db.write_to_alternate_format(format)
+    # Assert new file format was written
+    output_filename = TEST_DB_FILE.replace("test_file.db", output_filename)
+    assert os.path.exists(output_filename), TEST_DB_FILE  # f"File {output_filename} not found"
+    # Delete the file after test complete
+    os.remove(output_filename)
+
+
 # Remove the test.db file once the tests are complete
 def test_remove_test_db_file():
     """Delete the test_file.db now that the tests are complete"""
