@@ -7,6 +7,10 @@ from pathlib import Path
 
 import yaml
 
+from mast_contributor_tools.utils.logger_config import setup_logger
+
+logger = setup_logger(__name__)
+
 # ==========================================
 # Setup some configurations for this module
 # ==========================================
@@ -399,7 +403,15 @@ class HlspFileName:
         if self.nFields < 4:
             raise ValueError(f"Filename {self.name} has less than 4 fields")
         elif self.nFields > 9:
-            raise ValueError(f"Filename {self.name} has more than 9 fields")
+            # Don't raise a ValueError here: the individual fields can still be checked
+            # but filename will be added to the results as a FAIL
+            logger.error(
+                (
+                    f"Filename '{self.name}' contains more than 9 fields (total {self.nFields})."
+                    "Individual fields will still be evaulated, "
+                    "but the final verdict will be 'FAIL'"
+                )
+            )
 
     def create_fields(self) -> None:
         """Create Field objects for each field in the filename."""
@@ -419,6 +431,16 @@ class HlspFileName:
         elif 5 < nf < 9:
             for i in range(2, nf - 3):
                 self.fields.append(GenericField(self.fieldvals[i], i - 1))
+
+        # If there are more than 9 fields, treat the extra fields as generic
+        # The check will fail at the filename level, but the fields can still be tested
+        elif nf > 9:
+            self.fields.append(MissionField(self.fieldvals[2]))
+            self.fields.append(InstrumentField(self.fieldvals[3]))
+            self.fields.append(TargetField(self.fieldvals[4]))
+            self.fields.append(FilterField(self.fieldvals[5]))
+            for i in range(6, nf - 3):
+                self.fields.append(GenericField(self.fieldvals[i], i - 5))
 
         # Files should have a version field unless the product_type is readme
         if self.fieldvals[nf - 2].lower() not in ["readme"]:
@@ -451,6 +473,7 @@ class HlspFileName:
         dict[str, Any]
             Dictionary of file name attributes
         """
+        # The final verdict is determined as the worst of the individual field verdicts
         field_verdicts = [f.field_verdict for f in self.fields]
         if "FAIL" in field_verdicts:
             final_verdict = "fail"
@@ -458,6 +481,14 @@ class HlspFileName:
             final_verdict = "needs review"
         else:
             final_verdict = "pass"
+
+        # Additional last-minute checks based on the number of fields
+        if self.nFields > 9:  # more than 9 fields
+            final_verdict = "fail"
+        elif self.nFields < 5:  # less than 5 fields
+            final_verdict = "fail"
+
+        # Final result for this filename
         attr = {
             "path": self.path,
             "filename": self.name,

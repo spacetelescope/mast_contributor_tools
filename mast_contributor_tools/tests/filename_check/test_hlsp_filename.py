@@ -448,8 +448,13 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
             "FAIL",
         ),
         (
-            "hlsp_fake-hlsp_hst_wfc3_VEGA_f160w_v1_img.fits",
+            "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits",
             "wrong-name",
+            "FAIL",
+        ),
+        (
+            "hlsp_my-hlsp_hst_wfc3_vega_f160w_more_than_nine_fields.fits",  # too many fields
+            "my-hlsp",
             "FAIL",
         ),
     ],
@@ -480,11 +485,6 @@ def test_HlspFileName(
         ("fakefile.fits", "fakehlsp", ValueError),
         ("fakefile.fits", "invalid_name", ValueError),  # invalid hlsp name
         ("two_fields.fits", "fakehlsp", ValueError),  # only two fields
-        (
-            "this_fake_file_name_has_more_than_nine_fields.fits",  # too many fields
-            "fakehlsp",
-            ValueError,
-        ),
     ],
 )
 def test_HlspFileName_errors(
