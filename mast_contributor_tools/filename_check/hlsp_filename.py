@@ -417,7 +417,7 @@ class HlspFileName:
         elif self.nFields > 9:
             # Don't raise a ValueError here: the individual fields can still be checked
             # but filename will be added to the results as a FAIL
-            logger.warning(
+            logger.error(
                 (
                     f"Filename '{self.name}' contains more than 9 fields (total {self.nFields})."
                     "Individual fields will still be evaulated, "
