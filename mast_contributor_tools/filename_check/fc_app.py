@@ -203,6 +203,7 @@ def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
         "length_score": "Character length for this field is too long.",
         "format_score": "Forbidden characters detected. Value should be alphanumeric with hyphens, although some special characters are allowed in the 'target_name' or 'version' fields.",
         "value_score": "Unrecognized value or combination. These are often necessary and good, but require review by MAST staff.",
+        "nfield_score": "File name contains more than 9 fields; underscores cannot be used within a field.",
     }
 
     # Display resuls
@@ -210,7 +211,7 @@ def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
         logger_msg = "Individual Field evaluations: \n"
         for p, v in e.items():
             logger_msg += f"  {p}: '{v}' \n"
-            if (v.lower() in ["needs review", "fail"]) and (p in suggested_solutions.keys()):
+            if (str(v).lower() in ["needs review", "fail"]) and (p in suggested_solutions.keys()):
                 # Wrap text to the same indent level
                 logger_msg += textwrap.fill(
                     f"\tHINT: {suggested_solutions[p]}",
