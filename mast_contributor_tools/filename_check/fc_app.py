@@ -92,7 +92,7 @@ def get_file_paths(
     return file_list
 
 
-def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
+def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str, output_format: str = "db") -> None:
     """Recursively check filenames in a directory tree of HLSP products
 
     Parameters
@@ -103,6 +103,8 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
         List of files to check, typically output from get_file_paths()
     dbFile : str, optional
         Name of SQLite database file to contain results
+    output_format : str, optional
+       Alternate format to save results to: 'csv', 'fits', 'html', or 'excel'. Default: "db"
     """
     # Make sure hlsp name is valid
     if not FieldRule.match_pattern(hlsp_name, HLSPNAME_REGEX):
@@ -153,6 +155,14 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str) -> None:
             logger.debug(f"Verdict for {f.name}: '{file_rec['final_verdict']}'")
 
     logger.critical(db.print_summary())  # print summary information on how many files passed
+    logger.critical(f"\nResults written to {dbFile}")
+
+    # Write ouput to alternate format if specified
+    if output_format != "db":
+        logger.debug(f"Also writing to alternate format '{output_format}'")
+        ouput_files = db.write_to_alternate_format(output_format)
+        logger.critical(f"Written to {ouput_files}")
+
     db.close_db()
     logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
 

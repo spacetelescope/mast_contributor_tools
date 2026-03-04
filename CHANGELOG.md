@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Added
+[PR # 32](https://github.com/spacetelescope/mast_contributor_tools/pull/32)
+    - Adding option to save filename checker output in altnerate format (csv, fits, excel, html)
 
 ### Changed
 
