@@ -19,7 +19,7 @@ The `fields` table contains the results of the file name check for every single 
 
 Within the `fields` table, your files are evaluated as follows (see [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for more details):
 
-- Captalization: the filename must be all lower case.
+- Capitalization: the filename must be all lower case.
 - Character Length: each field has a maximum character length.
 - Format: checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
 - Value: In some cases, the contents of each field are validated against known values to the extent possible.
@@ -31,3 +31,35 @@ Within the `filename` table (`Browse Data` tab, then select table `filename` in 
 ![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_filename_Table_View.png "Figure 3")
 
 Again, please see [`filename_check_readme.md`](../docs/filename_check_readme.md) for how to run the filechecker or the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for detailed rules.
+
+### Opening the SQLite file with Python
+
+An alternative way to read and interact with the DB file is to open it in Python. This might be useful for large HLSPs with many files, or if you want to explore the results programmatically.
+
+For instance, if you want to get the full list of tables and views available to query, you can use the following Python code:
+
+```python
+# load sqlite3 module
+import sqlite3
+
+# modify the path to reflect the relative path of your results_mct-tutorial.db file
+dbfile = '/relative/path/to/results_mct-tutorial.db'
+
+# create sql connection to db
+con = sqlite3.connect(dbfile)
+# create cursor that can be used to execute queries
+cur = con.cursor()
+
+# query db for full list of tables and views
+table_list = [a for a in cur.execute("SELECT * from sqlite_master WHERE (type = 'table' or type = 'view')")]
+print(table_list) # should get '[('filename',), ('fields',), ('potential_problems',)]' as output
+
+# close connection
+con.close()
+```
+
+You can also execute queries within the potential_problems view to determine the number and severity of filename issues:
+
+```python
+potential_problems = [a for a in cur.execute("SELECT * from potential_problems")]
+```
