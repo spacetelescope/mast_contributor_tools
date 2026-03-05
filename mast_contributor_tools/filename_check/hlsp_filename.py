@@ -118,7 +118,7 @@ class FieldRule:
     def nfields(field_index: int) -> str:
         """Tests that the field index is less than 9;
         Returns 'pass' or 'fail' based on results."""
-        return SCORE[field_index < 9]
+        return SCORE[field_index < 10]
 
     def match_pattern(value: str, regex_expr: re.Pattern) -> str:
         """Test that the field contains no forbidden characters.
@@ -181,7 +181,7 @@ class FilenameFieldAB(ABC):
         self.name = field_name
         self.value = field_value
         self.max_len = fieldLengthPolicy[field_name]
-        self.field_indx = field_indx
+        self.field_indx = field_indx + 1  # index from 1 instead of 0
 
         # Set regex pattern based on field name
         if self.name == "hlsp_name":
