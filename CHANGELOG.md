@@ -10,6 +10,8 @@
 ### Deprecated
 
 ### Fixed
+[PR # 34](https://github.com/spacetelescope/mast_contributor_tools/pull/34)
+    - Addressing bug where file names with more than 9 fields were failing silently and not added to the results file.
 
 ### Removed
 

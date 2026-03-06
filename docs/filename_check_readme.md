@@ -134,10 +134,11 @@ The results are organized by field, and the fields must appear in a particular o
 
 See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for detailed rules. The results of the filename evaluation are stored in an SQLite3 database. Each recognized field is evaluated on the following criteria:
 
-- Captalization: the filename must be all lower case.
-- Character Length: each field has a maximum character length.
-- Format: checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
-- Value: In some cases, the contents of each field are validated against known values to the extent possible.
+- Captalization (`capitalization_score`): the filename must be all lower case.
+- Character Length (`length_score`): each field has a maximum character length.
+- Format (`format_score`): checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
+- Value (`value_score`): In some cases, the contents of each field are validated against known values to the extent possible.
+- Field Number (`nfield_score`): The file name must contain 9 fields or fewer (including the file extension), separated by underscores.
 
 The evaluation scores for individual fielda and the overall file names are one of `PASS`, `NEEDS REVIEW` or `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value. This is often necessary and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
 

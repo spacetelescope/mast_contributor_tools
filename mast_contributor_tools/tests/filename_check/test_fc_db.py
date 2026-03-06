@@ -92,12 +92,14 @@ def test_add_filename(file_record) -> None:
 @pytest.mark.parametrize(
     "field_record",
     [
-        ("hlsp_fake_file.fits", "hlsp_str", "hlsp", "pass", "pass", "pass", "pass", "PASS"),
-        ("hlsp_fake_file.fits", "hlsp_name", "fake", "pass", "fail", "pass", "pass", "FAIL"),
+        ("hlsp_fake_file.fits", "hlsp_str", "hlsp", 0, "pass", "pass", "pass", "pass", "pass", "PASS"),
+        ("hlsp_fake_file.fits", "hlsp_name", "fake", 1, "pass", "fail", "pass", "pass", "pass", "FAIL"),
         (
             "hlsp_fake_file.fits",
             "mission",
             "file",
+            2,
+            "pass",
             "pass",
             "pass",
             "pass",
@@ -116,11 +118,13 @@ def test_add_fields(field_record) -> None:
                 "file_ref": field_record[0],
                 "name": field_record[1],
                 "value": field_record[2],
-                "capitalization_score": field_record[3],
-                "length_score": field_record[4],
-                "format_score": field_record[5],
-                "value_score": field_record[6],
-                "field_verdict": field_record[7],
+                "nfield": field_record[3],
+                "capitalization_score": field_record[4],
+                "length_score": field_record[5],
+                "format_score": field_record[6],
+                "value_score": field_record[7],
+                "nfield_score": field_record[8],
+                "field_verdict": field_record[9],
             }
         ]
     )
@@ -152,10 +156,12 @@ def test_add_fields_xfail(field_record) -> None:
                     "file_ref": field_record[0],
                     "name": field_record[1],
                     "value": field_record[0].split("_")[1],
+                    "nfield": 0,
                     "capitalization_score": field_record[2],
                     "length_score": field_record[3],
                     "format_score": field_record[4],
                     "value_score": field_record[5],
+                    "nfield_score": "pass",
                     "field_verdict": field_record[6],
                 }
             ]
