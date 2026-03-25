@@ -55,7 +55,8 @@ field_evaluations = pd.read_sql_query("SELECT * FROM fields", conn)
 problems = pd.read_sql_query("SELECT * FROM potential_problems", conn)
 
 # Print to see what the results look like:
-print(file_evaluations)```
+print(file_evaluations)
+```
 
 |    | path   | filename                                                      | status   |   n_elements |
 |---:|:-------|:--------------------------------------------------------------|:---------|-------------:|
@@ -66,7 +67,8 @@ print(file_evaluations)```
 |  4 | .      | hlsp_mct-tutorial_readme.txt                                  | pass     |            4 |
 
 ```python
-print(field_evaluations)```
+print(field_evaluations)
+```
 
 |    | file_ref                                                      | name         | value        | capitalization_score   | length_score   | value_score   | severity     |
 |---:|:--------------------------------------------------------------|:-------------|:-------------|:-----------------------|:---------------|:--------------|:-------------|
@@ -112,7 +114,9 @@ print(field_evaluations)```
 | 39 | hlsp_mct-tutorial_readme.txt                                  | product_type | readme       | pass                   | pass           | review        | unrecognized |
 
 ```python
-print(problems)```
+print(problems)
+```
+
 |    | path   | filename                     |   n_elements | name         | value   | capitalization_score   | length_score   | value_score   | severity     |
 |---:|:-------|:-----------------------------|-------------:|:-------------|:--------|:-----------------------|:---------------|:--------------|:-------------|
 |  0 | .      | hlsp_mct-tutorial_readme.txt |            4 | product_type | readme  | pass                   | pass           | review        | unrecognized |
