@@ -370,7 +370,7 @@ def test_ExtensionField(test_value: str, expected_score: list[str]) -> None:
 def test_GenericField(test_value: str, expected_score: list[str]) -> None:
     """Test GenericField values"""
     # Evaluate Test Value
-    field = GenericField(value=test_value, id=1)
+    field = GenericField(value=test_value, id=1, field_indx=1)
     field.evaluate()
     # Assert recieved scores match expected
     assert_scores_match(field.get_scores(), expected_score)
@@ -448,8 +448,13 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
             "FAIL",
         ),
         (
-            "hlsp_fake-hlsp_hst_wfc3_VEGA_f160w_v1_img.fits",
+            "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits",
             "wrong-name",
+            "FAIL",
+        ),
+        (
+            "hlsp_my-hlsp_hst_wfc3_vega_f160w_more_than_nine_fields.fits",  # too many fields
+            "my-hlsp",
             "FAIL",
         ),
     ],
@@ -480,11 +485,6 @@ def test_HlspFileName(
         ("fakefile.fits", "fakehlsp", ValueError),
         ("fakefile.fits", "invalid_name", ValueError),  # invalid hlsp name
         ("two_fields.fits", "fakehlsp", ValueError),  # only two fields
-        (
-            "this_fake_file_name_has_more_than_nine_fields.fits",  # too many fields
-            "fakehlsp",
-            ValueError,
-        ),
     ],
 )
 def test_HlspFileName_errors(
@@ -561,9 +561,9 @@ def test_field_9parts_called_in_HlspFileName(*mock_fields) -> None:
         )
         # Assert correct value was used as arguments
         if i == 1:
-            mock_field.assert_called_with(parts[i], parts[i])  # two args for HlspName
+            mock_field.assert_called_with(parts[i], parts[i], i)  # two args for HlspName
         else:
-            mock_field.assert_called_with(parts[i])  # one for everything else
+            mock_field.assert_called_with(parts[i], i)  # one for everything else
 
 
 # Test that all field classes are called in HlspFileName (no fields are skipped)

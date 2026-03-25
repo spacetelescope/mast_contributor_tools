@@ -7,6 +7,10 @@ from pathlib import Path
 
 import yaml
 
+from mast_contributor_tools.utils.logger_config import setup_logger
+
+logger = setup_logger(__name__)
+
 # ==========================================
 # Setup some configurations for this module
 # ==========================================
@@ -111,6 +115,11 @@ class FieldRule:
         Returns 'pass' or 'fail' based on results."""
         return SCORE[value.islower()]
 
+    def nfields(field_index: int) -> str:
+        """Tests that the field index is less than 9;
+        Returns 'pass' or 'fail' based on results."""
+        return SCORE[field_index < 10]
+
     def match_pattern(value: str, regex_expr: re.Pattern) -> str:
         """Test that the field contains no forbidden characters.
         Returns 'pass' or 'fail' based on results."""
@@ -168,10 +177,11 @@ class FilenameFieldAB(ABC):
         Value of the field (i.e. text of the field in the filename)
     """
 
-    def __init__(self, field_name: str, field_value: str) -> None:
+    def __init__(self, field_name: str, field_value: str, field_indx: int) -> None:
         self.name = field_name
         self.value = field_value
         self.max_len = fieldLengthPolicy[field_name]
+        self.field_indx = field_indx + 1  # index from 1 instead of 0
 
         # Set regex pattern based on field name
         if self.name == "hlsp_name":
@@ -193,6 +203,8 @@ class FilenameFieldAB(ABC):
         self.format_eval = False
         # Value Evaluation (recognized entries for telescope, filter, etc.)
         self.value_eval = False
+        # Field number index evaluation (must be less than 9)
+        self.nfield_eval = False
         # Final Verdict
         self.field_verdict = "fail"
 
@@ -202,30 +214,34 @@ class FilenameFieldAB(ABC):
         self.cap_eval = FieldRule.capitalization(self.value)
         self.len_eval = FieldRule.length(self.value, self.max_len)
         self.format_eval = FieldRule.match_pattern(self.value, self.regex_pattern)
+        self.nfield_eval = FieldRule.nfields(self.field_indx)
 
     def get_scores(self):
         """Return final scores"""
         # Determine the final verdict as the worst of the four scores
-        all_scores = [self.cap_eval, self.len_eval, self.format_eval, self.value_eval]
+        all_scores = [self.cap_eval, self.len_eval, self.format_eval, self.value_eval, self.nfield_eval]
         self.field_verdict = FieldRule.field_verdict(all_scores)
         return {
             # Name of Field: for example 'mission' or 'product_type'
             "name": self.name,
             # value of the field: for example 'jwst' or 'spec'
             "value": self.value,
+            # Index of the field: location in file name
+            "nfield": self.field_indx,
             # Results from each validation check
             "capitalization_score": self.cap_eval,
             "length_score": self.len_eval,
             "format_score": self.format_eval,
             "value_score": self.value_eval,
+            "nfield_score": self.nfield_eval,
             # Final Score
             "field_verdict": self.field_verdict,
         }
 
 
 class ExtensionField(FilenameFieldAB):
-    def __init__(self, value: str) -> None:
-        super().__init__("extension", value)
+    def __init__(self, value: str, field_indx: int = 8) -> None:
+        super().__init__("extension", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -235,8 +251,8 @@ class ExtensionField(FilenameFieldAB):
 class FilterField(FilenameFieldAB):
     """A container for attributes of the filename Filtername field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("filter", value)
+    def __init__(self, value: str, field_indx: int = 5) -> None:
+        super().__init__("filter", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -246,8 +262,8 @@ class FilterField(FilenameFieldAB):
 class HlspField(FilenameFieldAB):
     """A container for attributes of the literal 'hlsp' prefix field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("hlsp_str", value)
+    def __init__(self, value: str, field_indx: int = 0) -> None:
+        super().__init__("hlsp_str", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -257,8 +273,8 @@ class HlspField(FilenameFieldAB):
 class HlspNameField(FilenameFieldAB):
     """A container for attributes of the HLSP name field."""
 
-    def __init__(self, value: str, ref_name: str) -> None:
-        super().__init__("hlsp_name", value)
+    def __init__(self, value: str, ref_name: str, field_indx: int = 1) -> None:
+        super().__init__("hlsp_name", value, field_indx)
         self.hlsp_ref_name = ref_name.lower()
 
     def evaluate(self):
@@ -270,8 +286,8 @@ class HlspNameField(FilenameFieldAB):
 class InstrumentField(FilenameFieldAB):
     """A container for attributes of the filename Instrument field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("instrument", value)
+    def __init__(self, value: str, field_indx: int = 3) -> None:
+        super().__init__("instrument", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -281,8 +297,8 @@ class InstrumentField(FilenameFieldAB):
 class MissionField(FilenameFieldAB):
     """A container for attributes of the filename Mission (or observatory) field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("mission", value)
+    def __init__(self, value: str, field_indx: int = 2) -> None:
+        super().__init__("mission", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -292,8 +308,8 @@ class MissionField(FilenameFieldAB):
 class ProductField(FilenameFieldAB):
     """A container for attributes of the filename ProductType field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("product_type", value)
+    def __init__(self, value: str, field_indx: int = 7) -> None:
+        super().__init__("product_type", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -303,8 +319,8 @@ class ProductField(FilenameFieldAB):
 class TargetField(FilenameFieldAB):
     """A container for attributes of the filename TargetName field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("target_name", value)
+    def __init__(self, value: str, field_indx: int = 4) -> None:
+        super().__init__("target_name", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -317,8 +333,8 @@ class TargetField(FilenameFieldAB):
 class VersionField(FilenameFieldAB):
     """A container for attributes of the filename Version field."""
 
-    def __init__(self, value: str) -> None:
-        super().__init__("version_id", value)
+    def __init__(self, value: str, field_indx: int = 6) -> None:
+        super().__init__("version_id", value, field_indx)
 
     def evaluate(self):
         super().evaluate()
@@ -333,10 +349,10 @@ class GenericField(FilenameFieldAB):
     validated for length and capitalization, but not for value.
     """
 
-    def __init__(self, value: str, id: int) -> None:
-        super().__init__("generic" + str(id), value)
+    def __init__(self, value: str, id: int, field_indx: int) -> None:
+        super().__init__("generic" + str(id), value, field_indx)
 
-    def evaluate(self):
+    def evaluate(self) -> None:
         super().evaluate()
         # No restriction on generic field values
         self.value_eval = "pass"
@@ -399,34 +415,52 @@ class HlspFileName:
         if self.nFields < 4:
             raise ValueError(f"Filename {self.name} has less than 4 fields")
         elif self.nFields > 9:
-            raise ValueError(f"Filename {self.name} has more than 9 fields")
+            # Don't raise a ValueError here: the individual fields can still be checked
+            # but filename will be added to the results as a FAIL
+            logger.error(
+                (
+                    f"Filename '{self.name}' contains more than 9 fields (total {self.nFields})."
+                    "Individual fields will still be evaulated, "
+                    "but the final verdict will be 'FAIL'"
+                )
+            )
 
     def create_fields(self) -> None:
         """Create Field objects for each field in the filename."""
         nf = self.nFields
         # The first two fields are: 'hlsp' and the acronnym of the collection
-        self.fields.append(HlspField(self.fieldvals[0]))
-        self.fields.append(HlspNameField(self.fieldvals[1], self.hlspName))
+        self.fields.append(HlspField(self.fieldvals[0], 0))
+        self.fields.append(HlspNameField(self.fieldvals[1], self.hlspName, 1))
 
         # If there are 9 fields, assume the rest of the fields are present in order
         if nf == 9:
-            self.fields.append(MissionField(self.fieldvals[2]))
-            self.fields.append(InstrumentField(self.fieldvals[3]))
-            self.fields.append(TargetField(self.fieldvals[4]))
-            self.fields.append(FilterField(self.fieldvals[5]))
+            self.fields.append(MissionField(self.fieldvals[2], 2))
+            self.fields.append(InstrumentField(self.fieldvals[3], 3))
+            self.fields.append(TargetField(self.fieldvals[4], 4))
+            self.fields.append(FilterField(self.fieldvals[5], 5))
 
         # If there are 5 < nFields < 9, the other fields are treated as generic
         elif 5 < nf < 9:
             for i in range(2, nf - 3):
-                self.fields.append(GenericField(self.fieldvals[i], i - 1))
+                self.fields.append(GenericField(self.fieldvals[i], i - 1, i))
+
+        # If there are more than 9 fields, treat the extra fields as generic
+        # The check will fail at the filename level, but the fields can still be tested
+        elif nf > 9:
+            self.fields.append(MissionField(self.fieldvals[2], 2))
+            self.fields.append(InstrumentField(self.fieldvals[3], 3))
+            self.fields.append(TargetField(self.fieldvals[4], 4))
+            self.fields.append(FilterField(self.fieldvals[5], 5))
+            for i in range(6, nf - 3):
+                self.fields.append(GenericField(self.fieldvals[i], i - 5, i))
 
         # Files should have a version field unless the product_type is readme
         if self.fieldvals[nf - 2].lower() not in ["readme"]:
-            self.fields.append(VersionField(self.fieldvals[nf - 3]))
+            self.fields.append(VersionField(self.fieldvals[nf - 3], nf - 3))
 
         # The last two fields are: the file semantic type and the extension
-        self.fields.append(ProductField(self.fieldvals[nf - 2]))
-        self.fields.append(ExtensionField(self.fieldvals[nf - 1]))
+        self.fields.append(ProductField(self.fieldvals[nf - 2], nf - 2))
+        self.fields.append(ExtensionField(self.fieldvals[nf - 1], nf - 1))
 
     def evaluate_fields(self):
         """Evaluate attributes of each field
@@ -451,6 +485,7 @@ class HlspFileName:
         dict[str, Any]
             Dictionary of file name attributes
         """
+        # The final verdict is determined as the worst of the individual field verdicts
         field_verdicts = [f.field_verdict for f in self.fields]
         if "FAIL" in field_verdicts:
             final_verdict = "fail"
@@ -458,6 +493,14 @@ class HlspFileName:
             final_verdict = "needs review"
         else:
             final_verdict = "pass"
+
+        # Additional last-minute checks based on the number of fields
+        if self.nFields > 9:  # more than 9 fields
+            final_verdict = "fail"
+        elif self.nFields < 5:  # less than 5 fields
+            final_verdict = "fail"
+
+        # Final result for this filename
         attr = {
             "path": self.path,
             "filename": self.name,

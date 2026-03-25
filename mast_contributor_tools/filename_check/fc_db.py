@@ -20,25 +20,27 @@ FIELDS_TABLE = """
         file_ref  TEXT NOT NULL,
 	    name  TEXT NOT NULL,
         value TEXT NOT NULL,
+        nfield INTEGER,
 	    capitalization_score  TEXT NOT NULL DEFAULT 'fail' CHECK("capitalization_score" IN ('pass', 'fail')),
 	    length_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
 	    format_score  TEXT NOT NULL DEFAULT 'fail' CHECK("length_score" IN ('pass', 'fail')),
 	    value_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'needs review')),
+        nfield_score  TEXT NOT NULL DEFAULT 'fail' CHECK("value_score" IN ('pass', 'fail', 'needs review')),
 	    field_verdict  TEXT NOT NULL DEFAULT 'FAIL' CHECK("field_verdict" IN ('PASS', 'FAIL', 'NEEDS REVIEW')),
 	    FOREIGN KEY(file_ref) REFERENCES filename_db(filename)
         );
         """
 PROBLEMS_VIEW = """
         CREATE VIEW IF NOT EXISTS potential_problems as
-        select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.capitalization_score, fl.length_score,
-        fl.value_score, fl.field_verdict
+        select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.nfield, fl.capitalization_score, fl.length_score,
+        fl.format_score, fl.value_score, f.nfield_score, fl.field_verdict
         from filename as fn, fields as fl
         where fn.filename = fl.file_ref
         AND fl.field_verdict != 'PASS';
         """
 
 INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:final_verdict,:n_elements)"""
-INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:value,:capitalization_score,:length_score,:format_score,:value_score,:field_verdict)"""
+INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:value,:nfield,:capitalization_score,:length_score,:format_score,:value_score,:nfield_score,:field_verdict)"""
 
 
 class Hlsp_SQLiteDb:
