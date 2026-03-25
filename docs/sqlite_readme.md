@@ -55,7 +55,8 @@ field_evaluations = pd.read_sql_query("SELECT * FROM fields", conn)
 problems = pd.read_sql_query("SELECT * FROM potential_problems", conn)
 
 # Print to see what the results look like:
-print(file_evaluations)
+print(file_evaluations)```
+
 |    | path   | filename                                                      | status   |   n_elements |
 |---:|:-------|:--------------------------------------------------------------|:---------|-------------:|
 |  0 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | pass     |            9 |
@@ -64,7 +65,9 @@ print(file_evaluations)
 |  3 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | pass     |            9 |
 |  4 | .      | hlsp_mct-tutorial_readme.txt                                  | pass     |            4 |
 
-print(field_evaluations)
+```python
+print(field_evaluations)```
+
 |    | file_ref                                                      | name         | value        | capitalization_score   | length_score   | value_score   | severity     |
 |---:|:--------------------------------------------------------------|:-------------|:-------------|:-----------------------|:---------------|:--------------|:-------------|
 |  0 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
@@ -108,11 +111,13 @@ print(field_evaluations)
 | 38 | hlsp_mct-tutorial_readme.txt                                  | extension    | txt          | pass                   | pass           | pass          | N/A          |
 | 39 | hlsp_mct-tutorial_readme.txt                                  | product_type | readme       | pass                   | pass           | review        | unrecognized |
 
-print(problems)
+```python
+print(problems)```
 |    | path   | filename                     |   n_elements | name         | value   | capitalization_score   | length_score   | value_score   | severity     |
 |---:|:-------|:-----------------------------|-------------:|:-------------|:--------|:-----------------------|:---------------|:--------------|:-------------|
 |  0 | .      | hlsp_mct-tutorial_readme.txt |            4 | product_type | readme  | pass                   | pass           | review        | unrecognized |
 
+```python
 # Close connection:
 conn.close()
 ```
