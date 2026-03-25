@@ -26,7 +26,7 @@ The various options for this command are described below:
 | `-v` or `--verbose`     | Enables verbose output for more information                                   | `False`                            |
 | `--help`                | Prints information about this command                                         |                                    |
 
-A step-by-step tutorial for learing how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder.
+A step-by-step tutorial for learning how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder.
 
 ### Example Usage: Check all files in the current directory
 
@@ -122,7 +122,7 @@ where the fields are defined as follows. Refer to the [HLSP Contributor Guide](h
 | `<product-type>` | Type of data as designated by the team (models/simulations can be indicated here). Use a widely recognized type. Be sure to distinguish products of similar type, possibly by using a simple compound type. e.g., a photometric catalog (phot-cat) vs. a catalog of simulated object morphologies (sim-cat). Hyphens are allowed for compound product types. | `img`, `cat`, `drz`, `lc`, `model-spec`, `sci`, `spec`, `spec2d`, `wht`, `sim-img`, `map`|
 | `<extension>` | Standard extension name for the file format, which must include standard notation for compression if applicable. | `.asdf`, `.txt`., `.md`, `.png`, `.fits`, `.fits.gz`|
 
-For each file name, the fields are evaluated against four criteria: capitalization, character Length: each field has a maximum character length, format, and value, which are described in detail in the next section of thie README ("Filename evaluation").
+For each file name, the fields are evaluated against four criteria: capitalization, character Length: each field has a maximum character length, format, and value, which are described in detail in the next section of this README ("Filename evaluation").
 
 The results of the evaluation for each field of a file name is written to an output database.
 
