@@ -126,10 +126,10 @@ make clean
 ## Quick Start
 ### Tutorials
 
-The [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder of this repository contains some example data and step-by-step instructions for how to run this code.
+The [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/stable/tutorial_readme.html) folder of this repository contains some example data and step-by-step instructions for how to run this code.
 
 ### Filename Check
-To check if the filenames comply with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please refer to [Filename Checker Guide](https://mast-contributor-tools.readthedocs.io/en/latest/filename_check_readme.html) to get started.
+To check if the filenames comply with the [HLSP filenaming convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention), please refer to [Filename Checker Guide](https://mast-contributor-tools.readthedocs.io/en/stable/filename_check_readme.html) to get started.
 
 ### Metadata Checker
 

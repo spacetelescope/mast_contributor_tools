@@ -26,7 +26,7 @@ The various options for this command are described below:
 | `-v` or `--verbose`     | Enables verbose output for more information                                   | `False`                            |
 | `--help`                | Prints information about this command                                         |                                    |
 
-A step-by-step tutorial for learing how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder.
+A step-by-step tutorial for learing how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/stable/tutorial_readme.html) folder.
 
 ### Example Usage: Check all files in the current directory
 
@@ -101,7 +101,7 @@ The file name checking application makes use of the following:
 
 ## Filename components
 
-Names of science files must follow the naming scheme described below. File names are typically divided into 9 **fields** separated by underscores (`_`). 
+Names of science files must follow the naming scheme described below. File names are typically divided into 9 **fields** separated by underscores (`_`).
 
 ```html
 hlsp_<proj-id>_<observatory>_<instrument>_<target>_<opt-elem>_<version>_<product-type>.<extension>
@@ -126,19 +126,18 @@ For each file name, the fields are evaluated against four criteria: captalizatio
 
 The results of the evaluation for each field of a file name is written to an output database.
 
-Some fields are composed of **elements**, separated by hyphens (e.g., `lmc-flows`,`hst-jwst`, `acs-wfc3`, or `f160w-f335m-f444w`). Elements in fields that specify the (observatory, instruments, filters) triplet are checked for consistency with known combinations. For instance, if observatory is `jwst` only, `wfc3` (an HST instrument) and `f775w` (an HST filter) cannot be the instrument and filter field values respectively. Refer to the [`mast_contributor_tools/filename_ckeck/oif.yaml`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/mast_contributor_tools/filename_check/oif.yaml) file for the list of currently-recognized combinations. 
+Some fields are composed of **elements**, separated by hyphens (e.g., `lmc-flows`,`hst-jwst`, `acs-wfc3`, or `f160w-f335m-f444w`). Elements in fields that specify the (observatory, instruments, filters) triplet are checked for consistency with known combinations. For instance, if observatory is `jwst` only, `wfc3` (an HST instrument) and `f775w` (an HST filter) cannot be the instrument and filter field values respectively. Refer to the [`mast_contributor_tools/filename_ckeck/oif.yaml`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/mast_contributor_tools/filename_check/oif.yaml) file for the list of currently-recognized combinations.
 
 ## Filename evaluation
 
-The results are organized by field, and the fields must appear in a particular order. There must be at least 4, and may be as many as 9 fields defined for each file. Note that some file content types (e.g. source catalogs, readme file) need not include all fields. 
+The results are organized by field, and the fields must appear in a particular order. There must be at least 4, and may be as many as 9 fields defined for each file. Note that some file content types (e.g. source catalogs, readme file) need not include all fields.
 
 See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for detailed rules. The results of the filename evaluation are stored in an SQLite3 database. Each recognized field is evaluated on the following criteria:
 
-- Captalization (`capitalization_score`): the filename must be all lower case.
-- Character Length (`length_score`): each field has a maximum character length.
-- Format (`format_score`): checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
-- Value (`value_score`): In some cases, the contents of each field are validated against known values to the extent possible.
-- Field Number (`nfield_score`): The file name must contain 9 fields or fewer (including the file extension), separated by underscores.
+- Captalization: the filename must be all lower case.
+- Character Length: each field has a maximum character length.
+- Format: checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
+- Value: In some cases, the contents of each field are validated against known values to the extent possible.
 
 The evaluation scores for individual fielda and the overall file names are one of `PASS`, `NEEDS REVIEW` or `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value. This is often necessary and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
 
