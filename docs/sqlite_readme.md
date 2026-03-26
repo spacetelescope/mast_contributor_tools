@@ -9,7 +9,7 @@ Once you've downloaded and installed the DB Browser, open it and select `Open Da
 
 ![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_Initial_Open_DB.png "Figure 1")
 
-Similar to Figure 1, you should now be seeing the `Database Structure` tab highlighted, with a few tables populating the left panel. Those tables are `fields` and `filename`. If you click on the arrows next to the two table names, you should see the names of the columns that belong to each table. There is also a `Views` heading where you can find the `potential_problems` view, which highlights all potential problem fields within the `fields` table.
+Similar to Figure 1, you should now be seeing the `Database Structure` tab highlighted, with a few tables populating the left panel. Those tables are `fields` and `filename`. If you click on the arrows next to the two table names, you should see the names of the columns that belong to each table. There is also a `Views` heading where you can find the `problems` view, which highlights all potential problem fields within the `fields` table.
 
 If you now click on the `Browse Data` tab next to the `Database Structure` tab, you'll be able to view the table itself, which should have the `fields` table selected near the top left hand corner of the window displayed in Figure 2:
 
@@ -30,9 +30,9 @@ Within the `filename` table (`Browse Data` tab, then select table `filename` in 
 
 ![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_filename_Table_View.png "Figure 3")
 
-Finally, there's the `potential_problems` table. You can access this table using the same dropdown menu in the top left corner of the window. This table contains all filenames that could have problems, from those that need review to those that fail. An example of this table is shown in Figure 4 below. You may have to modify the window size/click and drag the window dividers to view all columns within the Browser:
+Finally, there's the `problems` table. You can access this table using the same dropdown menu in the top left corner of the window. This table contains all filenames that could have problems, from those that need review to those that fail. An example of this table is shown in Figure 4 below. You may have to modify the window size/click and drag the window dividers to view all columns within the Browser:
 
-![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_potential_problems_Table_View.png "Figure 4")
+![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_problems_Table_View.png "Figure 4")
 
 Again, please see [`filename_check_readme.md`](../docs/filename_check_readme.md) for how to run the filechecker or the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for detailed rules.
 
@@ -56,7 +56,7 @@ conn = sqlite3.connect(dbfile)
 # Convert the various tables into pandas dataframes:
 file_evaluations = pd.read_sql_query("SELECT * FROM filename", conn)
 field_evaluations = pd.read_sql_query("SELECT * FROM fields", conn)
-problems = pd.read_sql_query("SELECT * FROM potential_problems", conn)
+problems = pd.read_sql_query("SELECT * FROM problems", conn)
 
 # Print to see what the results look like:
 print(file_evaluations)
@@ -115,7 +115,7 @@ print(field_evaluations)
 | 36 | hlsp_mct-tutorial_readme.txt                                  | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
 | 37 | hlsp_mct-tutorial_readme.txt                                  | hlsp_name    | mct-tutorial | pass                   | pass           | pass          | N/A          |
 | 38 | hlsp_mct-tutorial_readme.txt                                  | extension    | txt          | pass                   | pass           | pass          | N/A          |
-| 39 | hlsp_mct-tutorial_readme.txt                                  | product_type | readme       | pass                   | pass           | review        | unrecognized |
+| 39 | hlsp_mct-tutorial_readme.txt                                  | product_type | readme       | pass                   | pass           | fail          | unrecognized |
 
 ```python
 print(problems)
@@ -123,7 +123,7 @@ print(problems)
 
 |    | path   | filename                     |   n_elements | name         | value   | capitalization_score   | length_score   | value_score   | severity     |
 |---:|:-------|:-----------------------------|-------------:|:-------------|:--------|:-----------------------|:---------------|:--------------|:-------------|
-|  0 | .      | hlsp_mct-tutorial_readme.txt |            4 | product_type | readme  | pass                   | pass           | review        | unrecognized |
+|  0 | .      | hlsp_mct-tutorial_readme.txt |            4 | product_type | readme  | pass                   | pass           | fail          | unrecognized |
 
 ```python
 # Close connection:
