@@ -149,6 +149,6 @@ The results are written out in a database file (named `results_<proj-id>.db`). T
 
 * filename - file path, name, number of fields, status
 * fields - field attributes for each filename, and evaluation
-* problems (view) - selects all instances where an 'fail', or 'needs review' value was identified. Non-fatal warnings and unrecognized values are not always real problems; these will be reviewed by MAST staff.
+* potential_problems (view) - selects all instances where an 'fail', or 'needs review' value was identified. Non-fatal warnings and unrecognized values are not always real problems; these will be reviewed by MAST staff.
 
-The **problems** view may be filtered to select only fatal errors.
+The **potential_problems** view may be filtered to select only fatal errors.

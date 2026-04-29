@@ -497,7 +497,7 @@ class HlspFileName:
         # Additional last-minute checks based on the number of fields
         if self.nFields > 9:  # more than 9 fields
             final_verdict = "fail"
-        elif self.nFields < 5:  # less than 5 fields
+        elif self.nFields < 4:  # less than 4 fields
             final_verdict = "fail"
 
         # Final result for this filename

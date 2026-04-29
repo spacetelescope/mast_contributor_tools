@@ -56,7 +56,7 @@ conn = sqlite3.connect(dbfile)
 # Convert the various tables into pandas dataframes:
 file_evaluations = pd.read_sql_query("SELECT * FROM filename", conn)
 field_evaluations = pd.read_sql_query("SELECT * FROM fields", conn)
-problems = pd.read_sql_query("SELECT * FROM problems", conn)
+potential_problems = pd.read_sql_query("SELECT * FROM potential_problems", conn)
 
 # Print to see what the results look like:
 print(file_evaluations)
