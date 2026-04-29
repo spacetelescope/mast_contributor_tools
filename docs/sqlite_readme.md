@@ -32,7 +32,7 @@ Within the `filename` table (`Browse Data` tab, then select table `filename` in 
 
 Finally, there's the `problems` table. You can access this table using the same dropdown menu in the top left corner of the window. This table contains all filenames that could have problems, from those that need review to those that fail. An example of this table is shown in Figure 4 below. You may have to modify the window size/click and drag the window dividers to view all columns within the Browser:
 
-![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_problems_Table_View.png "Figure 4")
+![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_potential_problems_Table_View.png "Figure 4")
 
 Again, please see [`filename_check_readme.md`](../docs/filename_check_readme.md) for how to run the filechecker or the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for detailed rules.
 
@@ -62,68 +62,78 @@ potential_problems = pd.read_sql_query("SELECT * FROM potential_problems", conn)
 print(file_evaluations)
 ```
 
-|    | path   | filename                                                      | status   |   n_elements |
-|---:|:-------|:--------------------------------------------------------------|:---------|-------------:|
-|  0 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | pass     |            9 |
-|  1 | .      | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | pass     |            9 |
-|  2 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | pass     |            9 |
-|  3 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | pass     |            9 |
-|  4 | .      | hlsp_mct-tutorial_readme.txt                                  | pass     |            4 |
+|    | path   | filename                                                      | final_verdict   |   n_elements |
+|---:|:-------|:--------------------------------------------------------------|:----------------|-------------:|
+|  0 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | NEEDS REVIEW    |            9 |
+|  1 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | PASS            |            9 |
+|  2 | .      | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | PASS            |            9 |
+|  3 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | PASS            |            9 |
+|  4 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | PASS            |            9 |
+|  5 | .      | hlsp_mct-tutorial_readme.txt                                  | PASS            |            4 |
 
 ```python
 print(field_evaluations)
 ```
 
-|    | file_ref                                                      | name         | value        | capitalization_score   | length_score   | value_score   | severity     |
-|---:|:--------------------------------------------------------------|:-------------|:-------------|:-----------------------|:---------------|:--------------|:-------------|
-|  0 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
-|  1 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | hlsp_name    | mct-tutorial | pass                   | pass           | pass          | N/A          |
-|  2 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | extension    | fits         | pass                   | pass           | pass          | N/A          |
-|  3 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | product_type | spec         | pass                   | pass           | pass          | N/A          |
-|  4 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | version_id   | v1           | pass                   | pass           | pass          | N/A          |
-|  5 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | mission      | jwst         | pass                   | pass           | pass          | N/A          |
-|  6 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | instrument   | nirspec      | pass                   | pass           | pass          | N/A          |
-|  7 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | target_name  | galaxy3      | pass                   | pass           | pass          | N/A          |
-|  8 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | filter       | multi        | pass                   | pass           | pass          | N/A          |
-|  9 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
-| 10 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | hlsp_name    | mct-tutorial | pass                   | pass           | pass          | N/A          |
-| 11 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | extension    | fits         | pass                   | pass           | pass          | N/A          |
-| 12 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | product_type | cat          | pass                   | pass           | pass          | N/A          |
-| 13 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | version_id   | v1           | pass                   | pass           | pass          | N/A          |
-| 14 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | mission      | jwst         | pass                   | pass           | pass          | N/A          |
-| 15 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | instrument   | nirspec      | pass                   | pass           | pass          | N/A          |
-| 16 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | target_name  | all-galaxies | pass                   | pass           | pass          | N/A          |
-| 17 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | filter       | multi        | pass                   | pass           | pass          | N/A          |
-| 18 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
-| 19 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | hlsp_name    | mct-tutorial | pass                   | pass           | pass          | N/A          |
-| 20 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | extension    | fits         | pass                   | pass           | pass          | N/A          |
-| 21 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | product_type | spec         | pass                   | pass           | pass          | N/A          |
-| 22 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | version_id   | v1           | pass                   | pass           | pass          | N/A          |
-| 23 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | mission      | jwst         | pass                   | pass           | pass          | N/A          |
-| 24 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | instrument   | nirspec      | pass                   | pass           | pass          | N/A          |
-| 25 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | target_name  | galaxy1      | pass                   | pass           | pass          | N/A          |
-| 26 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | filter       | multi        | pass                   | pass           | pass          | N/A          |
-| 27 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
-| 28 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | hlsp_name    | mct-tutorial | pass                   | pass           | pass          | N/A          |
-| 29 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | extension    | fits         | pass                   | pass           | pass          | N/A          |
-| 30 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | product_type | spec         | pass                   | pass           | pass          | N/A          |
-| 31 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | version_id   | v1           | pass                   | pass           | pass          | N/A          |
-| 32 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | mission      | jwst         | pass                   | pass           | pass          | N/A          |
-| 33 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | instrument   | nirspec      | pass                   | pass           | pass          | N/A          |
-| 34 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | target_name  | galaxy2      | pass                   | pass           | pass          | N/A          |
-| 35 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | filter       | multi        | pass                   | pass           | pass          | N/A          |
-| 36 | hlsp_mct-tutorial_readme.txt                                  | hlsp_str     | hlsp         | pass                   | pass           | pass          | N/A          |
-| 37 | hlsp_mct-tutorial_readme.txt                                  | hlsp_name    | mct-tutorial | pass                   | pass           | pass          | N/A          |
-| 38 | hlsp_mct-tutorial_readme.txt                                  | extension    | txt          | pass                   | pass           | pass          | N/A          |
-| 39 | hlsp_mct-tutorial_readme.txt                                  | product_type | readme       | pass                   | pass           | fail          | unrecognized |
+|    | file_ref                                                      | name         | value        |   nfield | capitalization_score   | length_score   | format_score   | value_score   | nfield_score   | field_verdict   |
+|---:|:--------------------------------------------------------------|:-------------|:-------------|---------:|:-----------------------|:---------------|:---------------|:--------------|:---------------|:----------------|
+|  0 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | hlsp_str     | hlsp         |        1 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  1 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | hlsp_name    | mct-tutorial |        2 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  2 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | mission      | jwst         |        3 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  3 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | instrument   | nirspec      |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  4 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | target_name  | galaxy3      |        5 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  5 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | filter       | multi        |        6 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  6 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | version_id   | v1           |        7 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  7 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | product_type | a-spec       |        8 | pass                   | pass           | pass           | needs review  | pass           | NEEDS REVIEW    |
+|  8 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits   | extension    | fits         |        9 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+|  9 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | hlsp_str     | hlsp         |        1 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 10 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | hlsp_name    | mct-tutorial |        2 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 11 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | mission      | jwst         |        3 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 12 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | instrument   | nirspec      |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 13 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | target_name  | galaxy3      |        5 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 14 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | filter       | multi        |        6 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 15 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | version_id   | v1           |        7 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 16 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | product_type | spec         |        8 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 17 | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_spec.fits     | extension    | fits         |        9 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 18 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | hlsp_str     | hlsp         |        1 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 19 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | hlsp_name    | mct-tutorial |        2 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 20 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | mission      | jwst         |        3 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 21 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | instrument   | nirspec      |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 22 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | target_name  | all-galaxies |        5 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 23 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | filter       | multi        |        6 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 24 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | version_id   | v1           |        7 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 25 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | product_type | cat          |        8 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 26 | hlsp_mct-tutorial_jwst_nirspec_all-galaxies_multi_v1_cat.fits | extension    | fits         |        9 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 27 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | hlsp_str     | hlsp         |        1 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 28 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | hlsp_name    | mct-tutorial |        2 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 29 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | mission      | jwst         |        3 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 30 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | instrument   | nirspec      |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 31 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | target_name  | galaxy1      |        5 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 32 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | filter       | multi        |        6 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 33 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | version_id   | v1           |        7 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 34 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | product_type | spec         |        8 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 35 | hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits     | extension    | fits         |        9 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 36 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | hlsp_str     | hlsp         |        1 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 37 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | hlsp_name    | mct-tutorial |        2 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 38 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | mission      | jwst         |        3 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 39 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | instrument   | nirspec      |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 40 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | target_name  | galaxy2      |        5 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 41 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | filter       | multi        |        6 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 42 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | version_id   | v1           |        7 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 43 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | product_type | spec         |        8 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 44 | hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits     | extension    | fits         |        9 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 45 | hlsp_mct-tutorial_readme.txt                                  | hlsp_str     | hlsp         |        1 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 46 | hlsp_mct-tutorial_readme.txt                                  | hlsp_name    | mct-tutorial |        2 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 47 | hlsp_mct-tutorial_readme.txt                                  | product_type | readme       |        3 | pass                   | pass           | pass           | pass          | pass           | PASS            |
+| 48 | hlsp_mct-tutorial_readme.txt                                  | extension    | txt          |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
 
 ```python
 print(problems)
 ```
 
-|    | path   | filename                     |   n_elements | name         | value   | capitalization_score   | length_score   | value_score   | severity     |
-|---:|:-------|:-----------------------------|-------------:|:-------------|:--------|:-----------------------|:---------------|:--------------|:-------------|
-|  0 | .      | hlsp_mct-tutorial_readme.txt |            4 | product_type | readme  | pass                   | pass           | fail          | unrecognized |
+|    | path   | filename                                                    |   n_elements | name         | value   |   nfield | capitalization_score   | length_score   | format_score   | value_score   | nfield_score   | field_verdict   |
+|---:|:-------|:------------------------------------------------------------|-------------:|:-------------|:--------|---------:|:-----------------------|:---------------|:---------------|:--------------|:---------------|:----------------|
+|  0 | .      | hlsp_mct-tutorial_jwst_nirspec_galaxy3_multi_v1_a-spec.fits |            9 | product_type | a-spec  |        8 | pass                   | pass           | pass           | needs review  | pass           | NEEDS REVIEW    |
 
 ```python
 # Close connection:
