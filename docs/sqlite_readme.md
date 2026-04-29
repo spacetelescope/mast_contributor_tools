@@ -30,7 +30,7 @@ Within the `filename` table (`Browse Data` tab, then select table `filename` in 
 
 ![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_filename_Table_View.png "Figure 3")
 
-Finally, there's the `problems` table. You can access this table using the same dropdown menu in the top left corner of the window. This table contains all filenames that could have problems, from those that need review to those that fail. An example of this table is shown in Figure 4 below. You may have to modify the window size/click and drag the window dividers to view all columns within the Browser:
+Finally, there's the `potential_problems` table. You can access this table using the same dropdown menu in the top left corner of the window. This table contains all filenames that could have problems, from those that need review to those that fail. An example of this table is shown in Figure 4 below. You may have to modify the window size/click and drag the window dividers to view all columns within the Browser:
 
 ![DB Browser for SQLite after opening filename check DB file](../TUTORIAL/tutorial_images/DB_Browser_potential_problems_Table_View.png "Figure 4")
 
@@ -128,7 +128,7 @@ print(field_evaluations)
 | 48 | hlsp_mct-tutorial_readme.txt                                  | extension    | txt          |        4 | pass                   | pass           | pass           | pass          | pass           | PASS            |
 
 ```python
-print(problems)
+print(potential_problems)
 ```
 
 |    | path   | filename                                                    |   n_elements | name         | value   |   nfield | capitalization_score   | length_score   | format_score   | value_score   | nfield_score   | field_verdict   |
