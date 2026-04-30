@@ -651,6 +651,26 @@ ps1:
         - w
         - y
         - z
+roman:
+  instruments:
+    cgi:
+      filters:
+        - band1
+        - band2
+        - band3
+        - band4
+    wfi:
+      filters:
+        - f062
+        - f087
+        - f106
+        - f129
+        - f146
+        - f158
+        - f184
+        - f213
+        - g150
+        - p127
 sdss:
   instruments:
     camera:
