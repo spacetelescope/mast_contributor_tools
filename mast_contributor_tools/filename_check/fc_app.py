@@ -5,8 +5,14 @@ from typing import Union
 
 from tqdm import tqdm
 
+from mast_contributor_tools.filename_check.check_filename import (
+    COLLECTION_NAME_REGEX,
+    CCSPFileName,
+    FieldRule,
+    HlspFileName,
+    MCCMFileName,
+)
 from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
-from mast_contributor_tools.filename_check.hlsp_filename import HLSPNAME_REGEX, FieldRule, HlspFileName
 from mast_contributor_tools.utils.logger_config import setup_logger
 
 logger = setup_logger(__name__)
@@ -92,13 +98,36 @@ def get_file_paths(
     return file_list
 
 
-def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str, output_format: str = "db") -> None:
-    """Recursively check filenames in a directory tree of HLSP products
+def identify_collection_type(file_name: str) -> str:
+    """
+    Identify if a file is an HLSP, CCSP, or MCCM product based on the file name prefix.
 
     Parameters
     ----------
-    hlsp_name : str
-        Official identifier (abbreviation/acronym/initialism) for the HLSP collection
+    filename : str
+        File name
+
+    Returns
+    -------
+    collection_type: str
+        Collection Type - "HLSP", "CCSP", or "MCCM". Raises a warning and defaults to "HLSP" if unable to identify.
+    """
+    collection_type = file_name.split("_")[0].upper()
+    if collection_type.upper() not in ["HLSP", "MCCM", "CCSP"]:
+        # Default to HLSP, raise warning
+        msg = f"WARNING: Could not identify collection type '{collection_type}' from filename. Assuming HLSP."
+        logger.warning(msg)
+        collection_type = "HLSP"
+    return collection_type
+
+
+def check_filenames(collection_name: str, file_list: list[Path], dbFile: str, output_format: str = "db") -> None:
+    """Recursively check filenames in a directory tree of data products
+
+    Parameters
+    ----------
+    collection_name : str
+        Official identifier (abbreviation/acronym/initialism) for the HLSP/MCCM/CCSP collection
     file_list: list[str]
         List of files to check, typically output from get_file_paths()
     dbFile : str, optional
@@ -106,21 +135,24 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str, output_f
     output_format : str, optional
        Alternate format to save results to: 'csv', 'fits', 'html', or 'excel'. Default: "db"
     """
-    # Make sure hlsp name is valid
-    if not FieldRule.match_pattern(hlsp_name, HLSPNAME_REGEX):
+    # Make sure collection name is valid
+    if not FieldRule.match_pattern(collection_name, COLLECTION_NAME_REGEX):
         msg = (
-            f"Invalid hlsp_name for HLSP collection: '{hlsp_name}'.\n"
-            "The HLSP name must follow these rules: \n"
+            f"Invalid collection_name: '{collection_name}'.\n"
+            "The collection name must follow these rules: \n"
             "\t 1. The first character must be a lowercase letter \n"
             "\t 2. The middle characters can be lowercase letters, numbers, or a hyphen ‘-‘ \n"
             "\t 3. The last character must be a lowercase letter or a number \n"
-            "\t 4. The hlsp_name must be 20 characters or less in length"
+            "\t 4. The name must be 20 characters or less in length"
         )
         logger.error(msg)
         raise ValueError(msg)
 
+    # Identify if this is an HLSP, CCSP, or MCCM collection
+    collection_type = identify_collection_type(file_list[0].name)
+
     # Beging file name checking
-    logger.critical(f"Evaluating {len(file_list)} files for HLSP collection '{hlsp_name}'")
+    logger.critical(f"Evaluating {len(file_list)} files for {collection_type} collection '{collection_name}'")
     if Path(dbFile).is_file():
         logger.warning(f"Database file {dbFile} already exists. Overwriting File.")
         os.remove(dbFile)
@@ -133,11 +165,19 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str, output_f
     for f in tqdm(file_list):
         logger.debug(f"Examining {f.name}")
         try:
-            hfn = HlspFileName(f, hlsp_name)
+            # Create the filename object
+            if collection_type == "HLSP":
+                hfn = HlspFileName(f, collection_name)
+            elif collection_type == "CCSP":
+                hfn = CCSPFileName(f, collection_name)
+            elif collection_type == "MCCM":
+                hfn = MCCMFileName(f, collection_name)
+            # Partition into fields
             hfn.partition()
         except ValueError:
             logger.error(f"Invalid name: {f.name}, skipping...")
         else:
+            # Evaluate each field
             hfn.create_fields()
             elements = hfn.evaluate_fields()
             # Link elements to parent filename in db
@@ -167,30 +207,39 @@ def check_filenames(hlsp_name: str, file_list: list[Path], dbFile: str, output_f
     logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
 
 
-def check_single_filename(file_name: str, hlsp_name: str = "") -> None:
-    """HLSP filename module CLI driver.
+def check_single_filename(file_name: str, collection_name: str = "") -> None:
+    """Check a single filename against requirements for HLSP/MCCM/CCSP files.
 
     Parameters
     ----------
     file_name : str
         File name of an HLSP product to test: for example 'hlsp_my-hlsp_readme.txt'.
         This is a string, and does not need to be a real file.
-    hlsp_name : str, optional
-        Name of example HLSP collection. For example, 'my-hlsp'.
-        If not supplied, the hlsp_name is inferred using the second field of the filename.
+    collection_name : str, optional
+        Name of example HLSP/MCCM/CCSP collection. For example, 'my-hlsp'.
+        If not supplied, the collection_name is inferred using the second field of the filename.
     """
-    # Infer hlsp_name from the file name if it wasn't provided
-    if not hlsp_name:
+    # Infer collection type from file name
+    collection_type = identify_collection_type(file_name)
+
+    # Infer collection_name from the file name if it wasn't provided
+    if not collection_name:
         if len(file_name.split("_")) > 2:
-            hlsp_name = file_name.split("_")[1].lower()
+            collection_name = file_name.split("_")[1].lower()
         else:
-            msg = f"Could not infer HLSP name from filename '{file_name}'. Not enough parts in filename."
+            msg = f"Could not infer collection name from filename '{file_name}'. Not enough parts in filename."
             logger.error(msg)
             raise ValueError(msg)
 
     # Check file name fields
     fp = Path(file_name)
-    hfn = HlspFileName(fp, hlsp_name)
+    if collection_type == "HLSP":
+        hfn = HlspFileName(fp, collection_name)
+    elif collection_type == "CCSP":
+        hfn = CCSPFileName(fp, collection_name)
+    elif collection_type == "MCCM":
+        hfn = MCCMFileName(fp, collection_name)
+
     hfn.partition()
     hfn.create_fields()
     elements = hfn.evaluate_fields()
