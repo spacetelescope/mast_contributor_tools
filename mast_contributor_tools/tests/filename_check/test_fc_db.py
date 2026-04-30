@@ -29,6 +29,34 @@ def test_Hlsp_SQLiteDb_create(mock_connection) -> None:
     test_db.close_db()
 
 
+# Test expected views and tables
+@pytest.mark.parametrize(
+    "type, name",
+    [
+        ("view", "potential_problems"),
+        ("table", "filename"),
+        ("table", "fields"),
+    ],
+)
+def test_SQLiteDb_views_and_tables(type: str, name: str) -> None:
+    """Test that the sqlite DB has the expected views and tables"""
+    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db.create_db()
+
+    # Assert each table/view exists
+    test_query = f"SELECT name FROM sqlite_schema WHERE type = '{type}';"
+    results = test_db.conn.execute(f"{test_query}").fetchall()
+    assert len(results) > 0, f"No {type}s found."
+    assert (f"{name}",) in results, f"{type.title()} '{name}' not found: {results}"
+
+    # Assert each table/view can be queried successfully
+    test_query = f"SELECT * from {name}"
+    results = test_db.conn.execute(f"{test_query}").fetchall()
+    assert len(results) >= 0, f"{type.title()} {name} could not be queried."
+
+    test_db.close_db()
+
+
 # Test expected columns in DB
 @pytest.mark.parametrize(
     "table_name, expected_column",
