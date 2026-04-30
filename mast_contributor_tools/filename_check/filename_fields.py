@@ -1,9 +1,8 @@
-"""The main logic module to check filename compliance"""
+"""Module containing individual field logic to check filename compliance"""
 
 import os
 import re
 from abc import ABC, abstractmethod
-from pathlib import Path
 
 import yaml
 
@@ -21,7 +20,7 @@ with open(os.path.join(BASE_DIR, "fc_config.yaml"), "r") as f:
 
 EXTENSION_TYPES = cfg["ExtensionTypes"]
 SEMANTIC_TYPES = cfg["SemanticTypes"]
-fieldLengthPolicy = cfg["FieldLength"]
+FIELD_LENGTH = cfg["FieldLength"]
 
 # Fetch configurations of three name fields: observation, instrument, and filter (oif)
 with open(os.path.join(BASE_DIR, "oif.yaml"), "r") as f:
@@ -57,11 +56,11 @@ SCORE_LAX = {False: "needs review", True: "pass"}
 # In that case, the file would match this pattern and therefore be added to the list to test, but it would fail the tests due to the value
 FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9][\w\-\+]+(\.[\w\-\+\.]+)?(\.[\w]+(\.gz|\.zip)?)$")
 
-# HLSP Name Expression:
+# Collection Name Expression:
 # "^[a-zA-Z]"" : The first character must be a lowercase letter
 # "[a-zA-Z0-9-]*" : The middle characters can be lowercase letters, numbers, or a hyphen '-'
 # "[a-zA-Z0-9]$" : The last character must be a lowercase letter or a number
-HLSPNAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$")
+COLLECTION_NAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$")
 
 # Target Name Expression:
 # "^[a-zA-Z0-9]" : The first character must be a letter or a number
@@ -180,12 +179,12 @@ class FilenameFieldAB(ABC):
     def __init__(self, field_name: str, field_value: str, field_indx: int) -> None:
         self.name = field_name
         self.value = field_value
-        self.max_len = fieldLengthPolicy[field_name]
+        self.max_len = FIELD_LENGTH[field_name]
         self.field_indx = field_indx + 1  # index from 1 instead of 0
 
         # Set regex pattern based on field name
-        if self.name == "hlsp_name":
-            self.regex_pattern = HLSPNAME_REGEX
+        if self.name == "collection_name":
+            self.regex_pattern = COLLECTION_NAME_REGEX
         elif self.name == "target_name":
             self.regex_pattern = TARGET_REGEX
         elif self.name == "version_id":
@@ -259,28 +258,29 @@ class FilterField(FilenameFieldAB):
         self.value_eval = FieldRule.match_multi_choice(self.value, FILTERS)
 
 
-class HlspField(FilenameFieldAB):
-    """A container for attributes of the literal 'hlsp' prefix field."""
+class PrefixField(FilenameFieldAB):
+    """A container for attributes of the literal 'hlsp', 'ccsp', or 'mccm' prefix field."""
 
-    def __init__(self, value: str, field_indx: int = 0) -> None:
+    def __init__(self, value: str, string_match: str = "hlsp", field_indx: int = 0) -> None:
         super().__init__("hlsp_str", value, field_indx)
+        self.string_match = [string_match]
 
-    def evaluate(self):
+    def evaluate(self) -> None:
         super().evaluate()
-        self.value_eval = FieldRule.match_choice(self.value, ["hlsp"], score_level="fatal")
+        self.value_eval = FieldRule.match_choice(self.value, self.string_match, score_level="fatal")
 
 
-class HlspNameField(FilenameFieldAB):
-    """A container for attributes of the HLSP name field."""
+class CollectionNameField(FilenameFieldAB):
+    """A container for attributes of the HLSP/CCSP/MMCM collection name field."""
 
     def __init__(self, value: str, ref_name: str, field_indx: int = 1) -> None:
-        super().__init__("hlsp_name", value, field_indx)
-        self.hlsp_ref_name = ref_name.lower()
+        super().__init__("collection_name", value, field_indx)
+        self.collection_ref_name = ref_name.lower()
 
     def evaluate(self):
         super().evaluate()
         # Assume a valid HLSP name was passed to the constructor
-        self.value_eval = FieldRule.match_choice(self.value, [self.hlsp_ref_name], score_level="fatal")
+        self.value_eval = FieldRule.match_choice(self.value, [self.collection_ref_name], score_level="fatal")
 
 
 class InstrumentField(FilenameFieldAB):
@@ -314,6 +314,21 @@ class ProductField(FilenameFieldAB):
     def evaluate(self):
         super().evaluate()
         self.value_eval = FieldRule.match_multi_choice(self.value, SEMANTIC_TYPES)
+
+
+class StringLiteralField(FilenameFieldAB):
+    """
+    A container for attributes of the 'StringLiteral' field, matching
+    against an exact string (for example '_thumb' for thumbnail previews)
+    """
+
+    def __init__(self, value: str, string_match: str, field_indx: int = 0) -> None:
+        super().__init__("str_literal", value, field_indx)
+        self.string_match = [string_match]
+
+    def evaluate(self) -> None:
+        super().evaluate()
+        self.value_eval = FieldRule.match_choice(self.value, self.string_match, score_level="fatal")
 
 
 class TargetField(FilenameFieldAB):
@@ -356,155 +371,3 @@ class GenericField(FilenameFieldAB):
         super().evaluate()
         # No restriction on generic field values
         self.value_eval = "pass"
-
-
-class HlspFileName:
-    """HLSP filename validation
-
-    Filenames are composed of fields separated by underscores, except
-    that the last field is really composed of two fields separated by a period.
-    The last part of the last field may also contain a period. Certain fields
-    are further composed of elements, separated by hyphens.
-
-    Filenames must have at least 4 and as many as 9 fields to be valid.
-    For valid filenames:
-      - The first two and the last two fields are required
-      - the third from last (N-2) is always required except when the value of
-        N-1 is 'readme'
-
-    Unless all 9 fields are present, or only 4 are present, it is not possible
-    to determine robustly what the other fields (if present) contain.
-
-    Parameters
-    ----------
-    path : str
-        Filesystem path relative to the root of the HLSP collection files
-    filename : str
-        Filename of a collection product
-    hlsp_name : str
-        Official abbreviation/acronym/initialism of this HLSP collection
-
-    Raises
-    ------
-    ValueError
-        If the number of fields falls outside the limits.
-    """
-
-    def __init__(self, filepath: Path, hlsp_name: str) -> None:
-        self.filepath = filepath
-        # Check that filename is of the right form
-        if not re.match(FILENAME_REGEX, self.filepath.name):
-            raise ValueError(f"Invalid file name for testing: {self.filepath.name}")
-
-        # Check that the HLSP name is valid
-        if FieldRule.match_pattern(hlsp_name, HLSPNAME_REGEX):
-            self.hlspName = hlsp_name
-        else:
-            raise ValueError(f"Invalid HLSP name: {hlsp_name}")
-        self.fields: list[FilenameFieldAB] = []
-
-    def partition(self) -> None:
-        """Partition the filepath into path+filename, and filename into fields"""
-        self.name = self.filepath.name
-        self.path = str(self.filepath.parents[0])
-        parts = self.name.split("_")
-        # split the last part into the product type and the file extension
-        last = parts[-1].split(".", 1)
-        self.fieldvals = parts[:-1] + last
-        self.nFields = len(self.fieldvals)
-        if self.nFields < 4:
-            raise ValueError(f"Filename {self.name} has less than 4 fields")
-        elif self.nFields > 9:
-            # Don't raise a ValueError here: the individual fields can still be checked
-            # but filename will be added to the results as a FAIL
-            logger.error(
-                (
-                    f"Filename '{self.name}' contains more than 9 fields (total {self.nFields})."
-                    "Individual fields will still be evaulated, "
-                    "but the final verdict will be 'FAIL'"
-                )
-            )
-
-    def create_fields(self) -> None:
-        """Create Field objects for each field in the filename."""
-        nf = self.nFields
-        # The first two fields are: 'hlsp' and the acronnym of the collection
-        self.fields.append(HlspField(self.fieldvals[0], 0))
-        self.fields.append(HlspNameField(self.fieldvals[1], self.hlspName, 1))
-
-        # If there are 9 fields, assume the rest of the fields are present in order
-        if nf == 9:
-            self.fields.append(MissionField(self.fieldvals[2], 2))
-            self.fields.append(InstrumentField(self.fieldvals[3], 3))
-            self.fields.append(TargetField(self.fieldvals[4], 4))
-            self.fields.append(FilterField(self.fieldvals[5], 5))
-
-        # If there are 5 < nFields < 9, the other fields are treated as generic
-        elif 5 < nf < 9:
-            for i in range(2, nf - 3):
-                self.fields.append(GenericField(self.fieldvals[i], i - 1, i))
-
-        # If there are more than 9 fields, treat the extra fields as generic
-        # The check will fail at the filename level, but the fields can still be tested
-        elif nf > 9:
-            self.fields.append(MissionField(self.fieldvals[2], 2))
-            self.fields.append(InstrumentField(self.fieldvals[3], 3))
-            self.fields.append(TargetField(self.fieldvals[4], 4))
-            self.fields.append(FilterField(self.fieldvals[5], 5))
-            for i in range(6, nf - 3):
-                self.fields.append(GenericField(self.fieldvals[i], i - 5, i))
-
-        # Files should have a version field unless the product_type is readme
-        if self.fieldvals[nf - 2].lower() not in ["readme"]:
-            self.fields.append(VersionField(self.fieldvals[nf - 3], nf - 3))
-
-        # The last two fields are: the file semantic type and the extension
-        self.fields.append(ProductField(self.fieldvals[nf - 2], nf - 2))
-        self.fields.append(ExtensionField(self.fieldvals[nf - 1], nf - 1))
-
-    def evaluate_fields(self):
-        """Evaluate attributes of each field
-
-        Returns:
-        --------
-        List of result dictionaries for each field
-        """
-        for f in self.fields:
-            f.evaluate()
-        # If the field evaluations succeeded, set a positive status
-        self.field_status = "pass"
-        return [f.get_scores() for f in self.fields]
-
-    def evaluate_filename(self):
-        """Evaluate attributes of the filename.
-
-        Note that the filename 'status' depends upon having evaluated the fields.
-
-        Returns:
-        --------
-        dict[str, Any]
-            Dictionary of file name attributes
-        """
-        # The final verdict is determined as the worst of the individual field verdicts
-        field_verdicts = [f.field_verdict for f in self.fields]
-        if "FAIL" in field_verdicts:
-            final_verdict = "fail"
-        elif "NEEDS REVIEW" in field_verdicts:
-            final_verdict = "needs review"
-        else:
-            final_verdict = "pass"
-
-        # Additional last-minute checks based on the number of fields
-        if self.nFields > 9:  # more than 9 fields
-            final_verdict = "fail"
-        elif self.nFields < 5:  # less than 5 fields
-            final_verdict = "fail"
-
-        # Final result for this filename
-        attr = {
-            "path": self.path,
-            "filename": self.name,
-            "n_elements": self.nFields,
-            "final_verdict": final_verdict.upper(),
-        }
-        return attr

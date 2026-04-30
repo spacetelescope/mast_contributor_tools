@@ -14,27 +14,23 @@ the instrument must be valid for the telescope name.
  decided as the lowest score from these four tests.
 """
 
-from pathlib import Path
-from unittest import mock
-
 import pytest
 
-from mast_contributor_tools.filename_check.hlsp_filename import (
+from mast_contributor_tools.filename_check.filename_fields import (
     EXTENSION_TYPES,
-    FILENAME_REGEX,
     FILTERS,
     INSTRUMENTS,
     MISSIONS,
     SEMANTIC_TYPES,
+    CollectionNameField,
     ExtensionField,
     FilterField,
     GenericField,
-    HlspField,
-    HlspFileName,
-    HlspNameField,
     InstrumentField,
     MissionField,
+    PrefixField,
     ProductField,
+    StringLiteralField,
     TargetField,
     VersionField,
 )
@@ -80,36 +76,41 @@ def assert_scores_match(recieved_score: dict[str, str], expected_score: list[str
 # ==============================================
 # Tests for each field of the file name
 # =============================================
-# HlspField
+# PrefixField
 @pytest.mark.parametrize(
-    "test_value, expected_score",
+    "test_value, literal_str, expected_score",
     # expected_score is: [capitalization, length, format, value, field_verdict]
     [
         # Expected to Pass
-        ("hlsp", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("hlsp", "hlsp", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("ccsp", "ccsp", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("mccm", "mccm", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to Fail = anything else
-        ("HLSP", ["fail", "pass", "pass", "pass", "FAIL"]),  # no caps
-        ("hst", ["pass", "pass", "pass", "fail", "FAIL"]),  # not "hlsp"
-        ("banana", ["pass", "fail", "pass", "fail", "FAIL"]),  # not "hlsp"
-        ("123-hlsp", ["pass", "fail", "pass", "fail", "FAIL"]),  # not "hlsp"
-        ("", ["fail", "fail", "pass", "fail", "FAIL"]),  # empty string
-        ("h.lp", ["pass", "pass", "fail", "fail", "FAIL"]),  # special characters
-        ("hlsp!", ["pass", "fail", "fail", "fail", "FAIL"]),  # special characters
+        ("hlsp", "ccsp", ["pass", "pass", "pass", "fail", "FAIL"]),  # mismatch
+        ("ccsp", "hlsp", ["pass", "pass", "pass", "fail", "FAIL"]),  # mismatch
+        ("HLSP", "hlsp", ["fail", "pass", "pass", "pass", "FAIL"]),  # no caps
+        ("hst", "hlsp", ["pass", "pass", "pass", "fail", "FAIL"]),  # not "hlsp"
+        ("banana", "hlsp", ["pass", "fail", "pass", "fail", "FAIL"]),  # not "hlsp"
+        ("123-hlsp", "hlsp", ["pass", "fail", "pass", "fail", "FAIL"]),  # not "hlsp"
+        ("", "hlsp", ["fail", "fail", "pass", "fail", "FAIL"]),  # empty string
+        ("h.lp", "hlsp", ["pass", "pass", "fail", "fail", "FAIL"]),  # special characters
+        ("hlsp!", "hlsp", ["pass", "fail", "fail", "fail", "FAIL"]),  # special characters
     ],
 )
-def test_HlspField(
+def test_PrefixField(
     test_value: str,
+    literal_str: str,
     expected_score: list[str],
 ) -> None:
-    """Test HlspField values"""
+    """Test PrefixField values"""
     # Evaluate Test Value
-    field = HlspField(test_value)
+    field = PrefixField(test_value, literal_str)
     field.evaluate()
     # Assert recieved scores match expected
     assert_scores_match(field.get_scores(), expected_score)
 
 
-# HlspNameField
+# CollectionNameField
 @pytest.mark.parametrize(
     "test_value, ref_name, expected_score",
     # expected_score is: [capitalization, length, format, value, field_verdict]
@@ -138,14 +139,14 @@ def test_HlspField(
         ("", "", ["fail", "fail", "fail", "pass", "FAIL"]),  # empty string
     ],
 )
-def test_HlspNameField(
+def test_CollectionNameField(
     test_value: str,
     ref_name: str,
     expected_score: list[str],
 ) -> None:
-    """Test HlspNameField values"""
+    """Test CollectionNameField values"""
     # Evaluate Test Value
-    field = HlspNameField(test_value, ref_name=ref_name)
+    field = CollectionNameField(test_value, ref_name=ref_name)
     field.evaluate()
     # Assert recieved scores match expected
     assert_scores_match(field.get_scores(), expected_score)
@@ -161,8 +162,9 @@ def test_HlspNameField(
         ("hst-jwst", ["pass", "pass", "pass", "pass", "PASS"]),
         ("sdss", ["pass", "pass", "pass", "pass", "PASS"]),
         ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("roman", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to give warnings
-        ("roman", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
+        ("hwo", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         ("fake-mission", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         # Expected to Fail
         ("hst_jwst", ["pass", "pass", "fail", "needs review", "FAIL"]),
@@ -191,6 +193,7 @@ def test_MissionField(
         # Expected to Pass
         ("nirspec", ["pass", "pass", "pass", "pass", "PASS"]),
         ("multi", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("wfi", ["pass", "pass", "pass", "pass", "PASS"]),
         ("nircam-nirspec", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected wanrings
         ("mystery-camera", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
@@ -308,6 +311,7 @@ def test_VersionField(test_value: str, expected_score: list[str]) -> None:
         ("drz", ["pass", "pass", "pass", "pass", "PASS"]),
         ("lc", ["pass", "pass", "pass", "pass", "PASS"]),
         ("spec", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("thumb", ["pass", "pass", "pass", "pass", "PASS"]),
         # Expected to give warning
         ("fake-suffix", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
         ("2dspec", ["pass", "pass", "pass", "needs review", "NEEDS REVIEW"]),
@@ -332,6 +336,8 @@ def test_ProductField(test_value: str, expected_score: list[str]) -> None:
         # Expected to Pass
         ("fits", ["pass", "pass", "pass", "pass", "PASS"]),
         ("pdf", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("asdf", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("parquet", ["pass", "pass", "pass", "pass", "PASS"]),
         ("png", ["pass", "pass", "pass", "pass", "PASS"]),
         ("dat", ["pass", "pass", "pass", "pass", "PASS"]),
         ("tar.gz", ["pass", "pass", "pass", "pass", "PASS"]),
@@ -347,6 +353,33 @@ def test_ExtensionField(test_value: str, expected_score: list[str]) -> None:
     """Test ExtensionField values"""
     # Evaluate Test Value
     field = ExtensionField(test_value)
+    field.evaluate()
+    # Assert recieved scores match expected
+    assert_scores_match(field.get_scores(), expected_score)
+
+
+# StringLiteralField
+@pytest.mark.parametrize(
+    "test_value, literal_str, expected_score",
+    [
+        # Expected to Pass
+        ("thumb", "thumb", ["pass", "pass", "pass", "pass", "PASS"]),
+        ("hlsp", "hlsp", ["pass", "pass", "pass", "pass", "PASS"]),
+        # Expected to Fail = anything else
+        ("hlsp", "ccsp", ["pass", "pass", "pass", "fail", "FAIL"]),  # mismatch
+        ("THUMB", "thumb", ["fail", "pass", "pass", "pass", "FAIL"]),  # no caps
+        ("", "", ["fail", "fail", "pass", "pass", "FAIL"]),  # empty string
+        ("hlsp!", "hlsp!", ["pass", "pass", "fail", "pass", "FAIL"]),  # special characters
+    ],
+)
+def test_StringLiteralField(
+    test_value: str,
+    literal_str: str,
+    expected_score: list[str],
+) -> None:
+    """Test StringLiteralField values"""
+    # Evaluate Test Value
+    field = StringLiteralField(test_value, literal_str)
     field.evaluate()
     # Assert recieved scores match expected
     assert_scores_match(field.get_scores(), expected_score)
@@ -377,135 +410,6 @@ def test_GenericField(test_value: str, expected_score: list[str]) -> None:
 
 
 # ==============================================
-# Full filename tests
-# ==============================================
-# Tests for file names that are not expected to raise errors, buy may pass or fail
-@pytest.mark.parametrize(
-    "test_filename, hlsp_name, expected_evaluation",
-    [
-        # Expected to Pass
-        # Fake Example
-        (
-            "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits",
-            "fake-hlsp",
-            "PASS",
-        ),
-        # Real examples
-        (
-            "hlsp_phangs-jwst_jwst_nircam_ngc1385_f335m_v1p0p1_img.fits",
-            "phangs-jwst",
-            "PASS",
-        ),
-        (
-            "hlsp_hff-deepspace_hst_acs-wfc3_all_multi_v1_readme.txt",
-            "hff-deepspace",
-            "PASS",
-        ),
-        (
-            "hlsp_cos-gal_hst_cos_j152447.75-p041919.8_g130m_v1_fullspec.fits",
-            "cos-gal",
-            "NEEDS REVIEW",
-        ),
-        (
-            "hlsp_tica_tess_ffi_s0084-o2-01023889-cam1-ccd1_tess_v01_img.fits",
-            "tica",
-            "PASS",
-        ),
-        (
-            "hlsp_judo_hst_wfc3_jupiter-20120919_f275w_v1.0_npole-globalmap.fits",
-            "judo",
-            "NEEDS REVIEW",
-        ),
-        (  # example using multi
-            "hlsp_my-hlsp_multi_multi_vega_multi_v1_spec.fits",
-            "my-hlsp",
-            "PASS",
-        ),
-        (  # example using multi in only some fields
-            "hlsp_my-hlsp_hst_multi_vega_multi_v1_spec.fits",
-            "my-hlsp",
-            "PASS",
-        ),
-        (  # example readme with only 4 fields
-            "hlsp_my-hlsp_hst_readme.txt",
-            "my-hlsp",
-            "PASS",
-        ),
-        (  # example catalog
-            "hlsp_my-hlsp_alltargets_v1_cat.fits",
-            "my-hlsp",
-            "PASS",
-        ),
-        (  # example with + sign
-            "hlsp_specs_hst_acs_j012910+145935_f250w_v1.0_img.fits",
-            "specs",
-            "PASS",
-        ),
-        # Expected to Fail
-        (
-            "hlsp_fake-hlsp_hst_wfc3_VEGA_f160w_v1_img.fits",
-            "fake-hlsp",
-            "FAIL",
-        ),
-        (
-            "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits",
-            "wrong-name",
-            "FAIL",
-        ),
-        (
-            "hlsp_my-hlsp_hst_wfc3_vega_f160w_more_than_nine_fields.fits",  # too many fields
-            "my-hlsp",
-            "FAIL",
-        ),
-    ],
-)
-def test_HlspFileName(
-    test_filename: str,
-    hlsp_name: str,
-    expected_evaluation: list[str],
-) -> None:
-    """Tests for file names that are expected to run (no errors), but still pass/fail accordingly"""
-    # Make sure filename matches the regex
-    assert FILENAME_REGEX.match(test_filename), f"Filename {test_filename} does not match regex {FILENAME_REGEX}"
-    # Test the filename
-    hfn = HlspFileName(Path(test_filename), hlsp_name)
-    hfn.partition()
-    hfn.create_fields()
-    elements = hfn.evaluate_fields()
-    received_evaluation = hfn.evaluate_filename()["final_verdict"]
-    assert received_evaluation == expected_evaluation, (
-        f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
-    )
-
-
-# Tests for file names that are expected to raise errors
-@pytest.mark.parametrize(
-    "test_filename, hlsp_name, expected_error",
-    [
-        ("fakefile.fits", "fakehlsp", ValueError),
-        ("fakefile.fits", "invalid_name", ValueError),  # invalid hlsp name
-        ("two_fields.fits", "fakehlsp", ValueError),  # only two fields
-    ],
-)
-def test_HlspFileName_errors(
-    test_filename: str,
-    hlsp_name: str,
-    expected_error,
-) -> None:
-    """Tests for file names that are expected to raise errors"""
-    try:
-        hfn = HlspFileName(Path(test_filename), hlsp_name)
-        hfn.partition()
-        hfn.create_fields()
-    except Exception as e:
-        # Assert correct error was raised
-        assert e.__class__ == expected_error, f"Wrong error raised: Expected {expected_error}, raised {e.__class__}"
-    else:
-        # if it made it this far, no errors were raised - that's a problem for this test
-        assert False, f"No error was raised when evaluating filename '{test_filename}'"
-
-
-# ==============================================
 # Other miscellaneous tests
 # ==============================================
 @pytest.mark.parametrize(
@@ -526,69 +430,3 @@ def test_cfg(test_value: str, cfg_list: list) -> None:
             cfg_name = name
     # Assert value is in list
     assert test_value in cfg_list, f"Error: {test_value} not found in {cfg_name}"
-
-
-# Test that all field classes are called in HlspFileName (no fields are skipped)
-# Listed in backwards order because the last one is passed to function first
-# For standard 9-field filename
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.ExtensionField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.ProductField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.VersionField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.FilterField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.TargetField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.InstrumentField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.MissionField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspNameField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspField")
-def test_field_9parts_called_in_HlspFileName(*mock_fields) -> None:
-    """Test that all field classes are called in HlspFileName"""
-    test_filename = "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits"
-    # Split file name into parts to test
-    parts = test_filename.split("_")
-    last = parts[-1].split(".", 1)
-    parts = parts[:-1] + last
-
-    # Initiate File Name Validation
-    hfn = HlspFileName(Path(test_filename), "fake-hlsp")
-    hfn.partition()
-    hfn.create_fields()
-    # Check to make sure every field was checked
-    for i, mock_field in enumerate(mock_fields):
-        # Assert field was checked
-        (
-            mock_field.assert_called_once(),
-            f"Field {mock_field._extract_mock_name()} was not called",
-        )
-        # Assert correct value was used as arguments
-        if i == 1:
-            mock_field.assert_called_with(parts[i], parts[i], i)  # two args for HlspName
-        else:
-            mock_field.assert_called_with(parts[i], i)  # one for everything else
-
-
-# Test that all field classes are called in HlspFileName (no fields are skipped)
-# Listed in backwards order because the last one is passed to function first
-# For shorter 5-field filename with Generic Fields
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.ExtensionField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.GenericField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspNameField")
-@mock.patch("mast_contributor_tools.filename_check.hlsp_filename.HlspField")
-def test_field_5parts_called_in_HlspFileName(*mock_fields) -> None:
-    """Test that all field classes are called in HlspFileName"""
-    test_filename = "hlsp_fake-hlsp_alltargets_v1_cat.fits"
-    # Split file name into parts to test
-    parts = test_filename.split("_")
-    last = parts[-1].split(".", 1)
-    parts = parts[:-1] + last
-
-    # Initiate File Name Validation
-    hfn = HlspFileName(Path(test_filename), "fake-hlsp")
-    hfn.partition()
-    hfn.create_fields()
-    # Check to make sure every field was checked
-    for i, mock_field in enumerate(mock_fields):
-        # Assert field was checked
-        (
-            mock_field.assert_called_once(),
-            f"Field {mock_field._extract_mock_name()} was not called",
-        )
