@@ -5,6 +5,9 @@
 [PR # 32](https://github.com/spacetelescope/mast_contributor_tools/pull/32)
     - Adding option to save filename checker output in altnerate format (csv, fits, excel, html)
 
+[PR # 36](https://github.com/spacetelescope/mast_contributor_tools/pull/36)
+    - Adding support for MCCM and CCSP file name validation
+
 ### Changed
 
 ### Deprecated
