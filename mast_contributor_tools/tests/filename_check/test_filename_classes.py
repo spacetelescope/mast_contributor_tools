@@ -521,6 +521,6 @@ def test_get_filename_class(test_filename, expected):
     """
     with mock.patch(f"mast_contributor_tools.filename_check.filename_classes.{expected}") as expected_class:
         # Run function
-        result = get_filename_class(test_filename, "my-collection")
+        get_filename_class(test_filename, "my-collection")
         # Assert correct class was called
         expected_class.assert_called_once()
