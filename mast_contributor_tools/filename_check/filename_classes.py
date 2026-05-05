@@ -3,6 +3,7 @@
 import abc
 import re
 from pathlib import Path
+from typing import Union
 
 from mast_contributor_tools.filename_check.filename_fields import (
     COLLECTION_NAME_REGEX,
@@ -336,3 +337,55 @@ class HlspFileName(GenericFilename):
         # The last two fields are: the file semantic type and the extension
         self.fields.append(ProductField(self.field_values[nf - 2], nf - 2))
         self.fields.append(ExtensionField(self.field_values[nf - 1], nf - 1))
+
+
+def identify_collection_type(file_name: str) -> str:
+    """
+    Identify if a file is an HLSP, CCSP, or MCCM product based on the file name prefix.
+
+    Parameters
+    ----------
+    filename : Path
+        File name
+
+    Returns
+    -------
+    collection_type: str
+        Collection Type - "HLSP", "CCSP", or "MCCM". Raises a warning and defaults to "HLSP" if unable to identify.
+    """
+    collection_type = file_name.split("_")[0].upper()
+    if collection_type.upper() not in ["HLSP", "MCCM", "CCSP"]:
+        # Default to HLSP, raise warning
+        msg = f"WARNING: Could not identify collection type '{collection_type}' from filename. Assuming HLSP."
+        logger.warning(msg)
+        collection_type = "HLSP"
+    return collection_type
+
+
+def get_filename_class(file_name: Path, collection_name: str) -> Union[HlspFileName, CCSPFileName, MCCMFileName]:
+    """
+    Parameters
+    ----------
+    filename : Path
+        File name path object
+
+    collection_name : str, optional
+        Name of HLSP/MCCM/CCSP collection.
+
+    Returns:
+    --------
+    Filename Validator class for the appropriate collectiion: HlspFilename, CCSPFilename, or MCCMFilename
+    """
+
+    # Infer collection type from file name
+    collection_type = identify_collection_type(str(file_name))
+
+    # Initiate relevant class object
+    if collection_type == "HLSP":
+        filename_class = HlspFileName(file_name, collection_name)
+    elif collection_type == "CCSP":
+        filename_class = CCSPFileName(file_name, collection_name)
+    elif collection_type == "MCCM":
+        filename_class = MCCMFileName(file_name, collection_name)
+
+    return filename_class

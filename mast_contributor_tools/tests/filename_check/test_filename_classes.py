@@ -1,5 +1,5 @@
 """
-Tests for mast_contributor_tools/filename_check/hlsp_filename.py
+Tests for mast_contributor_tools/filename_check/filename_classes.py
 
 Each test recieves four scores: [capitalization, length, value, field_verdict]:
 - "Captalization" checks the capitilzation rules for this field, generally
@@ -19,11 +19,13 @@ from unittest import mock
 
 import pytest
 
-from mast_contributor_tools.filename_check.check_filename import (
+from mast_contributor_tools.filename_check.filename_classes import (
     FILENAME_REGEX,
     CCSPFileName,
     HlspFileName,
     MCCMFileName,
+    get_filename_class,
+    identify_collection_type,
 )
 
 
@@ -196,15 +198,15 @@ def test_HlspFileName_errors(
 # Test that all field classes are called in HlspFileName (no fields are skipped)
 # Listed in backwards order because the last one is passed to function first
 # For standard 9-field filename
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ExtensionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ProductField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.VersionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.FilterField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.TargetField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.InstrumentField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.MissionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.CollectionNameField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.PrefixField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ExtensionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ProductField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.VersionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.FilterField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.TargetField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.InstrumentField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.MissionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.CollectionNameField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.PrefixField")
 def test_field_9parts_called_in_HlspFileName(*mock_fields) -> None:
     """Test that all field classes are called in HlspFileName"""
     test_filename = "hlsp_fake-hlsp_hst_wfc3_vega_f160w_v1_img.fits"
@@ -236,10 +238,10 @@ def test_field_9parts_called_in_HlspFileName(*mock_fields) -> None:
 # Test that all field classes are called in HlspFileName (no fields are skipped)
 # Listed in backwards order because the last one is passed to function first
 # For shorter 5-field filename with Generic Fields
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ExtensionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.GenericField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.CollectionNameField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.PrefixField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ExtensionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.GenericField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.CollectionNameField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.PrefixField")
 def test_field_5parts_called_in_HlspFileName(*mock_fields) -> None:
     """Test that all field classes are called in HlspFileName"""
     test_filename = "hlsp_fake-hlsp_alltargets_v1_cat.fits"
@@ -352,14 +354,14 @@ def test_CCSPFileName_errors(
 
 # Test that all field classes are called in CCSPFileName
 # Listed in backwards order because the last one is passed to function first
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ExtensionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ProductField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.VersionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.FilterField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.TargetField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.InstrumentField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.CollectionNameField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.PrefixField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ExtensionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ProductField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.VersionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.FilterField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.TargetField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.InstrumentField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.CollectionNameField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.PrefixField")
 def test_field_CCSPFileName_8fields(*mock_fields) -> None:
     """Test that all field classes are called in CCSPFileName"""
     # For standard 8-field filename
@@ -389,15 +391,15 @@ def test_field_CCSPFileName_8fields(*mock_fields) -> None:
             mock_field.assert_called_with(parts[i], i)  # one for everything else
 
 
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ExtensionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.StringLiteralField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.ProductField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.VersionField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.FilterField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.TargetField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.InstrumentField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.CollectionNameField")
-@mock.patch("mast_contributor_tools.filename_check.check_filename.PrefixField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ExtensionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.StringLiteralField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.ProductField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.VersionField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.FilterField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.TargetField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.InstrumentField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.CollectionNameField")
+@mock.patch("mast_contributor_tools.filename_check.filename_classes.PrefixField")
 def test_field_CCSPFileName_9fields(*mock_fields) -> None:
     """Test that all field classes are called in CCSPFileName"""
     # For standard 8-field filename
@@ -481,3 +483,44 @@ def test_MCCMFileName(
     assert received_evaluation == expected_evaluation, (
         f"{test_filename} recieved score {received_evaluation}, expected {expected_evaluation}, {elements}"
     )
+
+
+# ==============================================
+# Misc Other Tests
+# ==============================================
+
+
+@pytest.mark.parametrize(
+    "test_filename, expected",
+    [
+        ("hlsp_my-hlsp_file.txt", "HLSP"),
+        ("ccsp_my-hlsp_file.txt", "CCSP"),
+        ("mccm_my-hlsp_file.txt", "MCCM"),
+        # Defaults to HLSP when not recognized
+        ("mast_my-hlsp_file.txt", "HLSP"),
+    ],
+)
+def test_identify_collection_type(test_filename, expected) -> None:
+    """Test that the identify_collection_type() function works correctly"""
+    assert identify_collection_type(test_filename) == expected
+
+
+@pytest.mark.parametrize(
+    "test_filename, expected",
+    [
+        ("hlsp_my-hlsp_file.txt", "HlspFileName"),
+        ("ccsp_my-hlsp_file.txt", "CCSPFileName"),
+        ("mccm_my-hlsp_file.txt", "MCCMFileName"),
+        # Defaults to HLSP when not recognized
+        ("mast_my-hlsp_file.txt", "HlspFileName"),
+    ],
+)
+def test_get_filename_class(test_filename, expected):
+    """
+    Tests get_filename_class returns the correct class
+    """
+    with mock.patch(f"mast_contributor_tools.filename_check.filename_classes.{expected}") as expected_class:
+        # Run function
+        result = get_filename_class(test_filename, "my-collection")
+        # Assert correct class was called
+        expected_class.assert_called_once()

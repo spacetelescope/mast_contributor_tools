@@ -5,14 +5,12 @@ from typing import Union
 
 from tqdm import tqdm
 
-from mast_contributor_tools.filename_check.check_filename import (
-    COLLECTION_NAME_REGEX,
-    CCSPFileName,
-    FieldRule,
-    HlspFileName,
-    MCCMFileName,
-)
 from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
+from mast_contributor_tools.filename_check.filename_classes import (
+    COLLECTION_NAME_REGEX,
+    FieldRule,
+    get_filename_class,
+)
 from mast_contributor_tools.utils.logger_config import setup_logger
 
 logger = setup_logger(__name__)
@@ -98,44 +96,16 @@ def get_file_paths(
     return file_list
 
 
-def identify_collection_type(file_name: str) -> str:
+def validate_collection_name(collection_name: str) -> None:
     """
-    Identify if a file is an HLSP, CCSP, or MCCM product based on the file name prefix.
+    Verifies the collection name is valid (no special characters, etc.)
+    and raises an error if not.
 
-    Parameters
-    ----------
-    filename : str
-        File name
-
-    Returns
-    -------
-    collection_type: str
-        Collection Type - "HLSP", "CCSP", or "MCCM". Raises a warning and defaults to "HLSP" if unable to identify.
+    Parameters:
+    ===========
+    collection_name: str
+        The name of the HLSP, MCCM, or CCSP collection.
     """
-    collection_type = file_name.split("_")[0].upper()
-    if collection_type.upper() not in ["HLSP", "MCCM", "CCSP"]:
-        # Default to HLSP, raise warning
-        msg = f"WARNING: Could not identify collection type '{collection_type}' from filename. Assuming HLSP."
-        logger.warning(msg)
-        collection_type = "HLSP"
-    return collection_type
-
-
-def check_filenames(collection_name: str, file_list: list[Path], dbFile: str, output_format: str = "db") -> None:
-    """Recursively check filenames in a directory tree of data products
-
-    Parameters
-    ----------
-    collection_name : str
-        Official identifier (abbreviation/acronym/initialism) for the HLSP/MCCM/CCSP collection
-    file_list: list[str]
-        List of files to check, typically output from get_file_paths()
-    dbFile : str, optional
-        Name of SQLite database file to contain results
-    output_format : str, optional
-       Alternate format to save results to: 'csv', 'fits', 'html', or 'excel'. Default: "db"
-    """
-    # Make sure collection name is valid
     if not FieldRule.match_pattern(collection_name, COLLECTION_NAME_REGEX):
         msg = (
             f"Invalid collection_name: '{collection_name}'.\n"
@@ -148,16 +118,31 @@ def check_filenames(collection_name: str, file_list: list[Path], dbFile: str, ou
         logger.error(msg)
         raise ValueError(msg)
 
-    # Identify if this is an HLSP, CCSP, or MCCM collection
-    collection_type = identify_collection_type(file_list[0].name)
 
-    # Beging file name checking
-    logger.critical(f"Evaluating {len(file_list)} files for {collection_type} collection '{collection_name}'")
-    if Path(dbFile).is_file():
-        logger.warning(f"Database file {dbFile} already exists. Overwriting File.")
-        os.remove(dbFile)
-    db = Hlsp_SQLiteDb(dbFile)
-    logger.debug(f"Creating results database {dbFile}")
+def check_filenames(collection_name: str, file_list: list[Path], db_file: str, output_format: str = "db") -> None:
+    """Recursively check filenames in a directory tree of data products
+
+    Parameters
+    ----------
+    collection_name : str
+        Official identifier (abbreviation/acronym/initialism) for the HLSP/MCCM/CCSP collection
+    file_list: list[str]
+        List of files to check, typically output from get_file_paths()
+    db_file : str, optional
+        Name of SQLite database file to contain results
+    output_format : str, optional
+       Alternate format to save results to: 'csv', 'fits', 'html', or 'excel'. Default: "db"
+    """
+    # Make sure collection name is valid
+    validate_collection_name(collection_name)
+
+    # Begin file name checking
+    logger.critical(f"Evaluating {len(file_list)} files for collection '{collection_name}'")
+    if Path(db_file).is_file():
+        logger.warning(f"Database file {db_file} already exists. Overwriting File.")
+        os.remove(db_file)
+    db = Hlsp_SQLiteDb(db_file)
+    logger.debug(f"Creating results database {db_file}")
     db.create_db()
 
     # Evaluate each filename
@@ -166,12 +151,7 @@ def check_filenames(collection_name: str, file_list: list[Path], dbFile: str, ou
         logger.debug(f"Examining {f.name}")
         try:
             # Create the filename object
-            if collection_type == "HLSP":
-                hfn = HlspFileName(f, collection_name)
-            elif collection_type == "CCSP":
-                hfn = CCSPFileName(f, collection_name)
-            elif collection_type == "MCCM":
-                hfn = MCCMFileName(f, collection_name)
+            hfn = get_filename_class(f, collection_name)
             # Partition into fields
             hfn.partition()
         except ValueError:
@@ -195,7 +175,7 @@ def check_filenames(collection_name: str, file_list: list[Path], dbFile: str, ou
             logger.debug(f"Verdict for {f.name}: '{file_rec['final_verdict']}'")
 
     logger.critical(db.print_summary())  # print summary information on how many files passed
-    logger.critical(f"\nResults written to {dbFile}")
+    logger.critical(f"\nResults written to {db_file}")
 
     # Write ouput to alternate format if specified
     if output_format != "db":
@@ -204,7 +184,7 @@ def check_filenames(collection_name: str, file_list: list[Path], dbFile: str, ou
         logger.critical(f"Written to {ouput_files}")
 
     db.close_db()
-    logger.critical(f"\nFilename checking complete. Results written to {dbFile}")
+    logger.critical(f"\nFilename checking complete. Results written to {db_file}")
 
 
 def check_single_filename(file_name: str, collection_name: str = "") -> None:
@@ -219,9 +199,6 @@ def check_single_filename(file_name: str, collection_name: str = "") -> None:
         Name of example HLSP/MCCM/CCSP collection. For example, 'my-hlsp'.
         If not supplied, the collection_name is inferred using the second field of the filename.
     """
-    # Infer collection type from file name
-    collection_type = identify_collection_type(file_name)
-
     # Infer collection_name from the file name if it wasn't provided
     if not collection_name:
         if len(file_name.split("_")) > 2:
@@ -231,15 +208,12 @@ def check_single_filename(file_name: str, collection_name: str = "") -> None:
             logger.error(msg)
             raise ValueError(msg)
 
+    # Make sure collection name is valid
+    validate_collection_name(collection_name)
+
     # Check file name fields
     fp = Path(file_name)
-    if collection_type == "HLSP":
-        hfn = HlspFileName(fp, collection_name)
-    elif collection_type == "CCSP":
-        hfn = CCSPFileName(fp, collection_name)
-    elif collection_type == "MCCM":
-        hfn = MCCMFileName(fp, collection_name)
-
+    hfn = get_filename_class(fp, collection_name)
     hfn.partition()
     hfn.create_fields()
     elements = hfn.evaluate_fields()
