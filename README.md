@@ -110,7 +110,7 @@ make -C docs html
 
 Then navigate to `docs/_build/html` and open `index.html` on your browser to see the built documentation.
 
-To build live-reload documentation, run the following command. You need to open a web browser and enter the URL that sphinx-build serves to veiw the live, auto-updating Sphinx docs, for instance, `http://127.0.0.1:8000`.
+To build live-reload documentation, run the following command. You need to open a web browser and enter the URL that sphinx-build serves to view the live, auto-updating Sphinx docs, for instance, `http://127.0.0.1:8000`.
 
 ```shell
 sphinx-autobuild docs docs/_build/html
