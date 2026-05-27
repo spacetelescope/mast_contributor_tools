@@ -10,7 +10,7 @@ For full installation instructions, refer to the [`README.md`](https://github.co
 pip install .
 ```
 
-You can check if your installation was successful by starting a python session and importing the pacakge:
+You can check if your installation was successful by starting a python session and importing the package:
 
 ```python
 python
@@ -30,7 +30,7 @@ The [Filename Checker Guide](https://github.com/spacetelescope/mast_contributor_
 
 The [`tutorial-data/`](https://github.com/spacetelescope/mast_contributor_tools/blob/main/TUTORIAL/tutorial-data/) folder included in this tutorial contains several example files that you can use for testing. Take a look in that folder and familiarize yourself with its contents! This folder contains 3 different files, for a hypothetical HLSP named "mct-tutorial".
 
-There are three different fake fits files containing spectra for different hypothetical galaixes:
+There are three different fake fits files containing spectra for different hypothetical galaxies:
 
 - `hlsp_mct-tutorial_jwst_nirspec_galaxy1_multi_v1_spec.fits`
 - `hlsp_mct-tutorial_jwst_nirspec_galaxy2_multi_v1_spec.fits`
@@ -86,7 +86,7 @@ Next, here's an example of a file name which fails validation. HLSP filenames ar
 mct check_filename HLSP_mct-tutorial_JWST_nirspec_GALAXY1_multi_v1_spec.fits
 ```
 
-You should see that this filename will recieve:
+You should see that this filename will receive:
 
 ```
 Final Score: FAIL
@@ -97,7 +97,7 @@ But why did it fail? You can use the verbose flag (`-v`) to investigate and lear
 ```shell
 mct check_filename -v HLSP_mct-tutorial_JWST_nirspec_GALAXY1_multi_v1_spec.fits
 ```
-This will print out a lot more information than the previous command, but specifically, it will show that this filename failed because the "`HLSP`", "`JWST`", and "`GALAXY1`" parts recieved a `capitalization_score: fail`.
+This will print out a lot more information than the previous command, but specifically, it will show that this filename failed because the "`HLSP`", "`JWST`", and "`GALAXY1`" parts received a `capitalization_score: fail`.
 
 ## Step 4: Checking multiple file names at once
 
@@ -130,7 +130,7 @@ Use this command to run the filename checker against everything in the [`tutoria
 mct check_filenames mct-tutorial --directory='tutorial-data/'
 ```
 
-You should receieve an output message that 5 files were checked, and that all files passed!
+You should receive an output message that 5 files were checked, and that all files passed!
 
 
 ### Step 4c: Check all file names from a list
@@ -143,7 +143,7 @@ This command reads in a list from the `tutorial_file_list.txt` file, and checks 
 mct check_filenames mct-tutorial --from_file='tutorial_file_list.txt'
 ```
 
-You should receieve an output message that 8 files were checked, and that all files passed!
+You should receive an output message that 8 files were checked, and that all files passed!
 
 
 ### Step 4d. Selecting or Excluding files

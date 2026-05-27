@@ -33,7 +33,7 @@ FIELDS_TABLE = """
 PROBLEMS_VIEW = """
         CREATE VIEW IF NOT EXISTS potential_problems as
         select fn.path, fn.filename, fn.n_elements, fl.name, fl.value, fl.nfield, fl.capitalization_score, fl.length_score,
-        fl.format_score, fl.value_score, f.nfield_score, fl.field_verdict
+        fl.format_score, fl.value_score, fl.nfield_score, fl.field_verdict
         from filename as fn, fields as fl
         where fn.filename = fl.file_ref
         AND fl.field_verdict != 'PASS';
