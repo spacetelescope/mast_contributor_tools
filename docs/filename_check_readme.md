@@ -26,7 +26,7 @@ The various options for this command are described below:
 | `-v` or `--verbose`     | Enables verbose output for more information                                   | `False`                            |
 | `--help`                | Prints information about this command                                         |                                    |
 
-A step-by-step tutorial for learing how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder.
+A step-by-step tutorial for learning how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder.
 
 ### Example Usage: Check all files in the current directory
 
@@ -101,7 +101,7 @@ The file name checking application makes use of the following:
 
 ## Filename components
 
-Names of science files must follow the naming scheme described below. File names are typically divided into 9 **fields** separated by underscores (`_`). 
+Names of science files must follow the naming scheme described below. File names are typically divided into 9 **fields** separated by underscores (`_`).
 
 ```html
 hlsp_<proj-id>_<observatory>_<instrument>_<target>_<opt-elem>_<version>_<product-type>.<extension>
@@ -113,7 +113,7 @@ where the fields are defined as follows. Refer to the [HLSP Contributor Guide](h
 | Field | Description | Example Values |
 | ---------------------------| -------------------------------------------------------------------------- | ---------------------------------- |
 | `hlsp` | A literal string that identifies the file as a community-contributed data product | `hlsp` |
-| `<proj-id>` | An agreed upon acronym or initializm for the HLSP collection. This name is also used in MAST as a directory name and as a database keyword. This field may contain a hyphen. | `candels`, `jades`, `phangs`, `rocky-worlds`, `tica`, `ulysses`, `wide` |
+| `<proj-id>` | An agreed upon acronym or initialize for the HLSP collection. This name is also used in MAST as a directory name and as a database keyword. This field may contain a hyphen. | `candels`, `jades`, `phangs`, `rocky-worlds`, `tica`, `ulysses`, `wide` |
 | `<observatory>` | Observatory or mission used to acquire the data, or for which the data were simulated. May include multiple elements If multiple observatories were used. | `hst-iue`, `galex`, `jwst`, `tess`|
 | `<instrument>` | Name of Instrument used to obtain the data, or for which the data were simulated. May include multiple elements if multiple instruments were used. When not applicable (e.g. for GALEX data), use a descriptive tag like img or spec. | `nircam`, `cos-stis` |
 | `<target>` | Field name or target as designated by the team, or as a general identifier where a specific target designation is not relevant. Parts, counter numbers, and epochs are allowed in this field and should be separated by hyphens. May include hyphen, period, and plus sign. | `m57`, `m101-ep1`, `m101-ep2`, `ngc1385`, `obj-123`, `j152447.75-p041919.8`|
@@ -122,30 +122,30 @@ where the fields are defined as follows. Refer to the [HLSP Contributor Guide](h
 | `<product-type>` | Type of data as designated by the team (models/simulations can be indicated here). Use a widely recognized type. Be sure to distinguish products of similar type, possibly by using a simple compound type. e.g., a photometric catalog (phot-cat) vs. a catalog of simulated object morphologies (sim-cat). Hyphens are allowed for compound product types. | `img`, `cat`, `drz`, `lc`, `model-spec`, `sci`, `spec`, `spec2d`, `wht`, `sim-img`, `map`|
 | `<extension>` | Standard extension name for the file format, which must include standard notation for compression if applicable. | `.asdf`, `.txt`., `.md`, `.png`, `.fits`, `.fits.gz`|
 
-For each file name, the fields are evaluated against four criteria: captalization, character Length: each field has a maximum character length, format, and value, which are described in detail in the next section of thie README ("Filename evaluation").
+For each file name, the fields are evaluated against four criteria: capitalization, character Length: each field has a maximum character length, format, and value, which are described in detail in the next section of this README ("Filename evaluation").
 
 The results of the evaluation for each field of a file name is written to an output database.
 
-Some fields are composed of **elements**, separated by hyphens (e.g., `lmc-flows`,`hst-jwst`, `acs-wfc3`, or `f160w-f335m-f444w`). Elements in fields that specify the (observatory, instruments, filters) triplet are checked for consistency with known combinations. For instance, if observatory is `jwst` only, `wfc3` (an HST instrument) and `f775w` (an HST filter) cannot be the instrument and filter field values respectively. Refer to the [`mast_contributor_tools/filename_ckeck/oif.yaml`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/mast_contributor_tools/filename_check/oif.yaml) file for the list of currently-recognized combinations. 
+Some fields are composed of **elements**, separated by hyphens (e.g., `lmc-flows`,`hst-jwst`, `acs-wfc3`, or `f160w-f335m-f444w`). Elements in fields that specify the (observatory, instruments, filters) triplet are checked for consistency with known combinations. For instance, if observatory is `jwst` only, `wfc3` (an HST instrument) and `f775w` (an HST filter) cannot be the instrument and filter field values respectively. Refer to the [`mast_contributor_tools/filename_check/oif.yaml`](https://github.com/spacetelescope/mast_contributor_tools/blob/dev/mast_contributor_tools/filename_check/oif.yaml) file for the list of currently-recognized combinations.
 
 ## Filename evaluation
 
-The results are organized by field, and the fields must appear in a particular order. There must be at least 4, and may be as many as 9 fields defined for each file. Note that some file content types (e.g. source catalogs, readme file) need not include all fields. 
+The results are organized by field, and the fields must appear in a particular order. There must be at least 4, and may be as many as 9 fields defined for each file. Note that some file content types (e.g. source catalogs, readme file) need not include all fields.
 
 See the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for detailed rules. The results of the filename evaluation are stored in an SQLite3 database. Each recognized field is evaluated on the following criteria:
 
-- Captalization (`capitalization_score`): the filename must be all lower case.
+- Capitalization (`capitalization_score`): the filename must be all lower case.
 - Character Length (`length_score`): each field has a maximum character length.
 - Format (`format_score`): checks overall format and special characters: for example, a period `.` is allowed in the `<version>` field but not in the `<proj-id>`. Certain fields allow hyphen-separated elements. Most fields must begin and end with an ASCII alpha-numeric character.
 - Value (`value_score`): In some cases, the contents of each field are validated against known values to the extent possible.
 - Field Number (`nfield_score`): The file name must contain 9 fields or fewer (including the file extension), separated by underscores.
 
-The evaluation scores for individual fielda and the overall file names are one of `PASS`, `NEEDS REVIEW` or `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value. This is often necessary and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
+The evaluation scores for individual fields and the overall file names are one of `PASS`, `NEEDS REVIEW` or `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value. This is often necessary and correct, e.g. for new product types or instruments whose data we haven't ingested before. Please consult with MAST staff for review.
 
 
 ## Reading the Results
 
-The results are written out in a database file (named `results_<proj-id>.db`). The database may be examined programmatically with python or other languages. We recommend viewing it interactively with the [DB Browser for SQLite](https://sqlitebrowser.org/). The database contains three tables:
+The results are written out in a database file (named `results_<proj-id>.db`). The database may be examined programmatically with python or other languages. We recommend viewing it interactively with the [DB Browser for SQLite](https://sqlitebrowser.org/). We have written a [`SQLITE tutorial`](../docs/sqlite_readme.md) to assist you with reading and evaluating the results from the filename checker. The database contains three tables:
 
 * filename - file path, name, number of fields, status
 * fields - field attributes for each filename, and evaluation

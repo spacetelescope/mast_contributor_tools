@@ -26,7 +26,8 @@ mast_contributor_tools Documentation
    :caption: Tutorials
 
    tutorial_readme
-   
+   sqlite_readme
+
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
