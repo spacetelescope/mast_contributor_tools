@@ -55,7 +55,7 @@ def test_filenames_cli_defaults(mock_checkfiles, mock_filepaths) -> None:
     # Assert get_file_paths called with right arguments
     mock_filepaths.assert_called_with(".", from_file="", search_pattern="*.*", exclude_pattern="", max_n=None)
     # Assert check_filenames was called with right arguments
-    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), dbFile="results_my-hlsp.db", output_format="db")
+    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), db_file="results_my-hlsp.db", output_format="db")
 
 
 def test_filenames_cli_logging(mock_checkfiles, mock_filepaths, mock_singlefile) -> None:
@@ -89,7 +89,7 @@ def test_filenames_cli_fileparams(mock_checkfiles, mock_singlefile, mock_filepat
     # Assert get_file_paths called with right arguments
     mock_filepaths.assert_called_with(".", from_file="", search_pattern="*.fits", exclude_pattern="*.png", max_n="2")
     # Assert check_filenames was called with right arguments
-    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), dbFile="results_my-hlsp.db", output_format="db")
+    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), db_file="results_my-hlsp.db", output_format="db")
     # Assert check_single_filename was not called
     mock_singlefile.assert_not_called()
 
@@ -108,7 +108,7 @@ def test_filenames_cli_fromfile(mock_checkfiles, mock_singlefile, mock_filepaths
         ".", from_file="file_list.txt", search_pattern="*.fits", exclude_pattern="*.png", max_n="2"
     )
     # Assert check_filenames was called with right arguments
-    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), dbFile="results_my-hlsp.db", output_format="db")
+    mock_checkfiles.assert_called_with("my-hlsp", mock_filepaths(), db_file="results_my-hlsp.db", output_format="db")
     # Assert check_single_filename was not called
     mock_singlefile.assert_not_called()
 
