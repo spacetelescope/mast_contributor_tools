@@ -2,7 +2,7 @@
 FieldLength:
     'extension': 16
     'filter': 20
-    'hlsp_str': 4
+    'prefix': 4
     'collection_name': 20
     'instrument': 20
     'mission': 20
@@ -17,7 +17,6 @@ FieldLength:
 
 ExtensionTypes:
  - asdf
- - asdf.gz
  - csv
  - dat
  - db

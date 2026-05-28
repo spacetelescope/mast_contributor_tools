@@ -165,7 +165,7 @@ class MCCMFileName(GenericFilename):
         # Initialize class
         super().__init__(filepath, min_fields=8, max_fields=9)
 
-        # Check that the CCSP/PIT name is valid
+        # Check that the MCCM name is valid
         # Use same regex as HLSPNAME for now
         if FieldRule.match_pattern(mccm_name, COLLECTION_NAME_REGEX):
             self.mccm_name = mccm_name
@@ -178,7 +178,7 @@ class MCCMFileName(GenericFilename):
         """Create Field objects for each field in the filename."""
         nf = self.n_fields
 
-        # The first two fields are: 'ccsp' and the pit name
+        # The first two fields are: 'mccm' and the collection name
         self.fields.append(PrefixField(self.field_values[0], "mccm", 0))
         self.fields.append(CollectionNameField(self.field_values[1], self.mccm_name, 1))
 

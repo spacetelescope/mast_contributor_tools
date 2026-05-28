@@ -262,7 +262,7 @@ class PrefixField(FilenameFieldAB):
     """A container for attributes of the literal 'hlsp', 'ccsp', or 'mccm' prefix field."""
 
     def __init__(self, value: str, string_match: str = "hlsp", field_indx: int = 0) -> None:
-        super().__init__("hlsp_str", value, field_indx)
+        super().__init__("prefix", value, field_indx)
         self.string_match = [string_match]
 
     def evaluate(self) -> None:

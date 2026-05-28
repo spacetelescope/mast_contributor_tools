@@ -50,14 +50,14 @@ def test_get_file_paths(mock_isfile, mock_rglob) -> None:
 
 
 @mock.patch("mast_contributor_tools.filename_check.fc_app.get_filename_class")
-@mock.patch("mast_contributor_tools.filename_check.fc_app.Hlsp_SQLiteDb")
-def test_check_filenames(mock_Hlsp_SQLiteDb, mock_FileNameClass) -> None:
+@mock.patch("mast_contributor_tools.filename_check.fc_app.FileNameChecker_SQLiteDb")
+def test_check_filenames(mock_SQLiteDb, mock_FileNameClass) -> None:
     """Test that the check_filenames() function calls the right classes"""
     # Run function
     check_filenames("hlsp-name", file_list=fake_directory(), db_file="test_file.db")
     # Assert expected calls were made
-    # assert mock_Hlsp_SQLiteDb object was made
-    mock_Hlsp_SQLiteDb.assert_called_once()
+    # assert mock_SQLiteDb object was made
+    mock_SQLiteDb.assert_called_once()
     # Assert mock_FileNameClass was called once for each file
     assert mock_FileNameClass.call_count == len(fake_directory())
 

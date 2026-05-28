@@ -43,7 +43,7 @@ INSERT_FILE_RECORD = """INSERT INTO filename VALUES(:path,:filename,:final_verdi
 INSERT_FIELD_RECORD = """INSERT INTO fields VALUES(:file_ref,:name,:value,:nfield,:capitalization_score,:length_score,:format_score,:value_score,:nfield_score,:field_verdict)"""
 
 
-class Hlsp_SQLiteDb:
+class FileNameChecker_SQLiteDb:
     """Create an SQLite DB to store results.
 
     Parameters

@@ -5,7 +5,7 @@ from typing import Union
 
 from tqdm import tqdm
 
-from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
+from mast_contributor_tools.filename_check.fc_db import FileNameChecker_SQLiteDb
 from mast_contributor_tools.filename_check.filename_classes import (
     COLLECTION_NAME_REGEX,
     FieldRule,
@@ -141,7 +141,7 @@ def check_filenames(collection_name: str, file_list: list[Path], db_file: str, o
     if Path(db_file).is_file():
         logger.warning(f"Database file {db_file} already exists. Overwriting File.")
         os.remove(db_file)
-    db = Hlsp_SQLiteDb(db_file)
+    db = FileNameChecker_SQLiteDb(db_file)
     logger.debug(f"Creating results database {db_file}")
     db.create_db()
 
@@ -193,7 +193,7 @@ def check_single_filename(file_name: str, collection_name: str = "") -> None:
     Parameters
     ----------
     file_name : str
-        File name of an HLSP product to test: for example 'hlsp_my-hlsp_readme.txt'.
+        File name of a product to test: for example 'hlsp_my-hlsp_readme.txt'.
         This is a string, and does not need to be a real file.
     collection_name : str, optional
         Name of example HLSP/MCCM/CCSP collection. For example, 'my-hlsp'.

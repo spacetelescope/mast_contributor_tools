@@ -8,16 +8,16 @@ from unittest import mock
 
 import pytest
 
-from mast_contributor_tools.filename_check.fc_db import Hlsp_SQLiteDb
+from mast_contributor_tools.filename_check.fc_db import FileNameChecker_SQLiteDb
 
 TEST_DB_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_file.db")
 
 
-# Test init functions for Hlsp_SQLiteDb
+# Test init functions for FileNameChecker_SQLiteDb
 @mock.patch("sqlite3.connect")
-def test_Hlsp_SQLiteDb_create(mock_connection) -> None:
-    """Test that the Hlsp_SQLiteDb class creates a db"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+def test_FileNameChecker_SQLiteDb_create(mock_connection) -> None:
+    """Test that the FileNameChecker_SQLiteDb class creates a db"""
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
 
     # Assert attribtues were set
     assert test_db.db_file == TEST_DB_FILE
@@ -40,7 +40,7 @@ def test_Hlsp_SQLiteDb_create(mock_connection) -> None:
 )
 def test_SQLiteDb_views_and_tables(type: str, name: str) -> None:
     """Test that the sqlite DB has the expected views and tables"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
     test_db.create_db()
 
     # Assert each table/view exists
@@ -74,9 +74,9 @@ def test_SQLiteDb_views_and_tables(type: str, name: str) -> None:
         ("fields", "field_verdict"),
     ],
 )
-def test_Hlsp_SQLiteDb_Columns(table_name: str, expected_column: str) -> None:
+def test_FileNameChecker_SQLiteDb_Columns(table_name: str, expected_column: str) -> None:
     """Test that the sqlite DB has the expected tables and columns"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
     test_db.create_db()
 
     # Assert each column can be queried
@@ -98,7 +98,7 @@ def test_Hlsp_SQLiteDb_Columns(table_name: str, expected_column: str) -> None:
 )
 def test_add_filename(file_record) -> None:
     """Test file record can be inserted successfully with add_filename()"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
     test_db.create_db()
     test_db.add_filename(
         {
@@ -138,7 +138,7 @@ def test_add_filename(file_record) -> None:
 )
 def test_add_fields(field_record) -> None:
     """Test field record can be inserted successfully with add_fields()"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
     test_db.create_db()
     test_db.add_fields(
         [
@@ -175,7 +175,7 @@ def test_add_fields(field_record) -> None:
 )
 def test_add_fields_xfail(field_record) -> None:
     """Test that the sqlite DB insertion fails when a value is wrong"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
     test_db.create_db()
     try:
         test_db.add_fields(
@@ -217,7 +217,7 @@ def test_add_fields_xfail(field_record) -> None:
 )
 def test_write_to_alternate_format(format, output_filename):
     """Test write_to_alternate_format() function"""
-    test_db = Hlsp_SQLiteDb(TEST_DB_FILE)
+    test_db = FileNameChecker_SQLiteDb(TEST_DB_FILE)
     test_db.write_to_alternate_format(format)
     # Assert new file format was written
     output_filename = TEST_DB_FILE.replace("test_file.db", output_filename)
