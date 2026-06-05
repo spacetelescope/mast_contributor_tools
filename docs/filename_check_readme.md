@@ -1,8 +1,13 @@
 # Filename Check
 
-This application will examine each file within a user-specified directory folder for compliance with the HLSP filename requirements. Refer to the HLSP [File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention) for documentation on the full requirements. The results are saved to an SQLite3 database. Prior to a final delivery of a HLSP collection to MAST, contributors should fix all filenames where reported failures have a `final_verdict` of `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value, which are often necessary and good, but require review by MAST staff.
+This application will examine each file within a user-specified directory folder for compliance with the HLSP, MCCM, or CCSP filename requirements for contribution to MAST. The results are saved to an SQLite3 database. Prior to a final delivery of a data collection to MAST, contributors should fix all filenames where reported failures have a `final_verdict` of `FAIL`. A verdict of `NEEDS REVIEW` is usually the result of an unrecognized value, which are often necessary and good, but require review by MAST staff.
 
-**Note:** Once your HLSP collection has been delivered to MAST, this same tool will be used to re-validate the product filenames. MAST staff will contact you to resolve issues.
+For documentation on the full file name requirements for contributed data, refer to the following pages:
+- [HLSP File Naming Convention](https://outerspace.stsci.edu/display/MASTDOCS/File+Naming+Convention)
+- [CCSP/PIT File Naming Convention](https://outerspace.stsci.edu/spaces/ISWG/pages/356669709/File+Naming+for+PITs)
+- MCCM File Naming Convention: Consult your MAST contact
+
+**Note:** Once your data collection has been delivered to MAST, this same tool will be used to re-validate the product filenames. MAST staff will contact you to resolve issues.
 
 ## Calling sequence
 
@@ -16,7 +21,7 @@ The various options for this command are described below:
 
 | Flag                       | Description                                                                | Default Value                      |
 | ---------------------------| -------------------------------------------------------------------------- | ---------------------------------- |
-| `-dir` or `--directory` | Path of HLSP directory tree; tests files in that directory                    | `'.'`, the current directory       |
+| `-dir` or `--directory` | Path of data directory tree; tests files in that directory                    | `'.'`, the current directory       |
 | `-file` or `--from_file` | Path to a text file containing a list of filenames to check, instead of scanning a directory | None; the default mode is to scan a directory
 | `-p` or `--pattern`     | File pattern to limit testing, for example '*.fits' to only check the fits files | `'*.*'` for all files           |
 | `-e` or `--exclude`     | File pattern to exclude from testing, for example '*.jpg' to test all files except the jpgs | None                 |
@@ -27,6 +32,8 @@ The various options for this command are described below:
 | `--help`                | Prints information about this command                                         |                                    |
 
 A step-by-step tutorial for learning how to use the file name checker can be found in the [`TUTORIAL/`](https://mast-contributor-tools.readthedocs.io/en/latest/tutorial_readme.html) folder.
+
+This software works for validating HLSP, MCCM, and Roman CCSP/PIT data collections, but for the rest of this tutorial, we will focus on an HLSP example.
 
 ### Example Usage: Check all files in the current directory
 
@@ -101,7 +108,7 @@ The file name checking application makes use of the following:
 
 ## Filename components
 
-Names of science files must follow the naming scheme described below. File names are typically divided into 9 **fields** separated by underscores (`_`).
+For HLSP collections, names of science files must follow the naming scheme described below. File names are typically divided into 9 **fields** separated by underscores (`_`).
 
 ```html
 hlsp_<proj-id>_<observatory>_<instrument>_<target>_<opt-elem>_<version>_<product-type>.<extension>

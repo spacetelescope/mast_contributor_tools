@@ -109,7 +109,7 @@ def filenames_cli(
     )
 
     # Perform the file name check
-    check_filenames(hlsp_name, file_list, dbFile=dbfile, output_format=output_format)
+    check_filenames(hlsp_name, file_list, db_file=dbfile, output_format=output_format)
 
 
 @cli.command("check_filename", short_help="Check a single file name against MAST HLSP naming standards")

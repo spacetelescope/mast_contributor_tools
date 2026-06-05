@@ -5,7 +5,13 @@ Tests for mast_contributor_tools/filename_check/fc_app.py
 from pathlib import Path
 from unittest import mock
 
-from mast_contributor_tools.filename_check.fc_app import check_filenames, get_file_paths
+import pytest
+
+from mast_contributor_tools.filename_check.fc_app import (
+    check_filenames,
+    check_single_filename,
+    get_file_paths,
+)
 
 
 def fake_directory() -> list[Path]:
@@ -36,20 +42,41 @@ def test_get_file_paths(mock_isfile, mock_rglob) -> None:
     output = get_file_paths("fake-directory", max_n=2)
     assert len(output) == 2
     # Test that the search_pattern argument performs as expected
-    output = get_file_paths("fake-directory", search_pattern='*1.fits')
+    output = get_file_paths("fake-directory", search_pattern="*1.fits")
     assert len(output) == 1
     # Test that the exclude_pattern argument performs as expected
-    output = get_file_paths("fake-directory", exclude_pattern='*1.fits')
+    output = get_file_paths("fake-directory", exclude_pattern="*1.fits")
     assert len(output) == 2
 
-@mock.patch("mast_contributor_tools.filename_check.fc_app.HlspFileName")
-@mock.patch("mast_contributor_tools.filename_check.fc_app.Hlsp_SQLiteDb")
-def test_check_filenames(mock_Hlsp_SQLiteDb, mock_HlspFileName) -> None:
+
+@mock.patch("mast_contributor_tools.filename_check.fc_app.get_filename_class")
+@mock.patch("mast_contributor_tools.filename_check.fc_app.FileNameChecker_SQLiteDb")
+def test_check_filenames(mock_SQLiteDb, mock_FileNameClass) -> None:
     """Test that the check_filenames() function calls the right classes"""
     # Run function
-    check_filenames("hlsp-name", file_list=fake_directory(), dbFile="test_file.db")
+    check_filenames("hlsp-name", file_list=fake_directory(), db_file="test_file.db")
     # Assert expected calls were made
-    # assert mock_Hlsp_SQLiteDb object was made
-    mock_Hlsp_SQLiteDb.assert_called_once()
-    # Assert HlspFileName was called once for each file
-    assert mock_HlspFileName.call_count == len(fake_directory())
+    # assert mock_SQLiteDb object was made
+    mock_SQLiteDb.assert_called_once()
+    # Assert mock_FileNameClass was called once for each file
+    assert mock_FileNameClass.call_count == len(fake_directory())
+
+
+# Test the the right filename class is called for HLSPs, CCSPs, and MCCMs
+@pytest.mark.parametrize(
+    "test_filename, expected",
+    [
+        ("hlsp_my-hlsp_file.txt", "HlspFileName"),
+        ("ccsp_my-hlsp_file.txt", "CCSPFileName"),
+        ("mccm_my-hlsp_file.txt", "MCCMFileName"),
+        # Defaults to HLSP when not recognized
+        ("mast_my-hlsp_file.txt", "HlspFileName"),
+    ],
+)
+def test_check_single_filename(test_filename, expected) -> None:
+    """Test that the test_check_single_filename() function calls the right classes"""
+    with mock.patch(f"mast_contributor_tools.filename_check.filename_classes.{expected}") as expected_class:
+        # Run function
+        check_single_filename(test_filename)
+        # Assert correct class was called
+        expected_class.assert_called_once()
