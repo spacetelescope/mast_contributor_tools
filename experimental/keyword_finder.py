@@ -4,7 +4,7 @@ import argparse
 from astropy.io import fits
 
 
-def search_all_headers(fits_file, keyword):
+def find_keyword(fits_file, keyword):
     keyword = keyword.upper()
     found_any = False
 
@@ -52,9 +52,9 @@ def main():
     args = parser.parse_args()
 
     with fits.open(args.filename) as hdul:
-        search_all_headers(hdul, args.keyword)
+        find_keyword(hdul, args.keyword)
 
 
 if __name__ == "__main__":
     main()
-    # /ifs/archive/test/mast/public/hlsp/pie/data/field01/hlsp_pie_hst_wfc3_field01_f336w_v1_drz.fits
+    
