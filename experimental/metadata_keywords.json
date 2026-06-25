@@ -1,52 +1,500 @@
 {
     "common": 
     [
-    "DATE-BEG",
-    "DATE-END",
-    "DOI",
-    "EQUINOX",
-    "HLSPID",
-    "HLSPNAME",
-    "HLSPLEAD",
-    "HLSPTARG",
-    "HLSPVER",
-    "INSTRUME",
-    "LICENSE",
-    "LICENURL",
-    "MJD-BEG",
-    "MJD-END",
-    "MJD-MID",
-    "OBSERVAT",
-    "PROPOSID",
-    "REFERENC",
-    "TELAPSE",
-    "TELESCOP",
-    "TIMESYS",
-    "XPOSURE"
+        {
+            "keyword": "DATE-BEG",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DATE-END",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DOI",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "EQUINOX",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "RADESYS='ICRS'"
+        },
+        {
+            "keyword": "HLSPID",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "HLSPLEAD",
+            "extension": [0],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "HLSPNAME",
+            "extension": [0],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "HLSPTARG",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "HLSPVER",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "INSTRUME",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "LICENSE",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "LICENURL",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "MJD-BEG",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "DATE-BEG"
+        },
+        {
+            "keyword": "MJD-END",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "DATE-END"
+        },
+        {
+            "keyword": "MJD-MID",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "DATE-AVG"
+        },
+        {
+            "keyword": "OBSERVAT",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "PROPOSID",
+            "extension": [0],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "REFERENC",
+            "extension": [0],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "TELAPSE",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "TELESCOP",
+            "extension": [0],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "TIMESYS",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "XPOSURE",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        }
     ],
-    "image": 
+    "image":
     [
-    "APERTURE",
-    "BUNIT",
-    "CD",
-    "CDELT",
-    "CRPIX",
-    "CRVAL",
-    "CTYPE",
-    "CUNIT",
-    "DETECTOR",
-    "FILTER",
-    "DEC_TARG",
-    "PSFSIZE",
-    "RA_TARG",
-    "WCSAXES"
+        {
+            "keyword": "APERTURE",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact",
+            "pattern": ""
+        },
+        {
+            "keyword": "BUNIT",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact",
+            "pattern": ""
+        },
+        {
+            "keyword": "CDi_j",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "PCi_j",
+            "match_type": "regex",
+            "pattern": "^CD\\d+_\\d+$"
+        },
+        {
+            "keyword": "CDELTi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "CDi_j",
+            "match_type": "regex",
+            "pattern": "^CDELT\\d+$"
+        },
+        {
+            "keyword": "CRPIXj",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CRPIX\\d+$"
+        },
+        {
+            "keyword": "CRVALi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CRVAL\\d+$"
+        },
+        {
+            "keyword": "CTYPEi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CTYPE\\d+$"
+        },
+        {
+            "keyword": "CUNITi",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CUNIT\\d+$"
+        },
+        {
+            "keyword": "DETECTOR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact"
+        },
+        {
+            "keyword": "FILTER",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact",
+            "pattern": "^FILTER\\d+$"
+        },
+        {
+            "keyword": "PCi_j",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "CDi_j",
+            "match_type": "regex",
+            "pattern": "^PC\\d+_\\d+$"
+        },
+        {
+            "keyword": "RADESYS",
+            "extension": [],
+            "rule": "required",
+            "other_names": "TARG_DEC",
+            "condition": "",
+            "match_type": "exact"
+        },
+        {
+            "keyword": "DEC_TARG",
+            "extension": [],
+            "rule": "required",
+            "other_names": "TARG_DEC",
+            "condition": "",
+            "match_type": "exact"
+        },
+        {
+            "keyword": "RA_TARG",
+            "extension": [],
+            "rule": "required",
+            "other_names": "TARG_DEC",
+            "condition": "",
+            "match_type": "exact"
+        },
+        {
+            "keyword": "PSFSIZE",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact"
+        },
+        {
+            "keyword": "WCSAXES",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact"
+        }
     ],
-    "spectral": 
+    "spectral-image":
     [
-    "APERTURE",
-    "DETECTOR",
-    "DISPRSR",
-    "DISPR",
-    "XPOSURE"
+        {
+            "keyword": "APERTURE",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DETECTOR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DISPRSR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DISPR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "XPOSURE",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "BUNIT",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact",
+            "pattern": ""
+        },
+        {
+            "keyword": "CDi_j",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "PCi_j",
+            "match_type": "regex",
+            "pattern": "^CD\\d+_\\d+$"
+        },
+        {
+            "keyword": "CDELTi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "CDi_j",
+            "match_type": "regex",
+            "pattern": "^CDELT\\d+$"
+        },
+        {
+            "keyword": "CRPIXj",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CRPIX\\d+$"
+        },
+        {
+            "keyword": "CRVALi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CRVAL\\d+$"
+        },
+        {
+            "keyword": "CTYPEi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CTYPE\\d+$"
+        },
+        {
+            "keyword": "CUNITi",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^CUNIT\\d+$"
+        },
+        {
+            "keyword": "PCi_j",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "CDi_j",
+            "match_type": "regex",
+            "pattern": "^PC\\d+_\\d+$"
+        },
+        {
+            "keyword": "RADESYS",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact"
+        },
+        {
+            "keyword": "WCSAXES",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact"
+        }
+    ],
+    "spectral-bin":
+    [
+        {
+            "keyword": "APERTURE",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DETECTOR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DISPRSR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "DISPR",
+            "extension": [],
+            "rule": "suggested",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "XPOSURE",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": ""
+        },
+        {
+            "keyword": "FLAGS",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact",
+            "pattern": ""
+        },
+        {
+            "keyword": "TTYPEi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^TTYPE\\d+$"
+        },
+                {
+            "keyword": "TUNITi",
+            "extension": [],
+            "rule": "required",
+            "other_names": "",
+            "condition": "",
+            "match_type": "regex",
+            "pattern": "^TUNIT\\d+$"
+        },
+        {
+            "keyword": "VARIANCE",
+            "extension": [],
+            "rule": "recommended",
+            "other_names": "",
+            "condition": "",
+            "match_type": "exact",
+            "pattern": ""
+        }
     ]
 }

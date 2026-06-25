@@ -1,74 +1,86 @@
+
 from astropy.io import fits
 import json
-
-def keyword_finder(fits_file, hlsp_type, verbose=True):
-    """
-    helper function to search a fits file for common metadata + metadata of specific hlsp types (currently only supports image, spectral). Will return exact and partial matches
-
-    Parameters:
-    ------------
-    fits_file:
-        Path to a .fits file
-    hlsp_type:
-        image or spectra (currently) will search metadata keywords for that type
-    verbose:
-        Default TRUE, will output the value of matched keywords
+import pandas as pd
+import re
 
 
-    """
+def keyword_finder(fits_file, meta_types=None, verbose=False):
 
-    print(f"Finding Keyword Matches for HLSP TYPE: {hlsp_type}")
+    with open("metadata_keywords.json") as f:
+        metadata = json.load(f)
+
+    categories = ["common"]
+
+    if meta_types:
+        if isinstance(meta_types, str):
+            categories.append(meta_types)
+        else:
+            categories.extend(meta_types)
+
+    categories = list(dict.fromkeys(categories))
+    results = []
+
+    with fits.open(fits_file) as hdul:
+
+        for category in categories:
+            if category not in metadata:
+                continue
+
+            for rule in metadata[category]:
+                keyword = rule["keyword"]
+                match_type = rule.get("match_type", "exact")
+                pattern = rule.get("pattern")
+                condition = rule.get("condition", "")
+
+                found_extensions = []
+                matches = []
+
+                for ext_num, hdu in enumerate(hdul):
+
+                    hdr = hdu.header
+
+                    # If json entry for this keyword is marked as exact it will try to match the keyword 
+                    if match_type == "exact":
+                        if keyword in hdr:
+                            found_extensions.append(ext_num)
+                            matches.append({
+                                "extension": ext_num,
+                                "keyword": keyword,
+                                "value": hdr[keyword]
+                            })
+
+                    # if the json entry is marked as regex and and a regex pattern exists it will look for that pattern
+                    elif match_type == "regex":
+
+                        for k in hdr:
+                            if re.match(pattern, k):
+                                found_extensions.append(ext_num)
+                                matches.append({
+                                    "extension": ext_num,
+                                    "keyword": k,
+                                    "value": hdr[k]
+                                })
+
+                found_extensions = sorted(set(found_extensions))
+
+                results.append({
+                    "KEYWORD": keyword,
+                    "CATAGORY": category,
+                    "RULE": rule["rule"],
+                    "FOUND": "SUCCESS" if matches else "FAIL",
+                    #"MATCH COUNT": len(matches),
+                    "EXT FOUND": found_extensions,
+                    #"MATCHES": [m["keyword"] for m in matches],
+                    "VALUE": list(set(m["value"] for m in matches)),
+                    "IGNORE_COND": condition,
+                })
+
+    df = pd.DataFrame(results)
+
     
-    with open("metadata_keywords.json", "r") as f:
-        data = json.load(f)
 
-        if hlsp_type not in data:
-            raise ValueError(f"Invalid hlsp_type: '{hlsp_type}' please use one of the following: {[k for k in data.keys() if k != 'common']}")
-        keywords = data.get("common", []) + data.get(f"{hlsp_type}", [])
-        keywords.sort()
-    
-    keywords = [k.upper() for k in keywords]
-    found_any_global = False
-    
-    with fits.open(fits_file) as fits_file:
-        for idx, hdu in enumerate(fits_file):
-            hdr = hdu.header
-            extname = hdr.get("EXTNAME", "PRIMARY")
+    if verbose:
+        print(df)
 
-            print(f"\n--- Ext {idx} ({extname}) ---")
-
-            found_in_this_hdu = False
-
-            for keyword in keywords:
-                exact_matches = {k: hdr[k] for k in hdr if k == keyword}
-
-                prefix_matches = {
-                    k: hdr[k]
-                    for k in hdr
-                    if k.startswith(keyword) and k != keyword
-                }
-                
-                if exact_matches or prefix_matches:
-                    print(f"> {keyword} [Success]")
-
-                    if verbose:
-                        for k, v in exact_matches.items():
-                            print(f"    > Exact Match: {k} = {v}")
-
-                        for k, v in prefix_matches.items():
-                            print(f"    > Prefix Match: {k} = {v}")
-
-                    found_any_global = True
-                    found_in_this_hdu = True
-
-                else:
-                    print(f"> {keyword} [fail]")
-
-            if not found_in_this_hdu:
-                print(" No Matched found in this extension")
-
-    if not found_any_global:
-        print("\nNone of the keywords were found in any extension.")
-
-
-keyword_finder(fits_file="/home/areedy/scratch/kronos/hlsp_kronos_jwst_niriss_v1298tauc_exotedrf_v1_uncalstellarspec.fits", hlsp_type="spectral")
+    return df
