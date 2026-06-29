@@ -6,154 +6,155 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": "MJD-BEG"
         },
         {
             "keyword": "DATE-END",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": "MJD-END"
         },
         {
             "keyword": "DOI",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "EQUINOX",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "RADESYS='ICRS'"
+            "ignore_keyword": "RADESYS",
+            "ignore_keyword_value": "ICRS"
         },
         {
             "keyword": "HLSPID",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "HLSPLEAD",
             "extension": [0],
             "rule": "recommended",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "HLSPNAME",
             "extension": [0],
             "rule": "recommended",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "HLSPTARG",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "HLSPVER",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "INSTRUME",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "LICENSE",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "LICENURL",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "MJD-BEG",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "DATE-BEG"
+            "ignore_keyword": "DATE-BEG"
         },
         {
             "keyword": "MJD-END",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "DATE-END"
+            "ignore_keyword": "DATE-END"
         },
         {
             "keyword": "MJD-MID",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "DATE-AVG"
+            "ignore_keyword": "DATE-AVG"
         },
         {
             "keyword": "OBSERVAT",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "PROPOSID",
             "extension": [0],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "REFERENC",
             "extension": [0],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "TELAPSE",
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "TELESCOP",
             "extension": [0],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "TIMESYS",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "XPOSURE",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         }
     ],
     "image":
@@ -163,7 +164,7 @@
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact",
             "pattern": ""
         },
@@ -172,7 +173,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact",
             "pattern": ""
         },
@@ -181,7 +182,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "PCi_j",
+            "ignore_keyword": "PCi_j",
             "match_type": "regex",
             "pattern": "^CD\\d+_\\d+$"
         },
@@ -190,7 +191,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "CDi_j",
+            "ignore_keyword": "CDi_j",
             "match_type": "regex",
             "pattern": "^CDELT\\d+$"
         },
@@ -199,7 +200,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CRPIX\\d+$"
         },
@@ -208,7 +209,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CRVAL\\d+$"
         },
@@ -217,7 +218,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CTYPE\\d+$"
         },
@@ -226,7 +227,7 @@
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CUNIT\\d+$"
         },
@@ -235,7 +236,7 @@
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         },
         {
@@ -243,7 +244,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact",
             "pattern": "^FILTER\\d+$"
         },
@@ -252,7 +253,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "CDi_j",
+            "ignore_keyword": "CDi_j",
             "match_type": "regex",
             "pattern": "^PC\\d+_\\d+$"
         },
@@ -261,7 +262,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "TARG_DEC",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         },
         {
@@ -269,7 +270,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "TARG_DEC",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         },
         {
@@ -277,7 +278,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "TARG_DEC",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         },
         {
@@ -285,7 +286,7 @@
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         },
         {
@@ -293,7 +294,7 @@
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         }
     ],
@@ -304,42 +305,42 @@
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "DETECTOR",
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "DISPRSR",
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "DISPR",
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "XPOSURE",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "BUNIT",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact",
             "pattern": ""
         },
@@ -348,7 +349,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "PCi_j",
+            "ignore_keyword": "PCi_j",
             "match_type": "regex",
             "pattern": "^CD\\d+_\\d+$"
         },
@@ -357,7 +358,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "CDi_j",
+            "ignore_keyword": "CDi_j",
             "match_type": "regex",
             "pattern": "^CDELT\\d+$"
         },
@@ -366,7 +367,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CRPIX\\d+$"
         },
@@ -375,7 +376,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CRVAL\\d+$"
         },
@@ -384,7 +385,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CTYPE\\d+$"
         },
@@ -393,7 +394,7 @@
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^CUNIT\\d+$"
         },
@@ -402,7 +403,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "CDi_j",
+            "ignore_keyword": "CDi_j",
             "match_type": "regex",
             "pattern": "^PC\\d+_\\d+$"
         },
@@ -411,7 +412,7 @@
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         },
         {
@@ -419,7 +420,7 @@
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact"
         }
     ],
@@ -430,42 +431,42 @@
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "DETECTOR",
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "DISPRSR",
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "DISPR",
             "extension": [],
             "rule": "suggested",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "XPOSURE",
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": ""
+            "ignore_keyword": ""
         },
         {
             "keyword": "FLAGS",
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact",
             "pattern": ""
         },
@@ -474,7 +475,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^TTYPE\\d+$"
         },
@@ -483,7 +484,7 @@
             "extension": [],
             "rule": "required",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "regex",
             "pattern": "^TUNIT\\d+$"
         },
@@ -492,7 +493,7 @@
             "extension": [],
             "rule": "recommended",
             "other_names": "",
-            "condition": "",
+            "ignore_keyword": "",
             "match_type": "exact",
             "pattern": ""
         }
