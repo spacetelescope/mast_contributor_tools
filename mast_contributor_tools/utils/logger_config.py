@@ -6,7 +6,7 @@ import re
 class CustomLoggingFormatter(logging.Formatter):
     """
     Provides some additional formatting for the logger, color-coding the output so that:
-        'DEBUG' messages are in gray
+        'DEBUG' and 'INFO' messages are in gray
         'WARNING' messages are in yellow
         'ERROR' messages are in red
         'CRITICAL' messages are in green
@@ -14,17 +14,44 @@ class CustomLoggingFormatter(logging.Formatter):
     Modified from : https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
     """
 
+    def __init__(self, color: bool = True) -> None:
+        """Initialize instance of CustomLoggingFormatter class.
+
+        Parameters
+        ===========
+        color: bool
+            Setting to show color-coded results.
+        """
+
+        self.color = color
+
     def color_code(self, record) -> str:
         """
-        Returns the color-coded format for a log record
+        Returns the color-coded and bolding format for a log record
         """
-        grey = "\x1b[38;20m"
-        yellow = "\x1b[33;20m"
-        red = "\x1b[31;20m"
-        bold_red = "\x1b[31;1m"
-        green = "\x1b[1;32m"
-        reset = "\x1b[0m"
-        msg_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+        if self.color:
+            grey = "\x1b[38;20m"
+            bold_grey = "\x1b[38;1m"
+            yellow = "\x1b[33;20m"
+            bold_yellow = "\x1b[33;1m"
+            red = "\x1b[31;20m"
+            bold_red = "\x1b[31;1m"
+            green = "\x1b[32m"
+            bold_green = "\x1b[1;32m"
+            reset = "\x1b[0m"
+            msg_format = "%(message)s"
+        else:
+            grey = "\x1b[20m"
+            bold_grey = "\x1b[1m"
+            yellow = "\x1b[20m"
+            bold_yellow = "\x1b[1m"
+            red = "\x1b[20m"
+            bold_red = "\x1b[1m"
+            green = "\x1b[20m"
+            bold_green = "\x1b[1m"
+            reset = "\x1b[0m"
+            msg_format = "%(message)s"
 
         # Set color by log message level
         FORMATS = {
@@ -32,7 +59,7 @@ class CustomLoggingFormatter(logging.Formatter):
             logging.INFO: grey + msg_format + reset,
             logging.WARNING: yellow + msg_format + reset,
             logging.ERROR: red + msg_format + reset,
-            logging.CRITICAL: green + msg_format + reset,
+            logging.CRITICAL: bold_grey + msg_format + reset,
         }
 
         log_fmt = FORMATS.get(record.levelno)
@@ -44,7 +71,9 @@ class CustomLoggingFormatter(logging.Formatter):
         elif ": 'NEEDS REVIEW'" in record.msg:
             log_fmt = yellow + msg_format + reset
         elif ": 'PASS'" in record.msg:
-            log_fmt = green + msg_format + reset
+            log_fmt = bold_green + msg_format + reset
+        elif ": 'SKIPPED'" in record.msg:
+            log_fmt = bold_yellow + msg_format + reset
 
         # Total score for file list
         if "All files passed!" in record.msg:
@@ -65,7 +94,7 @@ class CustomLoggingFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logger(name: str, level: int = logging.INFO) -> logging.Logger:
+def setup_logger(name: str, level: int = logging.INFO, color: bool = True) -> logging.Logger:
     """Create a custom logger."""
 
     logger = logging.getLogger(name)
@@ -83,7 +112,7 @@ def setup_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
     # Color code the text for the terminal output
-    c_handler.setFormatter(CustomLoggingFormatter())
+    c_handler.setFormatter(CustomLoggingFormatter(color))
 
     # Add handlers to the logger
     logger.addHandler(c_handler)

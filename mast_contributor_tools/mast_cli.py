@@ -10,12 +10,14 @@ from typing import Union
 import click
 
 from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, get_file_paths, logger
-
+from mast_contributor_tools.metadata_check.mc_parquet_app import parquet_validator
 
 # ==========================================
 # Command Line Interface (CLI) commands for mast contributor tools
 # Implemented using the click pacakge: https://pypi.org/project/click/
 # ==========================================
+
+
 @click.group("mct")
 def cli() -> None:
     """
@@ -143,6 +145,61 @@ def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
     # Check the file name
     for filename in filenames:
         check_single_filename(filename)
+
+
+# ==========================================
+# CLI commands for metadata checkers
+# =========================================
+
+
+# Parquet validator
+@cli.command(
+    "validate_parquet",
+    short_help="Check a single Parquet file for conformance with some of MAST's metadata standards for Roman PITs/CCSPs",
+)
+@click.argument("file")
+@click.option(
+    "-uu",
+    "--unrecognized_unit_warnings",
+    default=False,
+    flag_value=True,
+    help="Include (over)zealous warnings about unrecognized units",
+)
+@click.option("-vo", "--vo_required", default=False, flag_value=True, help="Require VOParquet")
+@click.option("-j", "--jar_file", default="stilts.jar", help="Path to a JAR file containing parqlint.")
+@click.option("-c", "--color", default=False, flag_value=True, help="Enable color-coded output")
+@click.option("-v", "--verbose", default=False, flag_value=True, help="Enable debug-level messages")
+def validate_parquet_cli(
+    file: str = "",
+    unrecognized_unit_warnings: bool = False,
+    vo_required: bool = False,
+    jar_file: str = "topcat-extra.jar",
+    color: bool = False,
+    verbose: bool = False,
+) -> None:
+    """
+    Parquet validator.
+
+    Add more info here.
+    """
+    if verbose:
+        logger.setLevel("DEBUG")
+        for handler in logger.handlers:
+            handler.setLevel(logger.level)
+    else:
+        # Logger level must at minimum be "INFO"
+        logger.setLevel("INFO")
+        for handler in logger.handlers:
+            handler.setLevel(logger.level)
+
+    # Run
+    parquet_validator.validate(
+        file,
+        unrecognized_unit_warnings=unrecognized_unit_warnings,
+        vo_required=vo_required,
+        jar_file=jar_file,
+        color=color,
+    )
 
 
 # ==========================================
