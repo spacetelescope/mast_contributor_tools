@@ -4,7 +4,6 @@ import json
 import pandas as pd
 import re
 
-
 def keyword_finder(fits_file, meta_types=None, verbose=False):
 
     with open("metadata_keywords.json") as f:
@@ -71,12 +70,10 @@ def keyword_finder(fits_file, meta_types=None, verbose=False):
                     "RULE": rule["rule"],
                     "FOUND": "SUCCESS" if matches else "FAIL",
                     "EXT EXPECT": rule['extension'],
-                    #"MATCH COUNT": len(matches),
                     "EXT FOUND": found_extensions,
-                    #"MATCHES": [m["keyword"] for m in matches],
                     "VALUE": list(set(m["value"] for m in matches)),
-                    "IGNORE_KEYWORD": f"{ignore_keyword}",
-                    "IGNORE_VALUE": f"{ignore_keyword_value}"
+                    "CONDITION_KEYWORD": f"{ignore_keyword}",
+                    "CONDITION_VALUE": f"{ignore_keyword_value}"
                 })
 
     df = pd.DataFrame(results)
@@ -110,3 +107,8 @@ def keyword_finder(fits_file, meta_types=None, verbose=False):
         print(summary_df)
 
     return df
+if __name__ == "__main__":
+    fits_file = "/Users/areedy/Software/scratch/hlsp_pie_hst_wfc3_all-galaxies_multi_v1_phot-cat.fits"
+    keyword_finder(fits_file=fits_file,
+                meta_types='image',
+                verbose=True)
