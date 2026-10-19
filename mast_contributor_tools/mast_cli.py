@@ -167,14 +167,14 @@ def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
 )
 @click.option("-vo", "--vo_required", default=False, flag_value=True, help="Require VOParquet")
 @click.option("-j", "--jar_file", default="stilts.jar", help="Path to a JAR file containing parqlint.")
-@click.option("-c", "--color", default=False, flag_value=True, help="Enable color-coded output")
+@click.option("-nc", "--no_color", default=False, flag_value=True, help="Turn off color-coded output")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable debug-level messages")
 def validate_parquet_cli(
     file: str = "",
     unrecognized_unit_warnings: bool = False,
     vo_required: bool = False,
     jar_file: str = "topcat-extra.jar",
-    color: bool = False,
+    no_color: bool = False,
     verbose: bool = False,
 ) -> None:
     """
@@ -198,7 +198,7 @@ def validate_parquet_cli(
         unrecognized_unit_warnings=unrecognized_unit_warnings,
         vo_required=vo_required,
         jar_file=jar_file,
-        color=color,
+        no_color=no_color,
     )
 
 

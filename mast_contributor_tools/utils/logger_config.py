@@ -14,41 +14,41 @@ class CustomLoggingFormatter(logging.Formatter):
     Modified from : https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
     """
 
-    def __init__(self, color: bool = True) -> None:
+    def __init__(self, no_color: bool = True) -> None:
         """Initialize instance of CustomLoggingFormatter class.
 
         Parameters
         ===========
-        color: bool
-            Setting to show color-coded results.
+        no_color: bool
+            Setting to turn off color-coded results.
         """
 
-        self.color = color
+        self.no_color = no_color
 
     def color_code(self, record) -> str:
         """
         Returns the color-coded and bolding format for a log record
         """
 
-        if self.color:
-            grey = "\x1b[38;20m"
-            bold_grey = "\x1b[38;1m"
-            yellow = "\x1b[33;20m"
-            bold_yellow = "\x1b[33;1m"
-            red = "\x1b[31;20m"
-            bold_red = "\x1b[31;1m"
+        if not self.no_color:
+            grey = "\x1b[0m"
+            bold_grey = "\x1b[1m"
+            yellow = "\x1b[33m"
+            bold_yellow = "\x1b[1;33m"
+            red = "\x1b[31m"
+            bold_red = "\x1b[1;31m"
             green = "\x1b[32m"
             bold_green = "\x1b[1;32m"
             reset = "\x1b[0m"
             msg_format = "%(message)s"
         else:
-            grey = "\x1b[20m"
+            grey = "\x1b[0m"
             bold_grey = "\x1b[1m"
-            yellow = "\x1b[20m"
+            yellow = "\x1b[0m"
             bold_yellow = "\x1b[1m"
-            red = "\x1b[20m"
+            red = "\x1b[0m"
             bold_red = "\x1b[1m"
-            green = "\x1b[20m"
+            green = "\x1b[0m"
             bold_green = "\x1b[1m"
             reset = "\x1b[0m"
             msg_format = "%(message)s"
@@ -94,7 +94,7 @@ class CustomLoggingFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logger(name: str, level: int = logging.INFO, color: bool = True) -> logging.Logger:
+def setup_logger(name: str, level: int = logging.INFO, no_color: bool = True) -> logging.Logger:
     """Create a custom logger."""
 
     logger = logging.getLogger(name)
@@ -112,7 +112,7 @@ def setup_logger(name: str, level: int = logging.INFO, color: bool = True) -> lo
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
     # Color code the text for the terminal output
-    c_handler.setFormatter(CustomLoggingFormatter(color))
+    c_handler.setFormatter(CustomLoggingFormatter(no_color))
 
     # Add handlers to the logger
     logger.addHandler(c_handler)

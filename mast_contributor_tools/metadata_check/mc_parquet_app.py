@@ -35,7 +35,7 @@ def run_parqlint(parquet_file, jar_file="stilts.jar", unrecognized_unit_warnings
     jar_file : str, optional
         Path to the JAR file needed to run parqlint. Defaults to stilts.jar in local directory.
 
-    unrecognized_unit_warnings : bool
+    unrecognized_unit_warnings : bool, optional
         Boolean to enable (over)zealous unit warnings. Defaults to False.
 
     Returns
@@ -83,6 +83,20 @@ def run_parqlint(parquet_file, jar_file="stilts.jar", unrecognized_unit_warnings
 
 
 def download_jar_file(url) -> str:
+    """
+    If the JAR file isn't found in the local directory, prompt the user on whether to download it.
+
+    Parameters
+    ----------
+    url : str
+        URL for JAR file.
+
+    Returns
+    -------
+    str
+        The new path to the JAR file on the user's machine, either ./stilts.jar or
+        or a path provided by the user.
+    """
     # Prompt the user for confirmation
     confirm = input(
         f"VOParquet keys detected, but stilts.jar file not found. Do you want to download the file from {url} (50 MB)? (y/n, or enter the path to a stilts.jar file on your machine): "
@@ -115,20 +129,43 @@ def download_jar_file(url) -> str:
 
 
 class parquet_validator:
+    """
+    Parquet validation class, holding attributes like the list of
+    evaluation results, the logger, and the key-value metadata dictionary
+    from the Parquet footer.
+
+    Parameters
+    ----------
+    file : str
+        Path to the Parquet file being test.
+
+    unrecognized_unit_warnings : bool, optional
+        Boolean to enable (over)zealous unit warnings. Defaults to False.
+
+    vo_required : bool, optional
+        Boolean to require a VOParquet key in order to PASS a file (defaults to False, meaning that the VOParquet check can be skipped if not present without causing a fail)
+
+    jar_file : str, optional
+        Path to the JAR file needed to run parqlint. Defaults to stilts.jar in local directory.
+
+    no_color : bool, optional
+        Boolean to turn off color-coded terminal output
+    """
+
     def __init__(
         self,
         file: str,
         unrecognized_unit_warnings: bool = False,
         vo_required: bool = False,
         jar_file: str = "stilts.jar",
-        color: bool = True,
+        no_color: bool = False,
     ) -> None:
         self.file = file
         self.unrecognized_unit_warnings = unrecognized_unit_warnings
         self.vo_required = vo_required
         self.jar_file = jar_file
-        self.color = color
-        self.logger: logging.Logger = setup_logger(__name__, color=color)
+        self.no_color = no_color
+        self.logger: logging.Logger = setup_logger(__name__, no_color=no_color)
         self.evaluations: list = []
 
         # Read the key-value dictionary in the Parquet footer
