@@ -107,7 +107,7 @@ def setup_logger(name: str, level: int = logging.INFO, no_color: bool = False) -
     f_handler.setLevel(level)
 
     # Create formatters and add it to handlers
-    c_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    c_format = logging.Formatter("%(message)s")
     f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
