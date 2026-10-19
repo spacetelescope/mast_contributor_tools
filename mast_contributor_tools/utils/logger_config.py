@@ -14,7 +14,7 @@ class CustomLoggingFormatter(logging.Formatter):
     Modified from : https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
     """
 
-    def __init__(self, no_color: bool = True) -> None:
+    def __init__(self, no_color: bool = False) -> None:
         """Initialize instance of CustomLoggingFormatter class.
 
         Parameters
@@ -94,7 +94,7 @@ class CustomLoggingFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logger(name: str, level: int = logging.INFO, no_color: bool = True) -> logging.Logger:
+def setup_logger(name: str, level: int = logging.INFO, no_color: bool = False) -> logging.Logger:
     """Create a custom logger."""
 
     logger = logging.getLogger(name)
