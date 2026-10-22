@@ -55,6 +55,7 @@ def cli() -> None:
     default="db",
     help="Write output to alternate format (csv, fits, html, excel)",
 )
+@click.option("-nc", "--no_color", default=False, flag_value=True, help="Turn off color-coded output")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
 def filenames_cli(
     hlsp_name: str,
@@ -65,6 +66,7 @@ def filenames_cli(
     max_n: Union[int, None] = None,
     dbfile: str = "",
     output_format: str = "db",
+    no_color: bool = False,
     verbose: bool = False,
 ) -> None:
     """
@@ -98,6 +100,10 @@ def filenames_cli(
         for handler in logger.handlers:
             handler.setLevel(logger.level)
 
+    if no_color:
+        fmt = getattr(logger, "_color_formatter", None)
+        fmt.no_color = no_color
+
     # Set default db file name
     if not dbfile:
         dbfile = f"results_{hlsp_name}.db"
@@ -116,8 +122,9 @@ def filenames_cli(
 
 @cli.command("check_filename", short_help="Check a single file name against MAST HLSP naming standards")
 @click.argument("filenames", nargs=-1)  # nargs=-1 allows variable number of arguments
+@click.option("-nc", "--no_color", default=False, flag_value=True, help="Turn off color-coded output")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
-def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
+def single_filename_cli(filenames: str = "", no_color: bool = False, verbose: bool = False) -> None:
     """
     Command for checking a single file name against MAST standards.
 
@@ -141,6 +148,10 @@ def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
         logger.setLevel("DEBUG")
         for handler in logger.handlers:
             handler.setLevel(logger.level)
+
+    if no_color:
+        fmt = getattr(logger, "_color_formatter", None)
+        fmt.no_color = no_color
 
     # Check the file name
     for filename in filenames:

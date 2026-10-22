@@ -69,7 +69,7 @@ class CustomLoggingFormatter(logging.Formatter):
         if ": 'FAIL'" in record.msg:
             log_fmt = bold_red + msg_format + reset
         elif ": 'NEEDS REVIEW'" in record.msg:
-            log_fmt = yellow + msg_format + reset
+            log_fmt = bold_yellow + msg_format + reset
         elif ": 'PASS'" in record.msg:
             log_fmt = bold_green + msg_format + reset
         elif ": 'SKIPPED'" in record.msg:
@@ -117,5 +117,7 @@ def setup_logger(name: str, level: int = logging.INFO, no_color: bool = False) -
     # Add handlers to the logger
     logger.addHandler(c_handler)
     logger.addHandler(f_handler)
+
+    logger._color_formatter = c_handler.formatter
 
     return logger
