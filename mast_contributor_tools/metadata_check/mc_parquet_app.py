@@ -16,7 +16,6 @@ from astropy.units.format.vounit import VOUnit  # type: ignore
 
 from mast_contributor_tools.utils.logger_config import setup_logger
 
-# TODO urgent: finish docstrings (and CLI help string)
 # TODO urgent: add help for faulty java installs
 # TODO urgent: see TODOs throughout
 # TODO eventually: add debug logging
@@ -174,6 +173,15 @@ class parquet_validator:
         self.metadata = {k.decode("utf-8"): v.decode("utf-8") for k, v in metadata_binary.items()}
 
     def validate_voparquet(self) -> str:
+        """
+        Validate the VOParquet aspects of the file, and their consistency with the rest of the file.
+
+        Returns
+        -------
+        str
+            Evaluation string (one of "PASS", "FAIL", "SKIPPED")
+        """
+
         self.logger.critical("Validating VOParquet...")
         evaluation_voparquet = "PASS"
 
@@ -231,6 +239,14 @@ class parquet_validator:
         return evaluation_voparquet
 
     def validate_table_meta_yaml(self) -> str:
+        """
+        Validate the table_meta_yaml aspects of the file, and their consistency with the rest of the file.
+
+        Returns
+        -------
+        str
+            Evaluation string (one of "PASS", "FAIL", "SKIPPED")
+        """
         self.logger.critical("Validating table_meta_yaml...")
         if "table_meta_yaml" not in self.metadata.keys():
             evaluation_table_meta_yaml = "FAIL"
@@ -341,6 +357,14 @@ class parquet_validator:
         return evaluation_table_meta_yaml
 
     def check_keys(self) -> str:
+        """
+        Check for the presence of other required or optional keys.
+
+        Returns
+        -------
+        str
+            Evaluation string (one of "PASS", "FAIL", "SKIPPED")
+        """
         self.logger.critical("Checking for the presence of other required or suggested keys...")
 
         evaluation_keys = "PASS"  # default to pass
@@ -458,6 +482,26 @@ class parquet_validator:
 
     @staticmethod
     def validate(*args, **kwargs) -> None:
+        """
+        Wrapper function creating an instance of the class, running each evaluation function, and summarizing results.
+
+        Parameters
+        ----------
+        file : str
+            Path to the Parquet file being test.
+
+        unrecognized_unit_warnings : bool, optional
+            Boolean to enable (over)zealous unit warnings. Defaults to False.
+
+        vo_required : bool, optional
+            Boolean to require a VOParquet key in order to PASS a file (defaults to False, meaning that the VOParquet check can be skipped if not present without causing a fail)
+
+        jar_file : str, optional
+            Path to the JAR file needed to run parqlint. Defaults to stilts.jar in local directory.
+
+        no_color : bool, optional
+            Boolean to turn off color-coded terminal output
+        """
         instance = parquet_validator(*args, **kwargs)
 
         instance.logger.critical(f"Metadata Checker is evaluating {instance.file}...")

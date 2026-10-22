@@ -129,8 +129,15 @@ def single_filename_cli(filenames: str = "", no_color: bool = False, verbose: bo
     Command for checking a single file name against MAST standards.
 
     Required Arguments:
-        FILENAMES is the name of at least one file to test. It does not need to be a real file.
-        Additional files can be provided as additional arguments.
+        filenames
+            The name of at least one file to test. It does not need to be a real file.
+            Additional files can be provided as additional arguments.
+
+    Optional flags:
+        --no_color
+            Turns off color-coded output. Alias: -nc
+        --verbose
+            Shows the evaluation for each field of the filename. Alias: -v
 
     Example Usage:
 
@@ -184,14 +191,55 @@ def validate_parquet_cli(
     file: str = "",
     unrecognized_unit_warnings: bool = False,
     vo_required: bool = False,
-    jar_file: str = "topcat-extra.jar",
+    jar_file: str = "stilts.jar",
     no_color: bool = False,
     verbose: bool = False,
 ) -> None:
     """
     Parquet validator.
 
-    Add more info here.
+    Command for checking a single Parquet file against a set of metadata/design standards.
+
+    Positional arguments:
+        file : str
+            The name or directory path of exactly one file to test.
+
+    Optional arguments:
+        --jar_file : str
+            Alias: -j
+            The name or directory path for your stilts.jar file.
+            If this argument is not provided, the Parquet validator will look for stilts.jar in your local directory,
+            or prompt you to download it into your local directory.
+
+    Optional flag arguments:
+        --unrecognized_unit_warnings
+            Alias: -uu
+            Turns on (over)zealous unit warnings from parqlint and astropy, which by default are suppressed.
+        --vo_required
+            Alias: -vo
+            Turn on to interpret the absence of VOParquet keys as a FAIL,
+            instead of the default which allows the VOParquet evaluation to be SKIPPED without preventing a PASS result.
+            Turn this flag on for file-based approaches where VOParquet is mandatory, or if you want to mandate the use of VOParquet for any reason.
+        --no_color
+            Alias: -nc
+            Turns off the default color-coded output, instead rendering all terminal output in the default text color of your terminal.
+        --verbose
+            Alias: -v
+            Increases debug verbosity.
+
+    Example Usage:
+
+        Validate a Parquet file in your local directory with default settings:
+
+            mct validate_parquet ccsp_sn_wfi_fake-star-001_f062_v0.1_lc.parquet
+
+        Validate a Parquet file using a stilts.jar file located elsewhere on your machine, with VOParquet keys required:
+
+            mct validate_parquet ccsp_sn_wfi_fake-star-001_f062_v0.1_lc.parquet -j /path/to/stilts.jar -vo
+
+        Validate a Parquet file located somewhere else on your local machine, with color-coded output turned off and overzealous unit warnings turned on:
+
+            mct validate_parquet /path/to/ccsp_sn_wfi_fake-star-001_f062_v0.1_lc.parquet -nc -uu
     """
     if verbose:
         logger.setLevel("DEBUG")
