@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import subprocess
 import warnings
@@ -7,6 +8,7 @@ from pathlib import Path
 
 import pyarrow.parquet as pq  # type: ignore
 import requests
+import yaml  # type: ignore
 from astropy import units as u  # type: ignore
 from astropy.io.votable import parse  # type: ignore
 from astropy.io.votable.ucd import check_ucd  # type: ignore
@@ -372,37 +374,14 @@ class parquet_validator:
             False  # assess whether guidance about table-level metadata key requirements is needed, default to False
         )
 
-        # TODO move these to yaml files, and allow users to pass in optional flags to set what categories of keys are required
-        required = ["ccsp.name", "ccsp.investigator", "ccsp.doi", "file_version", "file_date", "license", "license_url"]
-        conditional = [
-            "telescope",
-            "instrument.name",
-            "instrument.detector",
-            "instrument.optical_element",
-            "wavelength.band",
-            "simulated_flag",
-        ]
-        conditional_filebased = [
-            "exposure_time",
-            "effective_exposure_time",
-            "target_coordinates.ra",
-            "target_coordinates.dec",
-            "start_time",
-            "end_time",
-            "wavelength.minimum",
-            "wavelength.maximum",
-            "s_region",
-            "pixel_scale",
-        ]
-        suggested = [
-            "ccsp.archive_lead",
-            "ccsp.data_release_id",
-            "target_name",
-            "ccsp.intent",
-            "target_keywords",
-            "target_keywords_id",
-            "source_observations_id",
-        ]
+        # Load required and suggested key names from yaml file
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(BASE_DIR, "ccsp_keys.yaml"), "r") as f:
+            keynames = yaml.safe_load(f)
+        required = keynames["required"]
+        conditional = keynames["conditional"]
+        conditional_filebased = keynames["conditional_filebased"]
+        suggested = keynames["suggested"]
 
         # Check if votable is handling coosys and timesys
         if "IVOA.VOTable-Parquet.content" not in self.metadata.keys():
