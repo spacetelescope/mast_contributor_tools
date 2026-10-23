@@ -72,6 +72,7 @@ def filenames_cli(
     """
     Command for checking file names in a directory against MAST standards.
 
+    \b
     Required Arguments:
         HLSP_NAME is the name of the HLSP collection
 
@@ -128,16 +129,18 @@ def single_filename_cli(filenames: str = "", no_color: bool = False, verbose: bo
     """
     Command for checking a single file name against MAST standards.
 
+    \b
     Required Arguments:
         filenames
             The name of at least one file to test. It does not need to be a real file.
             Additional files can be provided as additional arguments.
 
+    \b
     Optional flags:
-        --no_color
-            Turns off color-coded output. Alias: -nc
-        --verbose
-            Shows the evaluation for each field of the filename. Alias: -v
+        --no_color, -nc
+            Turns off color-coded output.
+        --verbose, -v
+            Shows the evaluation for each field of the filename.
 
     Example Usage:
 
@@ -201,31 +204,33 @@ def validate_parquet_cli(
 
     Command for checking a single Parquet file against a set of metadata/design standards.
 
+    \b
     Positional arguments:
-        file : str
+        file
             The name or directory path of exactly one file to test.
 
+    \b
     Optional arguments:
-        --jar_file : str
-            Alias: -j
+        --jar_file, -j
             The name or directory path for your stilts.jar file.
-            If this argument is not provided, the Parquet validator will look for stilts.jar in your local directory,
-            or prompt you to download it into your local directory.
+            If this argument is not provided, the Parquet validator will look for
+            stilts.jar in your local directory, or prompt you to download it into your
+            local directory.
 
+    \b
     Optional flag arguments:
-        --unrecognized_unit_warnings
-            Alias: -uu
-            Turns on (over)zealous unit warnings from parqlint and astropy, which by default are suppressed.
-        --vo_required
-            Alias: -vo
-            Turn on to interpret the absence of VOParquet keys as a FAIL,
-            instead of the default which allows the VOParquet evaluation to be SKIPPED without preventing a PASS result.
-            Turn this flag on for file-based approaches where VOParquet is mandatory, or if you want to mandate the use of VOParquet for any reason.
-        --no_color
-            Alias: -nc
-            Turns off the default color-coded output, instead rendering all terminal output in the default text color of your terminal.
-        --verbose
-            Alias: -v
+        --unrecognized_unit_warnings, -uu
+            Turns on (over)zealous unit warnings from parqlint and astropy, which by
+            default are suppressed.
+        --vo_required, -vo
+            Turn on to interpret the absence of VOParquet keys as a FAIL, instead of the
+            default which allows the VOParquet evaluation to be SKIPPED without preventing
+            a PASS result. Turn this flag on for file-based approaches where VOParquet is
+            mandatory, or if you want to mandate the use of VOParquet for any reason.
+        --no_color, -nc
+            Turns off the default color-coded output, instead rendering all terminal
+            output in the default text color of your terminal.
+        --verbose, -v
             Increases debug verbosity.
 
     Example Usage:
