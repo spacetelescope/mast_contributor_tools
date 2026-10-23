@@ -18,7 +18,6 @@ from astropy.units.format.vounit import VOUnit  # type: ignore
 
 from mast_contributor_tools.utils.logger_config import setup_logger
 
-# TODO urgent: add help for faulty java installs
 # TODO urgent: see TODOs throughout
 # TODO eventually: add debug logging
 # TODO eventually: make agnostic to PITs/CCSPs vs. MCCMs vs. HLSPs (mainly just validate_keys, but minor doc issues throughout)
@@ -45,22 +44,27 @@ def run_parqlint(parquet_file, jar_file="stilts.jar", unrecognized_unit_warnings
         A concatenated string of stdout from parqlint, or None if stdout is empty.
 
     """
-    parq = subprocess.run(
-        [
-            "java",
-            "-jar",
-            str(Path(jar_file)),
-            "parqlint",
-            f"in={parquet_file}",
-            "time=true",
-            "ucd=true",
-            "unit=true",
-            "voparquet=true",
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        parq = subprocess.run(
+            [
+                "java",
+                "-jar",
+                str(Path(jar_file)),
+                "parqlint",
+                f"in={parquet_file}",
+                "time=true",
+                "ucd=true",
+                "unit=true",
+                "voparquet=true",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:  # if java not installed
+        raise RuntimeError(
+            "Java may not be installed in your system, or the java command may not be in your PATH. Please see the mast_contributor_tools repository README if you need help installing java."
+        )
 
     if parq.stdout:
         lines = parq.stdout.splitlines()
@@ -194,27 +198,35 @@ class parquet_validator:
 
             # Validate with parqlint
             if Path(self.jar_file).is_file():
-                parqlint_out = run_parqlint(
-                    self.file, unrecognized_unit_warnings=self.unrecognized_unit_warnings, jar_file=self.jar_file
-                )
-                if parqlint_out is None:
-                    pass
-                messages = parqlint_out.split("\n")
-                for msg in messages:
-                    if msg.startswith("WARNING: "):
-                        self.logger.warning(msg)
-                    elif msg.startswith("ERROR: "):
-                        self.logger.error(msg)
-                    elif msg.startswith("INFO: "):
-                        self.logger.info(msg)
+                try:
+                    parqlint_out = run_parqlint(
+                        self.file, unrecognized_unit_warnings=self.unrecognized_unit_warnings, jar_file=self.jar_file
+                    )
+                except RuntimeError as e:
+                    message = "WARNING: VOParquet keys detected, but attempt to run parqlint failed. Skipping VOParquet validation."
+                    self.logger.warning(message)
+                    warnings.warn(
+                        message + f" The parqlint subprocess produced the following message: {e}", RuntimeWarning
+                    )
+                else:
+                    if parqlint_out is None:
+                        pass
+                    messages = parqlint_out.split("\n")
+                    for msg in messages:
+                        if msg.startswith("WARNING: "):
+                            self.logger.warning(msg)
+                        elif msg.startswith("ERROR: "):
+                            self.logger.error(msg)
+                        elif msg.startswith("INFO: "):
+                            self.logger.info(msg)
 
-                # if any line reports an ERROR, evaluation returns FAIL
-                def any_line_contains(sub, text):
-                    lines = text.splitlines()
-                    return any(sub in line for line in lines)
+                    # if any line reports an ERROR, evaluation returns FAIL
+                    def any_line_contains(sub, text):
+                        lines = text.splitlines()
+                        return any(sub in line for line in lines)
 
-                if any_line_contains("ERROR:", parqlint_out):
-                    evaluation_voparquet = "FAIL"
+                    if any_line_contains("ERROR:", parqlint_out):
+                        evaluation_voparquet = "FAIL"
 
             else:
                 message = (
