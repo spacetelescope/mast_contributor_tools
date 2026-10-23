@@ -217,10 +217,12 @@ class parquet_validator:
                     evaluation_voparquet = "FAIL"
 
             else:
-                self.logger.warning(
+                message = (
                     "WARNING: VOParquet keys detected, but stilts.jar file not found. Skipping VOParquet validation."
                 )
-                # TODO raise warning
+                self.logger.warning(message)
+                # code is not behaving as intended, so raise a warning to stderr too
+                warnings.warn(message)
                 evaluation_voparquet = "SKIPPED"
 
         else:

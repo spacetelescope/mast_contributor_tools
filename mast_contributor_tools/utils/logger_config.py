@@ -1,6 +1,8 @@
 import logging
 import os
 import re
+import sys
+import warnings
 
 
 class CustomLoggingFormatter(logging.Formatter):
@@ -101,7 +103,7 @@ def setup_logger(name: str, level: int = logging.INFO, no_color: bool = False) -
     logger.setLevel(level)
 
     # Create handlers
-    c_handler = logging.StreamHandler()
+    c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), "../mct.log"))
     c_handler.setLevel(level)
     f_handler.setLevel(level)
@@ -114,9 +116,16 @@ def setup_logger(name: str, level: int = logging.INFO, no_color: bool = False) -
     # Color code the text for the terminal output
     c_handler.setFormatter(CustomLoggingFormatter(no_color))
 
+    # For console, send warnings.warn to stderr instead of stdout
+    c_handler.addFilter(lambda r: r.name != "py.warnings")
+    w_handler = logging.StreamHandler(sys.stderr)
+    w_handler.setLevel(logging.WARNING)
+    w_handler.addFilter(lambda r: r.name == "py.warnings")
+
     # Add handlers to the logger
     logger.addHandler(c_handler)
     logger.addHandler(f_handler)
+    logger.addHandler(w_handler)
 
     logger._color_formatter = c_handler.formatter
 
