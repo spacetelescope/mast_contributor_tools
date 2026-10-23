@@ -10,12 +10,14 @@ from typing import Union
 import click
 
 from mast_contributor_tools.filename_check.fc_app import check_filenames, check_single_filename, get_file_paths, logger
-
+from mast_contributor_tools.metadata_check.mc_parquet_app import parquet_validator
 
 # ==========================================
 # Command Line Interface (CLI) commands for mast contributor tools
 # Implemented using the click pacakge: https://pypi.org/project/click/
 # ==========================================
+
+
 @click.group("mct")
 def cli() -> None:
     """
@@ -53,6 +55,7 @@ def cli() -> None:
     default="db",
     help="Write output to alternate format (csv, fits, html, excel)",
 )
+@click.option("-nc", "--no_color", default=False, flag_value=True, help="Turn off color-coded output")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
 def filenames_cli(
     hlsp_name: str,
@@ -63,11 +66,13 @@ def filenames_cli(
     max_n: Union[int, None] = None,
     dbfile: str = "",
     output_format: str = "db",
+    no_color: bool = False,
     verbose: bool = False,
 ) -> None:
     """
     Command for checking file names in a directory against MAST standards.
 
+    \b
     Required Arguments:
         HLSP_NAME is the name of the HLSP collection
 
@@ -96,6 +101,10 @@ def filenames_cli(
         for handler in logger.handlers:
             handler.setLevel(logger.level)
 
+    if no_color:
+        fmt = getattr(logger, "_color_formatter", None)
+        fmt.no_color = no_color
+
     # Set default db file name
     if not dbfile:
         dbfile = f"results_{hlsp_name}.db"
@@ -114,14 +123,24 @@ def filenames_cli(
 
 @cli.command("check_filename", short_help="Check a single file name against MAST HLSP naming standards")
 @click.argument("filenames", nargs=-1)  # nargs=-1 allows variable number of arguments
+@click.option("-nc", "--no_color", default=False, flag_value=True, help="Turn off color-coded output")
 @click.option("-v", "--verbose", default=False, flag_value=True, help="Enable verbose output")
-def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
+def single_filename_cli(filenames: str = "", no_color: bool = False, verbose: bool = False) -> None:
     """
     Command for checking a single file name against MAST standards.
 
+    \b
     Required Arguments:
-        FILENAMES is the name of at least one file to test. It does not need to be a real file.
-        Additional files can be provided as additional arguments.
+        filenames
+            The name of at least one file to test. It does not need to be a real file.
+            Additional files can be provided as additional arguments.
+
+    \b
+    Optional flags:
+        --no_color, -nc
+            Turns off color-coded output.
+        --verbose, -v
+            Shows the evaluation for each field of the filename.
 
     Example Usage:
 
@@ -140,9 +159,112 @@ def single_filename_cli(filenames: str = "", verbose: bool = False) -> None:
         for handler in logger.handlers:
             handler.setLevel(logger.level)
 
+    # update logger color formatter for no_color
+    if no_color:
+        fmt = getattr(logger, "_color_formatter", None)
+        fmt.no_color = no_color
+
     # Check the file name
     for filename in filenames:
         check_single_filename(filename)
+
+
+# ==========================================
+# CLI commands for metadata checkers
+# =========================================
+
+
+# Parquet validator
+@cli.command(
+    "validate_parquet",
+    short_help="Check a single Parquet file for conformance with some of MAST's metadata standards for Roman PITs/CCSPs",
+)
+@click.argument("file")
+@click.option(
+    "-uu",
+    "--unrecognized_unit_warnings",
+    default=False,
+    flag_value=True,
+    help="Include (over)zealous warnings about unrecognized units",
+)
+@click.option("-vo", "--vo_required", default=False, flag_value=True, help="Require VOParquet")
+@click.option("-j", "--jar_file", default="stilts.jar", help="Path to a JAR file containing parqlint.")
+@click.option("-nc", "--no_color", default=False, flag_value=True, help="Turn off color-coded output")
+@click.option("-v", "--verbose", default=False, flag_value=True, help="Enable debug-level messages")
+def validate_parquet_cli(
+    file: str = "",
+    unrecognized_unit_warnings: bool = False,
+    vo_required: bool = False,
+    jar_file: str = "stilts.jar",
+    no_color: bool = False,
+    verbose: bool = False,
+) -> None:
+    """
+    Parquet validator.
+
+    Command for checking a single Parquet file against a set of metadata/design standards.
+
+    \b
+    Positional arguments:
+        file
+            The name or directory path of exactly one file to test.
+
+    \b
+    Optional arguments:
+        --jar_file, -j
+            The name or directory path for your stilts.jar file.
+            If this argument is not provided, the Parquet validator will look for
+            stilts.jar in your local directory, or prompt you to download it into your
+            local directory.
+
+    \b
+    Optional flag arguments:
+        --unrecognized_unit_warnings, -uu
+            Turns on (over)zealous unit warnings from parqlint and astropy, which by
+            default are suppressed.
+        --vo_required, -vo
+            Turn on to interpret the absence of VOParquet keys as a FAIL, instead of the
+            default which allows the VOParquet evaluation to be SKIPPED without preventing
+            a PASS result. Turn this flag on for file-based approaches where VOParquet is
+            mandatory, or if you want to mandate the use of VOParquet for any reason.
+        --no_color, -nc
+            Turns off the default color-coded output, instead rendering all terminal
+            output in the default text color of your terminal.
+        --verbose, -v
+            Increases debug verbosity.
+
+    Example Usage:
+
+        Validate a Parquet file in your local directory with default settings:
+
+            mct validate_parquet ccsp_sn_wfi_fake-star-001_f062_v0.1_lc.parquet
+
+        Validate a Parquet file using a stilts.jar file located elsewhere on your machine, with VOParquet keys required:
+
+            mct validate_parquet ccsp_sn_wfi_fake-star-001_f062_v0.1_lc.parquet -j /path/to/stilts.jar -vo
+
+        Validate a Parquet file located somewhere else on your local machine, with color-coded output turned off and overzealous unit warnings turned on:
+
+            mct validate_parquet /path/to/ccsp_sn_wfi_fake-star-001_f062_v0.1_lc.parquet -nc -uu
+    """
+    if verbose:
+        logger.setLevel("DEBUG")
+        for handler in logger.handlers:
+            handler.setLevel(logger.level)
+    else:
+        # Logger level must at minimum be "INFO"
+        logger.setLevel("INFO")
+        for handler in logger.handlers:
+            handler.setLevel(logger.level)
+
+    # Run
+    parquet_validator.validate(
+        file,
+        unrecognized_unit_warnings=unrecognized_unit_warnings,
+        vo_required=vo_required,
+        jar_file=jar_file,
+        no_color=no_color,
+    )
 
 
 # ==========================================
