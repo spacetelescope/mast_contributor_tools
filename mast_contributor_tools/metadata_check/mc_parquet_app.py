@@ -18,9 +18,9 @@ from astropy.units.format.vounit import VOUnit  # type: ignore
 
 from mast_contributor_tools.utils.logger_config import setup_logger
 
-# TODO urgent: see TODOs throughout
+# TODO eventually: make a few try-except exception classes more specific (see TODOs throughout)
 # TODO eventually: add debug logging
-# TODO eventually: make agnostic to PITs/CCSPs vs. MCCMs vs. HLSPs (mainly just validate_keys, but minor doc issues throughout)
+# TODO eventually: make agnostic to PITs/CCSPs vs. MCCMs vs. HLSPs (mainly just validate_keys, but communication issues throughout)
 
 
 def run_parqlint(parquet_file, jar_file="stilts.jar", unrecognized_unit_warnings=False):
@@ -333,7 +333,7 @@ class parquet_validator:
             # Check if astropy can load the file as a table
             try:
                 Table.read(self.file, format="parquet", schema_only=True)
-            except:  # noqa # TODO fix this noqa
+            except Exception:  # TODO Exception is too generic
                 self.logger.error(
                     "ERROR: Unable to open as an astropy Table. table_meta_yaml may be improperly formatted, or something else may be wrong."
                 )
@@ -348,7 +348,7 @@ class parquet_validator:
                     except ValueError:
                         try:
                             VOUnit.parse(unit)  # try to parse as a VOunit
-                        except:  # noqa # TODO fix this noqa
+                        except Exception:  # TODO Exception is too generic
                             if not unrecognized_unit_reported:
                                 self.logger.warning(
                                     f"WARNING: {unit} is not a recognized unit in astropy.units or VOUnit, or might be improperly formatted."
@@ -361,7 +361,7 @@ class parquet_validator:
                             u.Unit(unit)
                         except ValueError:
                             VOUnit.parse(unit)
-                except:  # noqa # TODO fix this noqa
+                except Exception:  # TODO Exception is too generic
                     self.logger.info(
                         "INFO: unknown and/or deprecated unit warnings were suppressed; the table_meta_yaml convention does not have rules for which units are allowable. To show zealous unit warnings, re-run with unrecognized_unit_warnings = True."
                     )
