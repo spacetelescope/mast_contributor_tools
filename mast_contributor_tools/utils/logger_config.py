@@ -33,6 +33,7 @@ class CustomLoggingFormatter(logging.Formatter):
         """
 
         if not self.no_color:
+            # colors, sometimes with bolding
             grey = "\x1b[0m"
             bold_grey = "\x1b[1m"
             yellow = "\x1b[33m"
@@ -44,6 +45,7 @@ class CustomLoggingFormatter(logging.Formatter):
             reset = "\x1b[0m"
             msg_format = "%(message)s"
         else:
+            # default terminal text color, sometimes with bolding
             grey = "\x1b[0m"
             bold_grey = "\x1b[1m"
             yellow = "\x1b[0m"

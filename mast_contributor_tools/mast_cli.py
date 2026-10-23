@@ -156,6 +156,7 @@ def single_filename_cli(filenames: str = "", no_color: bool = False, verbose: bo
         for handler in logger.handlers:
             handler.setLevel(logger.level)
 
+    # update logger color formatter for no_color
     if no_color:
         fmt = getattr(logger, "_color_formatter", None)
         fmt.no_color = no_color

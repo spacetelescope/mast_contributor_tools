@@ -69,13 +69,13 @@ def run_parqlint(parquet_file, jar_file="stilts.jar", unrecognized_unit_warnings
     if parq.stdout:
         lines = parq.stdout.splitlines()
         for i, line in enumerate(lines):  # escalate "bad unit grammar" warning to error
-            if "(BAD_SYNTAX)" in line:
+            if "(BAD_SYNTAX)" in line:  # this ERROR from parqlint is not zealous enough; escalate to ERROR
                 lines[i] = line.replace("WARNING:", "ERROR:")
-        if unrecognized_unit_warnings:
+        if unrecognized_unit_warnings:  # if strict unit checking is turned on, keep every line
             lined_output = [line for line in lines]
             lined_output = dict.fromkeys(lined_output).keys()  # set, but preserve order
             return "\n".join(lined_output)
-        else:
+        else:  # if strict unit checking is turned off, compress unknown/deprecated unit warnings into a single INFO message
             lined_output = [line for line in lines if "UNKNOWN_UNIT" not in line]
             if "UNKNOWN_UNIT" in parq.stdout:
                 lined_output += [
@@ -189,8 +189,9 @@ class parquet_validator:
         """
 
         self.logger.critical("Validating VOParquet...")
-        evaluation_voparquet = "PASS"
+        evaluation_voparquet = "PASS"  # default to PASS
 
+        # if VOTable keys present, try to run parqlint and extract its messages
         if "IVOA.VOTable-Parquet.content" in self.metadata.keys():
             if not Path(self.jar_file).is_file():
                 # Try to download stilts.jar to local directory, or prompt user path to their local stilts.jar file
@@ -270,7 +271,7 @@ class parquet_validator:
                 "ERROR: table_meta_yaml key was not found. This key is required for all PIT/CCSP Parquet products."
             )
         else:
-            evaluation_table_meta_yaml = "PASS"
+            evaluation_table_meta_yaml = "PASS"  # default to PASS
             # Get column names, units, and UCDs from table_meta_yaml
             column_name_pattern = r"name:\s*([^\n,{}]+?)[\n,]"
             unit_pattern = r"unit:\s*([^\n,{}]+?)[\n,]"
@@ -383,7 +384,7 @@ class parquet_validator:
         """
         self.logger.critical("Checking for the presence of other required or suggested keys...")
 
-        evaluation_keys = "PASS"  # default to pass
+        evaluation_keys = "PASS"  # default to PASS
         fail_or_warning = (
             False  # assess whether guidance about table-level metadata key requirements is needed, default to False
         )
