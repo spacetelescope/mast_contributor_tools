@@ -353,7 +353,7 @@ def identify_collection_type(file_name: str) -> str:
     collection_type: str
         Collection Type - "HLSP", "CCSP", or "MCCM". Raises a warning and defaults to "HLSP" if unable to identify.
     """
-    collection_type = file_name.split("_")[0].upper()
+    collection_type = Path(file_name).name.split("_")[0].upper()
     if collection_type.upper() not in ["HLSP", "MCCM", "CCSP"]:
         # Default to HLSP, raise warning
         msg = f"WARNING: Could not identify collection type '{collection_type}' from filename. Assuming HLSP."

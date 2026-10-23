@@ -498,6 +498,9 @@ def test_MCCMFileName(
         ("mccm_my-hlsp_file.txt", "MCCM"),
         # Defaults to HLSP when not recognized
         ("mast_my-hlsp_file.txt", "HLSP"),
+        # ignores file path
+        ("dir/hlsp_my-hlsp_file.txt", "HLSP"),
+        ("dir/subdir/mccm_my-hlsp_file.txt", "MCCM"),
     ],
 )
 def test_identify_collection_type(test_filename, expected) -> None:

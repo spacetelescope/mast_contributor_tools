@@ -8,6 +8,10 @@
 [PR # 36](https://github.com/spacetelescope/mast_contributor_tools/pull/36)
     - Adding support for MCCM and CCSP file name validation
 
+[PR # 38](https://github.com/spacetelescope/mast_contributor_tools/pull/38)
+    - Bug fix for identify_collection_type
+
+
 ### Changed
 
 ### Deprecated
