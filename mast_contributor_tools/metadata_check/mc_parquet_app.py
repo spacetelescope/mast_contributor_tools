@@ -387,17 +387,18 @@ class parquet_validator:
         if "IVOA.VOTable-Parquet.content" not in self.metadata.keys():
             conditional += ["coordinate_reference_frame", "time_scale", "time_reference_position"]
         else:
-            try:
+            try:  # try to open VOTable content
                 xml_object = BytesIO(self.metadata["IVOA.VOTable-Parquet.content"].encode("utf-8"))
                 with warnings.catch_warnings():
                     warnings.filterwarnings("ignore", category=UnitsWarning)
                     votable = parse(xml_object, verify="ignore")
+            except Exception:  # any exception; invalid voparquet is handled elsewhere
+                pass
+            else:  # if successfully opened VOTable content, check whether votable is handlign coosys and timesys
                 if len(votable.coordinate_systems) == 0:
                     conditional += ["coordinate_reference_frame"]
                 if len(votable.time_systems) == 0:
                     conditional += ["time_scale", "time_reference_position"]
-            except:  # noqa # TODO fix this noqa
-                pass  # TODO invalid votable handled elsewhere, but I should handle this better
 
         # Check for missing keys
 
