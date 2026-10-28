@@ -1,0 +1,38 @@
+required:
+  - ccsp.name
+  - ccsp.investigator
+  - ccsp.doi
+  - file_version
+  - file_date
+  - license
+  - license_url
+
+conditional:
+  - telescope
+  - instrument.name
+  - instrument.detector
+  - instrument.optical_element
+  - wavelength.band
+  - simulated_flag
+  # time_scale, time_reference_position, and coordinate_reference_frame are all added inside the code if TIMESYS/COOSYS VOTable elements are not present in the tested file
+
+conditional_filebased:
+  - exposure_time
+  - effective_exposure_time
+  - target_coordinates.ra
+  - target_coordinates.dec
+  - start_time
+  - end_time
+  - wavelength.minimum
+  - wavelength.maximum
+  - target_name
+  - s_region
+  - pixel_scale
+
+suggested:
+  - ccsp.archive_lead
+  - ccsp.data_release_id
+  - ccsp.intent
+  - target_keywords
+  - target_keywords_id
+  - source_observations_id
