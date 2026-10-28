@@ -32,7 +32,19 @@ class CustomLoggingFormatter(logging.Formatter):
         Returns the color-coded and bolding format for a log record
         """
 
-        if not self.no_color:
+        if not sys.stdout.isatty():
+            # if not outputting to a terminal, avoiding polluting output with ansi codes
+            grey = ""
+            bold_grey = ""
+            yellow = ""
+            bold_yellow = ""
+            red = ""
+            bold_red = ""
+            green = ""
+            bold_green = ""
+            reset = ""
+            msg_format = "%(message)s"
+        elif not self.no_color:
             # colors, sometimes with bolding
             grey = "\x1b[0m"
             bold_grey = "\x1b[1m"
