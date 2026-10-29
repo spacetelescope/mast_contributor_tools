@@ -18,8 +18,9 @@ There are two main branches for mast_contributor_tools work:
     - Release notes are maintained in the `CHANGELOG.md`
 
 ## Installation
-### Required packages and versions
+### Dependencies
 - See required packages found in the [conda env file](https://github.com/spacetelescope/mast_contributor_tools/blob/main/envs/mct_env.yml) or [pyproject.toml](https://github.com/spacetelescope/mast_contributor_tools/blob/main/pyproject.toml).
+- Java is an optional system dependency for validating the VOTable contents of VOParquet files. It's probably best to install Java system-wide on your own, but one fallback option is to use conda to [install `openjdk`](#conda-environment).
 
 ### Conda environment
 Replace `env_name` with the desired name for your environment.
@@ -30,6 +31,23 @@ Replace `env_name` with the desired name for your environment.
 conda create -n env_name python=3.11
 conda activate env_name
 ```
+
+> [!TIP]
+> If you want to validate the VOTable contents of VOParquet files, you need Java installed on your system. Try `which java` and/or `java -version` to check whether Java is installed.
+>
+> If you don't have Java installed on your system, one option is to install it with `conda` via the following steps, after activating your conda environment and *before* running the pip installation step:
+>
+> `conda install conda-forge::openjdk`
+>
+> Now try `which java` and/or `java -version` again to check that java is now available. If that didn't work, then find out where conda put the Java files...
+>
+> `find $CONDA_PREFIX -name "java" -type f`
+>
+> ...and add that subdirectory to your PATH. For example, if the above yielded `/Users/my_name/miniconda3/envs/my_test_environment/lib/jvm/bin/java`, then run the following in your terminal (temporary) or add it to your shell config file (then restart your terminal session):
+>
+> `export PATH=$CONDA_PREFIX/lib/jvm/bin:$PATH`
+>
+> If you have any trouble, please consult with your MAST contact for assistance.
 
 ### mast_contributor_tools
 #### Installation for regular users
