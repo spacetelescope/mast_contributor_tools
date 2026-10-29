@@ -87,7 +87,7 @@ def run_parqlint(parquet_file, jar_file="stilts.jar", unrecognized_unit_warnings
         return None
 
 
-def download_jar_file(url) -> str:
+def download_jar_file(url) -> str | None:
     """
     If the JAR file isn't found in the local directory, prompt the user on whether to download it.
 
@@ -98,9 +98,9 @@ def download_jar_file(url) -> str:
 
     Returns
     -------
-    str
+    str | None
         The new path to the JAR file on the user's machine, either ./stilts.jar or
-        or a path provided by the user.
+        or a path provided by the user, or None if no file is found anywhere and download failed.
     """
     # Prompt the user for confirmation
     confirm = input(
@@ -109,12 +109,12 @@ def download_jar_file(url) -> str:
 
     if confirm.lower() in ("n", "no"):
         print("Proceeding without stilts.jar...")
-        return "stilts.jar"
+        return None
 
     elif confirm.lower() not in ("y", "yes"):
         if not Path(confirm.strip()).is_file():
             print(f"No file found at {confirm.strip()}. Proceeding without stilts.jar...")
-            return "stilts.jar"
+            return None
         else:
             print(f"Trying to use {confirm.strip()}...")
             return confirm.strip()
@@ -127,10 +127,11 @@ def download_jar_file(url) -> str:
             with open("stilts.jar", "wb") as f:
                 f.write(response.content)
             print("Download successful.")
+            return "stilts.jar"
         except Exception as e:
             print(f"An error occurred: {e}")
             print("Proceeding without stilts.jar...")
-        return "stilts.jar"
+            return None
 
 
 class parquet_validator:
@@ -193,12 +194,18 @@ class parquet_validator:
 
         # if VOTable keys present, try to run parqlint and extract its messages
         if "IVOA.VOTable-Parquet.content" in self.metadata.keys():
-            if not Path(self.jar_file).is_file():
+            if (not Path(self.jar_file).is_file()) and (Path("stilts.jar").is_file()):
+                # If the jar file isn't found at the custom input path, but it is in the local directory, use the latter
+                self.jar_file = "stilts.jar"
+                message = "JAR file not found at the specified path, using stilts.jar in the local directory instead."
+                warnings.warn(message)
+            elif not Path(self.jar_file).is_file():
+                # If the jar file isn't found anywhere,
                 # Try to download stilts.jar to local directory, or prompt user path to their local stilts.jar file
                 self.jar_file = download_jar_file("https://www.star.bristol.ac.uk/mbt/stilts/stilts.jar")
 
             # Validate with parqlint
-            if Path(self.jar_file).is_file():
+            if isinstance(self.jar_file, str) and Path(self.jar_file).is_file():
                 try:
                     parqlint_out = run_parqlint(
                         self.file, unrecognized_unit_warnings=self.unrecognized_unit_warnings, jar_file=self.jar_file
