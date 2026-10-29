@@ -27,7 +27,7 @@ class CustomLoggingFormatter(logging.Formatter):
 
         self.no_color = no_color
 
-    def color_code(self, record) -> str:
+    def color_code(self, record) -> str:  # noqa: C901
         """
         Returns the color-coded and bolding format for a log record
         """

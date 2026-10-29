@@ -179,7 +179,7 @@ class parquet_validator:
         metadata_binary = cat_pq.schema.metadata
         self.metadata = {k.decode("utf-8"): v.decode("utf-8") for k, v in metadata_binary.items()}
 
-    def validate_voparquet(self) -> str:
+    def validate_voparquet(self) -> str:  # noqa: C901
         """
         Validate the VOParquet aspects of the file, and their consistency with the rest of the file.
 
@@ -262,7 +262,7 @@ class parquet_validator:
 
         return evaluation_voparquet
 
-    def validate_table_meta_yaml(self) -> str:
+    def validate_table_meta_yaml(self) -> str:  # noqa: C901
         """
         Validate the table_meta_yaml aspects of the file, and their consistency with the rest of the file.
 
@@ -380,7 +380,7 @@ class parquet_validator:
 
         return evaluation_table_meta_yaml
 
-    def check_keys(self) -> str:
+    def check_keys(self) -> str:  # noqa: C901
         """
         Check for the presence of other required or optional keys.
 
